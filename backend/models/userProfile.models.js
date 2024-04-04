@@ -12,7 +12,7 @@ const userProfileSchema = new Schema(
       type: String,
       required: true,
     },
-    password: {
+    hashpassword: {
       type: String,
       required: true,
     },
