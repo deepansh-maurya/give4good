@@ -14,5 +14,5 @@ mongoDbConnect()
     console.log("system failue");
   });
 
-import router from "./routes/auth.routes.js";
+import router from "./routes/app.routes.js";
 app.use("/api/v1", router);
