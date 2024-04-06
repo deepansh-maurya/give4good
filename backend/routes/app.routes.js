@@ -14,8 +14,8 @@ const router = Router();
 // auth routes
 router.route("/register").post(registerUser);
 router.route("/login").post(loginUser);
-router.route("/change-password").put(changePassword);
-router.route("/delete-account").delete(deleteAccount);
+router.route("/change-password").put(authenticationMiddleware, changePassword);
+router.route("/delete-account").delete(authenticationMiddleware, deleteAccount);
 // campaign routes
 router
   .route("/campaign-creation")

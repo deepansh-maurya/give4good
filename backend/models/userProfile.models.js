@@ -35,6 +35,21 @@ const userProfileSchema = new Schema(
         },
       },
     ],
+    refundhistory: [
+      {
+        paymentID: {
+          type: String,
+          required: true,
+        },
+        orderID: { type: String, required: true },
+        signature: { type: String, required: true },
+        campaignID: {
+          type: Schema.Types.ObjectId,
+          ref: "Campaign",
+          required: true,
+        },
+      },
+    ],
     profilePicture: {
       type: String,
     },

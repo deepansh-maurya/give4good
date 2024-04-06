@@ -69,7 +69,7 @@ export const paymentVerification = async (req, res) => {
       { donationhistory },
       { new: true }
     );
-    var instance = new Razorpay({
+    let instance = new Razorpay({
       key_id: process.env.RAZORPAY_API_KEY,
       key_secret: process.env.RAZORPAY_API_KEY_SECRET,
     });
@@ -86,7 +86,7 @@ export const paymentVerification = async (req, res) => {
       //refund
       res.status(400).json({
         success: true,
-        messgae: "payment donation failed",
+        messgae: "payment donation failed, payment refunded",
       });
     }
     return res.status(200).json({
@@ -98,6 +98,54 @@ export const paymentVerification = async (req, res) => {
     return res.status(500).json({
       success: false,
       message: "internal error while payment",
+    });
+  }
+};
+export const paymentVerificationForRefund = async (req, res) => {
+  try {
+    const { razorpay_payment_id, razorpay_order_id, razorpay_signature } =
+      req.body;
+    const response = validatePaymentVerification(
+      { order_id: razorpay_order_id, payment_id: razorpay_payment_id },
+      razorpay_signature,
+      process.env.RAZORPAY_API_KEY_SECRET
+    );
+    if (!response) {
+      res.status(400).json({
+        success: true,
+        messgae: "payment donation failed",
+      });
+    }
+    const data = {
+      paymentID: razorpay_payment_id,
+      orderID: razorpay_order_id,
+      signature: razorpay_signature,
+      campaignID: req.params.campaignID,
+    };
+    const user = await UserProfile.findById({ _id: req.params.id });
+    const refundhistory = user.refundhistory;
+    refundhistory.push(data);
+    const updatedUser = await UserProfile.updateOne(
+      { _id: req.params.id },
+      { refundhistory },
+      { new: true }
+    );
+
+    if (!updatedUser) {
+      //refund
+      res.status(400).json({
+        success: true,
+        messgae: "refund  failed, payment refunded",
+      });
+    }
+    return res.status(200).json({
+      success: true,
+      messgae: "payment refund successfull",
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: "internal error while refund",
     });
   }
 };
