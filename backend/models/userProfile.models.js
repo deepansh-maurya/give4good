@@ -21,7 +21,21 @@ const userProfileSchema = new Schema(
         type: String,
       },
     ],
-    donationhistory: [{ type: String }],
+    donationhistory: [
+      {
+        paymentID: {
+          type: String,
+          required: true,
+        },
+        orderID: { type: String, required: true },
+        signature: { type: String, required: true },
+        campaignID: {
+          type: Schema.Types.ObjectId,
+          ref: "Campaign",
+          required: true,
+        },
+      },
+    ],
     profilePicture: {
       type: String,
     },

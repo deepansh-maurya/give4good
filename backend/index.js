@@ -1,9 +1,17 @@
 import express from "express";
 import dotenv from "dotenv";
+import cors from "cors";
 import { mongoDbConnect } from "./database/dbconnect.js";
 dotenv.config({ path: "./env" });
 const app = express();
 app.use(express.json());
+app.use(express.urlencoded());
+app.use(
+  cors({
+    origin: process.env.CORS_ORIGIN,
+    credentials: true,
+  })
+);
 mongoDbConnect()
   .then(() => {
     app.listen(process.env.PORT || 4000, () => {
