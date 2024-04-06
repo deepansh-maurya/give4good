@@ -1,4 +1,3 @@
-import { response } from "express";
 import { Campaign } from "../models/campaign.models.js";
 export const createCampaign = async (req, res) => {
   console.log("0");

@@ -39,6 +39,7 @@ const campaigneSchema = new Schema(
     creator: {
       type: Schema.Types.ObjectId,
       ref: "UserProfile",
+      required: true,
     },
     video: {
       type: String,
