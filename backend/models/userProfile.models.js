@@ -15,6 +15,10 @@ const userProfileSchema = new Schema(
       type: String,
       required: true,
     },
+    role: {
+      type: String,
+      required: true,
+    },
     campaigns: [
       {
         type: String,

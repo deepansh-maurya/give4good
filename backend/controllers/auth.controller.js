@@ -3,6 +3,7 @@ import bcrypt, { hash } from "bcrypt";
 import { Campaign } from "../models/campaign.models.js";
 import dotenv from "dotenv";
 import jwt from "jsonwebtoken";
+import { Admin } from "../models/admin.models.js";
 dotenv.config({ path: "./env" });
 export const registerUser = async (req, res) => {
   try {
@@ -81,6 +82,7 @@ export const loginUser = async (req, res) => {
       id: user._id,
       username: username,
       email: user.email,
+      role: user.role,
     };
     const secretKey = process.env.JWT_SECRET_KEY;
     const token = jwt.sign(userData, secretKey, { header, expiresIn });
@@ -157,3 +159,102 @@ export const deleteAccount = async (req, res) => {
 };
 
 // forget password functionality
+
+// admin auth
+export const adminregister = async (req, res) => {
+  try {
+    const { email, username, password, role } = req.body;
+    if (
+      email != "" &&
+      email.includes("@gmail.com") &&
+      username != "" &&
+      password != "" &&
+      password.length > 8 &&
+      role != ""
+    ) {
+      const existedadmin = await Admin.findOne({
+        $or: [{ username }, { email }],
+      });
+      if (existedadmin) {
+        return res.status(400).json({
+          success: false,
+          message: "admin already existed",
+        });
+      }
+      let hashpassword = await bcrypt.hash(password, 10);
+      const admin = await Admin.create({
+        email,
+        username,
+        hashpassword,
+        role,
+      });
+      if (!admin) {
+        return res
+          .status(400)
+          .json({ success: false, message: "failed to become admin try again" })
+          .render();
+      }
+      return res
+        .status(200)
+        .json({ success: true, message: "you are now a admin" })
+        .render();
+    }
+  } catch (error) {
+    return res
+      .status(500)
+      .json({
+        success: false,
+        message: "internal error while admin registeration",
+      })
+      .render();
+  }
+};
+export const adminLogin = async (req, res) => {
+  try {
+    const { username, password } = req.body;
+    const admin = await Admin.findOne({
+      username,
+    });
+
+    if (!user) {
+      return res.status(401).json({
+        success: false,
+        messgae: " admin not exist ",
+      });
+    }
+    const hashpassword = await bcrypt.compare(password, admin.hashpassword);
+    if (!hashpassword) {
+      return res.status(401).json({
+        success: false,
+        messgae: "wrong passsword",
+      });
+    }
+    // creating a jwt token
+    const header = {
+      alg: "HS256",
+      typ: "JWT",
+    };
+    const expiresIn = "1d";
+    const userData = {
+      id: admin._id,
+      username: username,
+      email: admin.email,
+      role: admin.role,
+    };
+    const secretKey = process.env.JWT_SECRET_KEY;
+    const token = jwt.sign(userData, secretKey, { header, expiresIn });
+    const options = {
+      httpOnly: true,
+      secure: true,
+    };
+    return res.status(200).cookie("token", token, options).json({
+      success: true,
+      messgae: "admin logged in",
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      messgae: " logged in failed",
+    });
+  }
+};

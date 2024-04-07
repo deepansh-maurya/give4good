@@ -1,7 +1,6 @@
-import { Schema } from "mongoose";
-import models from "mongoose";
+import { Schema, model } from "mongoose";
 
-const adminSchema = new Schema(
+const ownerSchema = new Schema(
   {
     name: {
       type: String,
@@ -19,13 +18,17 @@ const adminSchema = new Schema(
       type: String,
       required: true,
     },
-    campaignsToDelete: [
+    role: {
+      type: String,
+      default: "owner",
+    },
+    adminlist: [
       {
         type: Schema.Types.ObjectId,
-        ref: "Campaign",
+        ref: "Admin",
       },
     ],
-    role: {
+    hashedtoken: {
       type: String,
       required: true,
     },
@@ -33,4 +36,4 @@ const adminSchema = new Schema(
   { timestamps: true }
 );
 
-export const Admin = models("Admin", adminSchema);
+export const Owner = model("Owner", ownerSchema);
