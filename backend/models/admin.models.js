@@ -14,10 +14,8 @@ const adminSchema = new Schema(
     },
     campaignsToDelete: [
       {
-        id: {
-          type: Schema.Types.ObjectId,
-          ref: "Campaign",
-        },
+        type: Schema.Types.ObjectId,
+        ref: "Campaign",
       },
     ],
   },

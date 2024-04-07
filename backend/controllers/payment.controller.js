@@ -60,6 +60,7 @@ export const paymentVerification = async (req, res) => {
       orderID: razorpay_order_id,
       signature: razorpay_signature,
       campaignID: req.params.campaignID,
+      time: new Date(),
     };
     const user = await UserProfile.findById({ _id: req.params.id });
     const donationhistory = user.donationhistory;

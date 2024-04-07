@@ -33,6 +33,10 @@ const userProfileSchema = new Schema(
           ref: "Campaign",
           required: true,
         },
+        time: {
+          type: String,
+          required: true,
+        },
       },
     ],
     refundhistory: [

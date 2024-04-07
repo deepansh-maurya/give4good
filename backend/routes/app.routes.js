@@ -10,6 +10,10 @@ import { paymentVerification } from "../controllers/payment.controller.js";
 import { authenticationMiddleware } from "../middlwares/auth.middleware.js";
 import { changePassword } from "../controllers/auth.controller.js";
 import { deleteAccount } from "../controllers/auth.controller.js";
+import { requestDeleteCampaign } from "../controllers/campaign.controller.js";
+import { listOfCampaignsToBeDeleted } from "../controllers/campaign.controller.js";
+import { toAcceptCampaignDeletionByAdmin } from "../controllers/campaign.controller.js";
+import { askForRefund } from "../controllers/campaign.controller.js";
 const router = Router();
 // auth routes
 router.route("/register").post(registerUser);
@@ -22,6 +26,14 @@ router
   .post(authenticationMiddleware, createCampaign);
 router.route("/get-campaign").get(authenticationMiddleware, getCampaigns);
 router.route("/update-campaign").post(authenticationMiddleware, updateCampaign);
+router
+  .route("/request-delete-campiagn")
+  .post(authenticationMiddleware, requestDeleteCampaign);
+router.route("/ask-for-refund").post(authenticationMiddleware, askForRefund);
+router.route("/campaign-list-for-deletion").get(listOfCampaignsToBeDeleted);
+router
+  .route("/accept-campaign-deletion")
+  .delete(toAcceptCampaignDeletionByAdmin);
 // payment routes
 router.route("/create-order").post(authenticationMiddleware, orderCreation);
 router.route("/get-payment-key").get(authenticationMiddleware, getPaymentKey);
