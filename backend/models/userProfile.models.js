@@ -70,6 +70,12 @@ const userProfileSchema = new Schema(
         type: String,
       },
     ],
+    donatedGood: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: "Goods",
+      },
+    ],
   },
   { timestamps: true }
 );

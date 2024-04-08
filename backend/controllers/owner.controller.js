@@ -143,7 +143,7 @@ export const forVerifiactionCode = async (req, res) => {
         pass: process.env.PASSWORD_FOR_EMAIL_SERVICE,
       },
     });
-    let code = cryptoRandomString({ length: 10, type: "alphanumeric" });
+    let codetoverify = cryptoRandomString({ length: 10, type: "alphanumeric" });
     const info = await transporter.sendMail({
       from: ` Deepansh <${process.env.EMAIL_FOR_EMAIL_SERVICE}>`,
       to: req.body.to,
@@ -158,20 +158,10 @@ export const forVerifiactionCode = async (req, res) => {
         message: "code sent unsuccesfully",
       });
     }
-    const owner = await Owner.findByIdAndUpdate(
-      { _id: req.user.id },
-      { $push: { verficationCodes: code } },
-      { new: true }
-    );
-    if (!owner) {
-      return res.status(400).json({
-        success: true,
-        message: "code sent unsuccesfully",
-      });
-    }
     return res.status(400).json({
       success: true,
       message: "code sent succesfully",
+      codetoverify,
     });
   } catch (error) {
     return res.status(400).json({

@@ -159,12 +159,10 @@ export const deleteAccount = async (req, res) => {
   }
 };
 
-// forget password functionality and special middleware for this to ad owner id
 export const resetPassword = async (req, res) => {
   try {
     const code = req.body.code;
-    const owner = await Owner.findById(req.user.ownerid);
-    const toVerify = owner.verficationCodes[owner.verficationCodes.length - 1];
+    const toVerify = req.body.codetoverify;
     if (code !== toVerify) {
       return res.status(400).json({
         success: false,
@@ -301,3 +299,5 @@ export const adminLogin = async (req, res) => {
 };
 
 //  route to render a form
+
+// similar route for admin change password, delete, forget
