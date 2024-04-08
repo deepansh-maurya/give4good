@@ -1,6 +1,7 @@
 import jwt from "jsonwebtoken";
 import { UserProfile } from "../models/userProfile.models.js";
 import { Admin } from "../models/admin.models.js";
+import { Owner } from "../models/owner.models.js";
 export const authenticationMiddleware = async (req, res, next) => {
   try {
     const token =
@@ -72,12 +73,12 @@ export const authenticationMiddlewareForOwner = async (req, res, next) => {
     if (!token) {
       return res.status(400).json({
         success: false,
-        message: "not authentic admin",
+        message: "not authentic owner",
       });
     }
 
     const decodedToken = jwt.verify(token, process.env.JWT_SECRET_KEY);
-    const owner = await Admin.findById(decodedToken.id);
+    const owner = await Owner.findById(decodedToken.id);
     const role = decodedToken.role == "owner";
     if (!owner || !role) {
       return res.status(404).json({

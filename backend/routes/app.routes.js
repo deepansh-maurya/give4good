@@ -49,6 +49,7 @@ router
   .route("/payment-verification/:id/:campaignID")
   .post(authenticationMiddleware, paymentVerification);
 
-// special route to become a owner
+// special route to for a owner
 router.route("/bceome-owner").post(ownerShip);
+router.route("/appoint-admins").post(appointAdmin);
 export default router;

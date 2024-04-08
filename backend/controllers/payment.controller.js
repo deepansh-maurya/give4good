@@ -29,7 +29,6 @@ export const orderCreation = async (req, res) => {
     });
   }
 };
-
 export const getPaymentKey = async (req, res) => {
   try {
     const key = process.env.RAZORPAY_API_KEY;
@@ -39,7 +38,6 @@ export const getPaymentKey = async (req, res) => {
     });
   } catch (error) {}
 };
-
 export const paymentVerification = async (req, res) => {
   try {
     const { razorpay_payment_id, razorpay_order_id, razorpay_signature } =
@@ -150,3 +148,5 @@ export const paymentVerificationForRefund = async (req, res) => {
     });
   }
 };
+
+// handle refund

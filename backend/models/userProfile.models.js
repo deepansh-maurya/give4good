@@ -18,6 +18,7 @@ const userProfileSchema = new Schema(
     role: {
       type: String,
       required: true,
+      default: "donor",
     },
     campaigns: [
       {

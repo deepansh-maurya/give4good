@@ -1,6 +1,7 @@
 import { Owner } from "../models/owner.models.js";
 import bcrypt, { hash } from "bcrypt";
-
+import { createTransport } from "nodemailer";
+import cryptoRandomString from "crypto-random-string";
 export const ownerShip = async (req, res) => {
   try {
     const { email, username, password, role, token } = req.body;
@@ -91,6 +92,91 @@ export const ownerLogin = async (req, res) => {
     return res.status(500).json({
       success: false,
       messgae: " logged in failed",
+    });
+  }
+};
+export const appointAdmin = async (req, res) => {
+  try {
+    const transporter = createTransport({
+      host: "gmail",
+      port: 587,
+      secure: false,
+      auth: {
+        user: process.env.EMAIL_FOR_EMAIL_SERVICE,
+        pass: process.env.PASSWORD_FOR_EMAIL_SERVICE,
+      },
+    });
+    const info = await transporter.sendMail({
+      from: ` Deepansh <${process.env.EMAIL_FOR_EMAIL_SERVICE}>`,
+      to: req.body.to, // list of receivers
+      subject: req.body.subject, // Subject line
+      text: req.body.message, // plain text body
+      html: `<a href=${req.body.link}>${req.body.linktext}</a>`,
+    });
+
+    if (!info) {
+      return res.status(400).json({
+        success: true,
+        message: "email sent unsuccesfully",
+      });
+    }
+    return res.status(400).json({
+      success: true,
+      message: "email sent succesfully",
+    });
+  } catch (error) {
+    return res.status(400).json({
+      success: true,
+      message: "system error while sending email ",
+    });
+  }
+};
+
+export const forVerifiactionCode = async (req, res) => {
+  try {
+    const transporter = createTransport({
+      host: "gmail",
+      port: 230,
+      secure: false,
+      auth: {
+        user: process.env.EMAIL_FOR_EMAIL_SERVICE,
+        pass: process.env.PASSWORD_FOR_EMAIL_SERVICE,
+      },
+    });
+    let code = cryptoRandomString({ length: 10, type: "alphanumeric" });
+    const info = await transporter.sendMail({
+      from: ` Deepansh <${process.env.EMAIL_FOR_EMAIL_SERVICE}>`,
+      to: req.body.to,
+      subject: "Your verification code for password reset",
+      text: code,
+      html: ``,
+    });
+
+    if (!info) {
+      return res.status(400).json({
+        success: true,
+        message: "code sent unsuccesfully",
+      });
+    }
+    const owner = await Owner.findByIdAndUpdate(
+      { _id: req.user.id },
+      { $push: { verficationCodes: code } },
+      { new: true }
+    );
+    if (!owner) {
+      return res.status(400).json({
+        success: true,
+        message: "code sent unsuccesfully",
+      });
+    }
+    return res.status(400).json({
+      success: true,
+      message: "code sent succesfully",
+    });
+  } catch (error) {
+    return res.status(400).json({
+      success: true,
+      message: "system error while sending code ",
     });
   }
 };

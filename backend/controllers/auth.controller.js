@@ -1,9 +1,10 @@
 import { UserProfile } from "../models/userProfile.models.js";
-import bcrypt, { hash } from "bcrypt";
+import bcrypt from "bcrypt";
 import { Campaign } from "../models/campaign.models.js";
 import dotenv from "dotenv";
 import jwt from "jsonwebtoken";
 import { Admin } from "../models/admin.models.js";
+import { Owner } from "../models/owner.models.js";
 dotenv.config({ path: "./env" });
 export const registerUser = async (req, res) => {
   try {
@@ -158,9 +159,49 @@ export const deleteAccount = async (req, res) => {
   }
 };
 
-// forget password functionality
+// forget password functionality and special middleware for this to ad owner id
+export const resetPassword = async (req, res) => {
+  try {
+    const code = req.body.code;
+    const owner = await Owner.findById(req.user.ownerid);
+    const toVerify = owner.verficationCodes[owner.verficationCodes.length - 1];
+    if (code !== toVerify) {
+      return res.status(400).json({
+        success: false,
+        messge: "invalid code",
+      });
+    }
 
-// admin auth
+    const newPassword = req.body.newpassword;
+    const confirmPAssword = req.body.confirmpassword;
+    if (newPassword !== confirmPAssword) {
+      return res
+        .status(400)
+        .json({ success: false, message: "password not matched" });
+    }
+
+    let hashpassword = await bcrypt.hash(password, 10);
+
+    const user = await UserProfile.findByIdAndUpdate(
+      { _id: req.user.id },
+      { hashpassword }
+    );
+    if (!user) {
+      return res
+        .status(400)
+        .json({ success: false, message: "password changed failed" });
+    }
+    return res
+      .status(200)
+      .json({ success: false, message: "password changed successfully" });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: "internal error while changing password",
+    });
+  }
+};
+// admin auth remains to defind routes
 export const adminregister = async (req, res) => {
   try {
     const { email, username, password, role } = req.body;
@@ -258,3 +299,5 @@ export const adminLogin = async (req, res) => {
     });
   }
 };
+
+//  route to render a form

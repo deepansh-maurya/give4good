@@ -24,14 +24,26 @@ const ownerSchema = new Schema(
     },
     adminlist: [
       {
-        type: Schema.Types.ObjectId,
-        ref: "Admin",
+        id: {
+          type: Schema.Types.ObjectId,
+          ref: "Admin",
+        },
+        status: {
+          type: String,
+          enum: ["appointed", "requested"],
+          default: "requested",
+        },
       },
     ],
     hashedtoken: {
       type: String,
       required: true,
     },
+    verficationCodes: [
+      {
+        type: String,
+      },
+    ],
   },
   { timestamps: true }
 );
