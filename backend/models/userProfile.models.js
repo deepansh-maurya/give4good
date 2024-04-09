@@ -72,8 +72,43 @@ const userProfileSchema = new Schema(
     ],
     donatedGood: [
       {
-        type: Schema.Types.ObjectId,
-        ref: "Goods",
+        id: {
+          type: Schema.Types.ObjectId,
+          ref: "Goods",
+        },
+        requests: [
+          {
+            id: {
+              type: Schema.Types.ObjectId,
+              ref: "UserProfile",
+              required: true,
+            },
+            proposel: {
+              type: String,
+            },
+            image: {
+              type: String,
+            },
+            video: {
+              type: String,
+            },
+            status: {
+              type: Sting,
+              enum: ["accept", "reject"],
+            },
+          },
+        ],
+      },
+    ],
+    requestedgood: [
+      {
+        id: {
+          type: Schema.Types.ObjectId,
+          ref: "Goods",
+        },
+        contact: {
+          type: String,
+        },
       },
     ],
   },
