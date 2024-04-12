@@ -111,6 +111,12 @@ const userProfileSchema = new Schema(
         },
       },
     ],
+    shippedgooddetail: [
+      {
+        shippedinfo: { type: Schema.Types.ObjectId, ref: "Shippedgood" },
+        goodinfo: { type: Schema.Types.ObjectId, ref: "Goods" },
+      },
+    ],
   },
   { timestamps: true }
 );

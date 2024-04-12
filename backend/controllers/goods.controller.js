@@ -381,10 +381,28 @@ export const shipTheGoods = async (req, res) => {
                   { new: true }
                 );
                 if (updatedShippedData) {
-                  return res.status(200).json({
-                    success: true,
-                    message: "good shipped successfully",
+                  let user = await UserProfile.findById({ _id: req.user.id });
+                  let shippedgooddetail = user.shippedgooddetail;
+                  shippedgooddetail.push({
+                    shippedinfo: updatedShippedData._id,
+                    goodinfo: req.body.goodID,
                   });
+                  let updatedUser = await UserProfile.findByIdAndUpdate(
+                    { _id: req.user.id },
+                    { shippedgooddetail: shippedgooddetail }
+                  );
+                  ///   changes remaaining for updating values
+                  if (updatedUser) {
+                    return res.status(200).json({
+                      success: true,
+                      message: "good shipped successfully",
+                    });
+                  } else {
+                    return res.status(400).json({
+                      success: true,
+                      message: " error while shippping the good,try again",
+                    });
+                  }
                 } else {
                   return res.status(400).json({
                     success: true,
@@ -430,6 +448,39 @@ export const shipTheGoods = async (req, res) => {
   }
 };
 
+export const trackOrder = async (req, res) => {
+  try {
+    const goodID = req.body.goodID;
+    const user = await UserProfile.findById({ _id: req.body.donorID });
+    const shippedgooddetail = user.shippedgooddetail;
+    const shippedinfo = shippedgooddetail.filter(
+      (data) => data.goodinfo == goodID
+    );
+    const shippedID = shippedinfo.shippedinfo;
+    const shippedData = await Shippedgood.findById({ _id: shippedID });
+
+    const awb = shippedData.awn_data;
+    let config = {
+      method: "get",
+      maxBodyLength: Infinity,
+      url: `https://apiv2.shiprocket.in/v1/external/courier/track/awb/${awb.awb_code}`,
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    };
+    let response = await axios(config);
+
+    if (!response) {
+      return res
+        .status(400)
+        .json({ success: false, message: "failed to track" });
+    }
+    return res
+      .status(200)
+      .json({ success: true, message: "tracking successfull", response });
+  } catch (error) {}
+};
 // list requested goods
 
 export const listRequestedGoods = async (req, res) => {
