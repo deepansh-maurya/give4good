@@ -1,5 +1,5 @@
 import { Schema } from "mongoose";
-import models from "mongoose";
+import { model } from "mongoose";
 
 const adminSchema = new Schema(
   {
@@ -34,4 +34,4 @@ const adminSchema = new Schema(
   { timestamps: true }
 );
 
-export const Admin = models("Admin", adminSchema);
+export const Admin = model("Admin", adminSchema);

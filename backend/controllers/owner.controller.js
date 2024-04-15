@@ -1,5 +1,5 @@
 import { Owner } from "../models/owner.models.js";
-import bcrypt, { hash } from "bcrypt";
+import bcrypt from "bcrypt";
 import { createTransport } from "nodemailer";
 import cryptoRandomString from "crypto-random-string";
 export const ownerShip = async (req, res) => {

@@ -1,10 +1,17 @@
 import { Router } from "express";
-import { adminregister, registerUser } from "../controllers/auth.controller.js";
+import {
+  adminregister,
+  registerUser,
+  resetPassword,
+} from "../controllers/auth.controller.js";
 import { createCampaign } from "../controllers/campaign.controller.js";
 import { loginUser } from "../controllers/auth.controller.js";
 import { getCampaigns } from "../controllers/campaign.controller.js";
 import { updateCampaign } from "../controllers/campaign.controller.js";
-import { orderCreation } from "../controllers/payment.controller.js";
+import {
+  orderCreation,
+  paymentVerificationForRefund,
+} from "../controllers/payment.controller.js";
 import { getPaymentKey } from "../controllers/payment.controller.js";
 import { paymentVerification } from "../controllers/payment.controller.js";
 import { authenticationMiddleware } from "../middlwares/auth.middleware.js";
@@ -14,16 +21,27 @@ import { requestDeleteCampaign } from "../controllers/campaign.controller.js";
 import { listOfCampaignsToBeDeleted } from "../controllers/campaign.controller.js";
 import { toAcceptCampaignDeletionByAdmin } from "../controllers/campaign.controller.js";
 import { askForRefund } from "../controllers/campaign.controller.js";
-import { adminregister } from "../controllers/auth.controller.js";
 import { ownerShip } from "../controllers/owner.controller.js";
 import { adminLogin } from "../controllers/auth.controller.js";
 import { ownerLogin } from "../controllers/owner.controller.js";
+import { appointAdmin } from "../controllers/owner.controller.js";
+import {
+  acceptOrRejectGoods,
+  donateGoods,
+  listGoods,
+  listRequestedGoods,
+  listRequests,
+  requestGoods,
+  shipTheGoods,
+  trackOrder,
+} from "../controllers/goods.controller.js";
 const router = Router();
 // auth routes
 router.route("/register").post(registerUser);
 router.route("/login").post(loginUser);
 router.route("/change-password").put(authenticationMiddleware, changePassword);
 router.route("/delete-account").delete(authenticationMiddleware, deleteAccount);
+router.route("/reset-password").patch(authenticationMiddleware, resetPassword);
 router.route("/admin-register").post(adminregister);
 router.route("/admin-login").post(adminLogin);
 router.route("/owner-register").post(ownerShip);
@@ -48,8 +66,22 @@ router.route("/get-payment-key").get(authenticationMiddleware, getPaymentKey);
 router
   .route("/payment-verification/:id/:campaignID")
   .post(authenticationMiddleware, paymentVerification);
-
+router
+  .route("payment-verifiaction-for-refund")
+  .post(authenticationMiddleware, paymentVerificationForRefund);
 // special route to for a owner
-router.route("/bceome-owner").post(ownerShip);
 router.route("/appoint-admins").post(appointAdmin);
+// route to donate the goods
+router.route("/donate-goods").post(authenticationMiddleware, donateGoods);
+router.route("list-goods").post(authenticationMiddleware, listGoods);
+router.route("request-goods").post(authenticationMiddleware, requestGoods);
+router.route("list-requests").post(authenticationMiddleware, listRequests);
+router
+  .route("accept-or-reject-request")
+  .post(authenticationMiddleware, acceptOrRejectGoods);
+router.route("to-ship-the-goods").post(authenticationMiddleware, shipTheGoods);
+router.route("track-order").post(authenticationMiddleware, trackOrder);
+router
+  .route("list-requested-good")
+  .get(authenticationMiddleware, listRequestedGoods);
 export default router;

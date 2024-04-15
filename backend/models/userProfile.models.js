@@ -93,7 +93,7 @@ const userProfileSchema = new Schema(
               type: String,
             },
             status: {
-              type: Sting,
+              type: String,
               enum: ["accept", "reject"],
             },
           },
