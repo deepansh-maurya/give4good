@@ -7,6 +7,7 @@ import { Admin } from "../models/admin.models.js";
 import { Owner } from "../models/owner.models.js";
 dotenv.config({ path: "./env" });
 export const registerUser = async (req, res) => {
+  console.log("Sdf");
   try {
     const { username, email, password } = req.body;
     if (
@@ -26,11 +27,19 @@ export const registerUser = async (req, res) => {
         });
       }
       let hashpassword = await bcrypt.hash(password, 10);
+      console.log(hashpassword);
       const register = await UserProfile.create({
         email,
         hashpassword,
         username,
       });
+      if (!register) {
+        return res.status(400).json({
+          success: false,
+          message: "user register failed",
+        });
+      }
+      console.log(register);
       return res.status(201).json({
         success: true,
         message: "user registered",
@@ -55,11 +64,21 @@ export const registerUser = async (req, res) => {
 
 export const loginUser = async (req, res) => {
   try {
-    const { username, password } = req.body;
-    const user = await UserProfile.findOne({
-      username,
-    });
-
+    const { username, password, role } = req.body;
+    const user = "";
+    if (role == "donor") {
+      user = await UserProfile.findOne({
+        username,
+      });
+    } else if (role == "admin") {
+      user = await Admin.findOne({
+        username,
+      });
+    } else {
+      user = await Owner.findOne({
+        username,
+      });
+    }
     if (!user) {
       return res.status(401).json({
         success: false,
@@ -91,6 +110,7 @@ export const loginUser = async (req, res) => {
       httpOnly: true,
       secure: true,
     };
+    console.log(token);
     return res.status(200).cookie("token", token, options).json({
       success: true,
       messgae: "user logged in",
@@ -103,7 +123,6 @@ export const loginUser = async (req, res) => {
   }
 };
 
-// testing remainnig
 export const changePassword = async (req, res) => {
   try {
     const { oldPassword, newPassword } = req.body;
@@ -114,8 +133,7 @@ export const changePassword = async (req, res) => {
         newPassword,
       });
     }
-    const id = req.user.id;
-    const user = await UserProfile.findById(id);
+    const user = await UserProfile.findById(req.user._id);
     const hashpassword = await bcrypt.compare(oldPassword, user.hashpassword);
     if (!hashpassword) {
       return res.status(401).json({
@@ -124,7 +142,7 @@ export const changePassword = async (req, res) => {
       });
     }
     await UserProfile.findByIdAndUpdate(
-      { id },
+      req.user?._id,
       { hashpassword: newPassword },
       { new: true }
     );
@@ -134,6 +152,7 @@ export const changePassword = async (req, res) => {
       message: "password changes succesfully",
     });
   } catch (error) {
+    console.log(error);
     return res.status(500).json({
       success: false,
       message: "erorr while changing the password",
@@ -141,6 +160,7 @@ export const changePassword = async (req, res) => {
   }
 };
 
+// handle refund
 export const deleteAccount = async (req, res) => {
   //transfer ownership , notifying user about campaigns
   try {
@@ -199,105 +219,69 @@ export const resetPassword = async (req, res) => {
     });
   }
 };
-// admin auth remains to defind routes
 export const adminregister = async (req, res) => {
+  // try {
+  //   const { email, username, password, role } = req.body;
+  //   if (
+  //     email != "" &&
+  //     email.includes("@gmail.com") &&
+  //     username != "" &&
+  //     password != "" &&
+  //     password.length > 8 &&
+  //     role != ""
+  //   ) {
+  //     const existedadmin = await Admin.findOne({
+  //       $or: [{ username }, { email }],
+  //     });
+  //     if (existedadmin) {
+  //       return res.status(400).json({
+  //         success: false,
+  //         message: "admin already existed",
+  //       });
+  //     }
+  //     let hashpassword = await bcrypt.hash(password, 10);
+  //     const admin = await Admin.create({
+  //       email,
+  //       username,
+  //       hashpassword,
+  //       role,
+  //     });
+  //     if (!admin) {
+  //       return res
+  //         .status(400)
+  //         .json({ success: false, message: "failed to become admin try again" })
+  //         .render();
+  //     }
+  //     return res
+  //       .status(200)
+  //       .json({ success: true, message: "you are now a admin" })
+  //       .render();
+  //   }
+  // } catch (error) {
+  //   return res
+  //     .status(500)
+  //     .json({
+  //       success: false,
+  //       message: "internal error while admin registeration",
+  //     })
+  //     .render();
+  // }
+  return res.render("form");
+};
+export const handleSubmitForm = async (req, res) => {
   try {
-    const { email, username, password, role } = req.body;
-    if (
-      email != "" &&
-      email.includes("@gmail.com") &&
-      username != "" &&
-      password != "" &&
-      password.length > 8 &&
-      role != ""
-    ) {
-      const existedadmin = await Admin.findOne({
-        $or: [{ username }, { email }],
-      });
-      if (existedadmin) {
-        return res.status(400).json({
-          success: false,
-          message: "admin already existed",
-        });
-      }
-      let hashpassword = await bcrypt.hash(password, 10);
-      const admin = await Admin.create({
-        email,
-        username,
-        hashpassword,
-        role,
-      });
-      if (!admin) {
-        return res
-          .status(400)
-          .json({ success: false, message: "failed to become admin try again" })
-          .render();
-      }
-      return res
-        .status(200)
-        .json({ success: true, message: "you are now a admin" })
-        .render();
-    }
+    const admin = await Admin.create({
+      email: req.body.email,
+      username: req.body.username,
+      hashpassword: req.body.password,
+      role: req.body.admin,
+    });
+    console.log(admin);
+    return res.status(200).send("welcome admin, now login into the app");
   } catch (error) {
-    return res
-      .status(500)
-      .json({
-        success: false,
-        message: "internal error while admin registeration",
-      })
-      .render();
+    console.log(error);
+    return res.status(500).send("failed to become admin try again");
   }
 };
-export const adminLogin = async (req, res) => {
-  try {
-    const { username, password } = req.body;
-    const admin = await Admin.findOne({
-      username,
-    });
-
-    if (!user) {
-      return res.status(401).json({
-        success: false,
-        messgae: " admin not exist ",
-      });
-    }
-    const hashpassword = await bcrypt.compare(password, admin.hashpassword);
-    if (!hashpassword) {
-      return res.status(401).json({
-        success: false,
-        messgae: "wrong passsword",
-      });
-    }
-    // creating a jwt token
-    const header = {
-      alg: "HS256",
-      typ: "JWT",
-    };
-    const expiresIn = "1d";
-    const userData = {
-      id: admin._id,
-      username: username,
-      email: admin.email,
-      role: admin.role,
-    };
-    const secretKey = process.env.JWT_SECRET_KEY;
-    const token = jwt.sign(userData, secretKey, { header, expiresIn });
-    const options = {
-      httpOnly: true,
-      secure: true,
-    };
-    return res.status(200).cookie("token", token, options).json({
-      success: true,
-      messgae: "admin logged in",
-    });
-  } catch (error) {
-    return res.status(500).json({
-      success: false,
-      messgae: " logged in failed",
-    });
-  }
-};
-
-//  route to render a form
 
 // similar route for admin change password, delete, forget

@@ -5,8 +5,8 @@ import { Owner } from "../models/owner.models.js";
 export const authenticationMiddleware = async (req, res, next) => {
   try {
     const token =
-      req.cookies.token || req.header("Authorization").replace("Bearer ", "");
-
+      req.cookies?.token || req.header("Authorization").replace("Bearer ", "");
+    console.log(token, "token");
     if (!token) {
       return res.status(400).json({
         success: false,
@@ -16,6 +16,7 @@ export const authenticationMiddleware = async (req, res, next) => {
 
     const decodedToken = jwt.verify(token, process.env.JWT_SECRET_KEY);
     const user = await UserProfile.findById(decodedToken.id);
+    console.log(user.id);
     const role =
       decodedToken.role == "owner" ||
       decodedToken.role == "admin" ||
@@ -29,6 +30,7 @@ export const authenticationMiddleware = async (req, res, next) => {
     req.user = user;
     next();
   } catch (error) {
+    console.log(error);
     return res.status(500).json({
       success: false,
       message: "error while authentication",

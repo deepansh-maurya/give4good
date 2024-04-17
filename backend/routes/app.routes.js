@@ -21,9 +21,10 @@ import { requestDeleteCampaign } from "../controllers/campaign.controller.js";
 import { listOfCampaignsToBeDeleted } from "../controllers/campaign.controller.js";
 import { toAcceptCampaignDeletionByAdmin } from "../controllers/campaign.controller.js";
 import { askForRefund } from "../controllers/campaign.controller.js";
-import { ownerShip } from "../controllers/owner.controller.js";
-import { adminLogin } from "../controllers/auth.controller.js";
-import { ownerLogin } from "../controllers/owner.controller.js";
+import {
+  forVerifiactionCode,
+  ownerShip,
+} from "../controllers/owner.controller.js";
 import { appointAdmin } from "../controllers/owner.controller.js";
 import {
   acceptOrRejectGoods,
@@ -37,20 +38,18 @@ import {
 } from "../controllers/goods.controller.js";
 const router = Router();
 // auth routes
-router.route("/register").post(registerUser);
-router.route("/login").post(loginUser);
+router.route("/register").post(registerUser); //
+router.route("/login").post(loginUser); //
 router.route("/change-password").put(authenticationMiddleware, changePassword);
+router.route("/get-verification-code").post(forVerifiactionCode);
+router.route("/forget-pasword").post(authenticationMiddleware, resetPassword);
 router.route("/delete-account").delete(authenticationMiddleware, deleteAccount);
-router.route("/reset-password").patch(authenticationMiddleware, resetPassword);
-router.route("/admin-register").post(adminregister);
-router.route("/admin-login").post(adminLogin);
+router.route("/admin-register").get(adminregister);
+// router.route("/form-submit").post(handleSubmitForm);
 router.route("/owner-register").post(ownerShip);
-router.route("/owner-login").post(ownerLogin);
 // campaign routes
-router
-  .route("/campaign-creation")
-  .post(authenticationMiddleware, createCampaign);
-router.route("/get-campaign").get(authenticationMiddleware, getCampaigns);
+router.route("/campaign-creation").post(createCampaign);
+router.route("/get-campaign").post(getCampaigns);
 router.route("/update-campaign").post(authenticationMiddleware, updateCampaign);
 router
   .route("/request-delete-campiagn")

@@ -2,6 +2,7 @@ import { Owner } from "../models/owner.models.js";
 import bcrypt from "bcrypt";
 import { createTransport } from "nodemailer";
 import cryptoRandomString from "crypto-random-string";
+import { loginUser } from "./auth.controller.js";
 export const ownerShip = async (req, res) => {
   try {
     const { email, username, password, role, token } = req.body;
@@ -42,63 +43,11 @@ export const ownerShip = async (req, res) => {
       .render();
   }
 };
-export const ownerLogin = async (req, res) => {
-  try {
-    const { username, password, hashedtokentoken } = req.body;
-    const owner = await Owner.findOne({
-      username,
-    });
 
-    if (!owner) {
-      return res.status(401).json({
-        success: false,
-        messgae: " owner not exist ",
-      });
-    }
-    const hashpassword = await bcrypt.compare(password, owner.hashpassword);
-    const hashedtoken = await bcrypt.compare(
-      hashedtokentoken,
-      owner.hashedtoken
-    );
-    if (!hashpassword || !hashedtoken) {
-      return res.status(401).json({
-        success: false,
-        messgae: "wrong passsword",
-      });
-    }
-    // creating a jwt token
-    const header = {
-      alg: "HS256",
-      typ: "JWT",
-    };
-    const expiresIn = "1d";
-    const userData = {
-      id: owner._id,
-      username: username,
-      email: owner.email,
-      role: owner.role,
-    };
-    const secretKey = process.env.JWT_SECRET_KEY;
-    const token = jwt.sign(userData, secretKey, { header, expiresIn });
-    const options = {
-      httpOnly: true,
-      secure: true,
-    };
-    return res.status(200).cookie("token", token, options).json({
-      success: true,
-      messgae: "admin logged in",
-    });
-  } catch (error) {
-    return res.status(500).json({
-      success: false,
-      messgae: " logged in failed",
-    });
-  }
-};
 export const appointAdmin = async (req, res) => {
   try {
     const transporter = createTransport({
-      host: "gmail",
+      host: "smtp.gmail.com",
       port: 587,
       secure: false,
       auth: {
@@ -111,7 +60,7 @@ export const appointAdmin = async (req, res) => {
       to: req.body.to, // list of receivers
       subject: req.body.subject, // Subject line
       text: req.body.message, // plain text body
-      html: `<a href=${req.body.link}>${req.body.linktext}</a>`,
+      html: `<a href=http://localhost:3000/api/v1/admin-register>register as admin</a>`,
     });
 
     if (!info) {
@@ -135,8 +84,8 @@ export const appointAdmin = async (req, res) => {
 export const forVerifiactionCode = async (req, res) => {
   try {
     const transporter = createTransport({
-      host: "gmail",
-      port: 230,
+      host: "smtp.gmail.com",
+      port: 587,
       secure: false,
       auth: {
         user: process.env.EMAIL_FOR_EMAIL_SERVICE,
@@ -144,11 +93,12 @@ export const forVerifiactionCode = async (req, res) => {
       },
     });
     let codetoverify = cryptoRandomString({ length: 10, type: "alphanumeric" });
+    console.log(codetoverify);
     const info = await transporter.sendMail({
       from: ` Deepansh <${process.env.EMAIL_FOR_EMAIL_SERVICE}>`,
       to: req.body.to,
       subject: "Your verification code for password reset",
-      text: code,
+      text: codetoverify,
       html: ``,
     });
 
@@ -164,6 +114,7 @@ export const forVerifiactionCode = async (req, res) => {
       codetoverify,
     });
   } catch (error) {
+    console.log(error);
     return res.status(400).json({
       success: true,
       message: "system error while sending code ",

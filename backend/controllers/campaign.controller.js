@@ -3,8 +3,17 @@ import { Admin } from "../models/admin.models.js";
 import { UserProfile } from "../models/userProfile.models.js";
 export const createCampaign = async (req, res) => {
   try {
-    const { title, description, story, tags, goal, deadline, image, video } =
-      req.body;
+    const {
+      title,
+      date,
+      description,
+      story,
+      tags,
+      goal,
+      deadline,
+      image,
+      video,
+    } = req.body;
     let ans = [title, description, tags, goal, story, deadline];
     console.log("0.5", ans);
     if (
@@ -19,16 +28,19 @@ export const createCampaign = async (req, res) => {
         credential: [title, description, tags, goal, story, deadline],
       });
     }
+
     const campaign = await Campaign.create({
       title,
       description,
       story,
+      date: new Date(),
       tags,
       staus: "active",
       goal,
       deadline,
       image: image || "",
       video: video || "",
+      creator: req.user?._id || "661e52b1d0158f33e59db5a5",
     });
     if (!campaign) {
       return res.status(401).json({
@@ -41,6 +53,7 @@ export const createCampaign = async (req, res) => {
       message: "campaign created successfully",
     });
   } catch (error) {
+    console.log(error);
     return res.status(500).json({
       success: false,
       message: "error while creating campaign",
@@ -50,13 +63,18 @@ export const createCampaign = async (req, res) => {
 
 export const getCampaigns = async (req, res) => {
   try {
-    const keyword = req.query.tag;
-    const campaigns = await Campaign.find({ tags: { $in: [keyword] } });
-    if (!campaigns) {
-      return res.status(404).json({
-        success: false,
-        message: "campaign not exist with this tag",
-      });
+    const keyword = req.body.tag;
+    let campaigns = "";
+    if (keyword != "") {
+      campaigns = await Campaign.find({ tags: { $in: [keyword] } });
+      if (!campaigns) {
+        return res.status(404).json({
+          success: false,
+          message: "campaign not exist with this tag",
+        });
+      }
+    } else {
+      campaigns = await Campaign.find({});
     }
     res.status(200).json({
       success: true,
@@ -64,6 +82,7 @@ export const getCampaigns = async (req, res) => {
       campaigns,
     });
   } catch (error) {
+    console.log(error);
     return res.status(500).json({
       success: false,
       message: "error while getting campaigns",
@@ -75,8 +94,8 @@ export const updateCampaign = async (req, res) => {
   try {
     const {
       title,
-      id,
       description,
+      id,
       story,
       tags,
       goal,
@@ -84,24 +103,36 @@ export const updateCampaign = async (req, res) => {
       image,
       video,
     } = req.body;
+    if (
+      [title, description, goal, story, deadline].some(
+        (field) => field.trim() == ""
+      ) &&
+      tags.length > 0
+    ) {
+      return res.status(401).json({
+        success: false,
+        message: "wrong credential",
+        credential: [title, description, tags, goal, story, deadline],
+      });
+    }
     const campaign = await Campaign.findOneAndUpdate(
       { _id: id },
       { title, description, story, tags, goal, deadline, image, video },
       { new: true }
     );
-
-    if (campaign.length == 0) {
-      res.status(400).json({
+    if (!campaign) {
+      return res.status(400).json({
         success: false,
         message: "bad request, failed to update campaign",
       });
     }
-    res.status(200).json({
+    return res.status(200).json({
       success: true,
       message: "campaign updated successfully",
       campaign,
     });
   } catch (error) {
+    console.log(error);
     res.status(500).json({
       success: false,
       message: "system error while updating campaign",
@@ -111,7 +142,10 @@ export const updateCampaign = async (req, res) => {
 
 export const requestDeleteCampaign = async (req, res) => {
   try {
-    let adminid = req.user.id;
+    const adminArray = await Admin.find({});
+    const index = Math.floor(Math.random() * adminArray.length);
+
+    let adminid = adminArray[index]._id;
     let admin = await Admin.findById(adminid);
     let campaignsToDelete = admin.campaignsToDelete;
     campaignsToDelete.push(req.body?.id);
@@ -131,6 +165,7 @@ export const requestDeleteCampaign = async (req, res) => {
       message: "requested submitted succesfully",
     });
   } catch (error) {
+    console.log(error);
     return res.status(500).json({
       success: false,
       message: "error while deletion request in server",
@@ -140,9 +175,8 @@ export const requestDeleteCampaign = async (req, res) => {
 
 export const askForRefund = async (req, res) => {
   try {
-    const userid = req.user.id;
-    const campaignid = req.body.id;
-    const user = await UserProfile.findById({ _id: userid });
+    const campaignid = req.body?.id;
+    const user = await UserProfile.findById({ _id: req.user?._id });
     const donationTime = user.donationhistory.time;
     const currentTime = new Date();
     const timedifference = donationTime - currentTime;
