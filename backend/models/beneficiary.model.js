@@ -30,6 +30,26 @@ const beneficiaryModel = new Schema(
       type: String,
       required: true,
     },
+
+    // for getting funds out
+    contact_number: {
+      type: Number,
+    },
+    contact_id: {
+      type: String,
+    },
+    ifsc_code: {
+      type: String,
+    },
+    account_number: {
+      type: Number,
+    },
+    account_id: {
+      type: String,
+    },
+    payout_id: {
+      type: String,
+    },
   },
   { timestamps: true }
 );

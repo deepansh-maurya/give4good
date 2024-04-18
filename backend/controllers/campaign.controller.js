@@ -1,7 +1,61 @@
 import { Campaign } from "../models/campaign.models.js";
+import axios from "axios";
 import Razorpay from "razorpay";
 import { Admin } from "../models/admin.models.js";
 import { UserProfile } from "../models/userProfile.models.js";
+import { Beneficiery } from "../models/beneficiary.model.js";
+export const kycOfBeneficiery = async (req, res) => {
+  try {
+    const {
+      name,
+      date_of_birth,
+      gender,
+      nationlaity,
+      address,
+      documentm,
+      beneficiary_relationship,
+    } = req.body;
+    if (
+      [
+        name,
+        date_of_birth,
+        gender,
+        nationlaity,
+        address,
+        documentm,
+        beneficiary_relationship,
+      ].filter((data) => data != "")
+    ) {
+      return res
+        .status(400)
+        .json({ success: false, message: "fill all the fields for kyc " });
+    }
+
+    // document verification
+    const bene = await Beneficiery.create({
+      name,
+      date_of_birth,
+      gender,
+      nationlaity,
+      address,
+      documentm,
+      beneficiary_relationship,
+    });
+    if (!bene) {
+      return res
+        .status(401)
+        .json({ success: false, message: "kyc failed try again " });
+    }
+
+    return res
+      .status(200)
+      .json({ success: true, message: "kyc successfull, you can proceed" });
+  } catch (error) {
+    return res
+      .status(500)
+      .json({ success: false, message: "server error while kyc" });
+  }
+};
 export const createCampaign = async (req, res) => {
   try {
     const { title, description, story, tags, goal, deadline, image, video } =
@@ -341,6 +395,98 @@ export const requestDonationMoney = async (req, res) => {
     const campaign = await Campaign.findById(req.body?.id);
     const isPermitted = campaign.request;
     if (isPermitted === "yes") {
+      const beneID = campaign.benefciery;
+      const bene = await Beneficiery.findByIdAndUpdate(
+        { beneID },
+        {
+          contact_number: req.body.number,
+          account_number: req.body.accountNumber,
+          ifsc_code: req.body.ifscCode,
+        },
+        { new: true }
+      );
+
+      // create contact
+      let contactData = {
+        name: req.user.name,
+        email: req.user.email,
+        contact: bene.contact_number,
+        type: "customer",
+      };
+
+      let confToCreateContact = {
+        method: "post",
+        url: "https://api.razorpay.com/v1/contacts",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        data: contactData,
+      };
+      let contactResponse = await axios(confToCreateContact);
+      const updatedBene = await Beneficiery.findByIdAndUpdate(
+        { beneID },
+        { contact_id: contactResponse.id },
+        { new: true }
+      );
+
+      // create a fund account
+      const fundAccountData = {
+        contact_id: updatedBene.contact_id,
+        account_type: "bank_account",
+        bank_account: {
+          name: req.user?.name,
+          ifsc: updatedBene.ifsc_code,
+          account_number: updatedBene.account_number,
+        },
+      };
+      const confToCreateFundAccount = {
+        method: "post",
+        url: "https://api.razorpay.com/v1/fund_accounts ",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        data: fundAccountData,
+      };
+
+      const fundAccountResponse = await axios(confToCreateFundAccount);
+
+      const moreUpdatedBene = await Beneficiery.findByIdAndUpdate(
+        { beneID },
+        { account_id: fundAccountResponse.id },
+        { new: true }
+      );
+
+      // create payout
+      const payoutdata = {
+        account_number: moreUpdatedBene.account_number,
+        fund_account_id: moreUpdatedBene.account_id,
+        amount: req.body.amount,
+        currency: "INR",
+        mode: "IMPS",
+        purpose: "payout",
+      };
+      const confToCreatePayout = {
+        method: "post",
+        url: "https://api.razorpay.com/v1/payouts",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        data: payoutdata,
+      };
+      const payoutResponse = await axios(confToCreatePayout);
+      const beneUpdated = await Beneficiery.findByIdAndUpdate(
+        { beneID },
+        { payout_id: payoutResponse.id },
+        { new: true }
+      );
+
+      return res
+        .status(200)
+        .json({ success: true, message: "payout successfull" });
     }
-  } catch (error) {}
+  } catch (error) {
+    return res
+      .status(500)
+      .json({ success: false, message: "internal error while payout" });
+  }
 };

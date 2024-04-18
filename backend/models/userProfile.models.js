@@ -3,6 +3,9 @@ import { model } from "mongoose";
 
 const userProfileSchema = new Schema(
   {
+    name: {
+      type: String,
+    },
     username: {
       type: String,
       required: true,
