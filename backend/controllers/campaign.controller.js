@@ -1,19 +1,11 @@
 import { Campaign } from "../models/campaign.models.js";
+import Razorpay from "razorpay";
 import { Admin } from "../models/admin.models.js";
 import { UserProfile } from "../models/userProfile.models.js";
 export const createCampaign = async (req, res) => {
   try {
-    const {
-      title,
-      date,
-      description,
-      story,
-      tags,
-      goal,
-      deadline,
-      image,
-      video,
-    } = req.body;
+    const { title, description, story, tags, goal, deadline, image, video } =
+      req.body;
     let ans = [title, description, tags, goal, story, deadline];
     console.log("0.5", ans);
     if (
@@ -29,11 +21,12 @@ export const createCampaign = async (req, res) => {
       });
     }
 
+    // handle user updation
     const campaign = await Campaign.create({
       title,
       description,
       story,
-      date: new Date(),
+      date: new Date().toDateString(),
       tags,
       staus: "active",
       goal,
@@ -60,7 +53,7 @@ export const createCampaign = async (req, res) => {
     });
   }
 };
-
+//kyc
 export const getCampaigns = async (req, res) => {
   try {
     const keyword = req.body.tag;
@@ -176,57 +169,76 @@ export const requestDeleteCampaign = async (req, res) => {
 export const askForRefund = async (req, res) => {
   try {
     const campaignid = req.body?.id;
-    const user = await UserProfile.findById({ _id: req.user?._id });
-    const donationTime = user.donationhistory.time;
+    // console.log(campaignid);
+    const user = await UserProfile.findById({
+      _id: "661e5367d79b469a29a53814",
+    });
+    const donationTime = user.donationhistory.filter(
+      (data) => data.campaignID == campaignid
+    );
+    // console.log(donationTime);
     const currentTime = new Date();
-    const timedifference = donationTime - currentTime;
-    timedifference = Math.abs(timedifference / (100 * 60 * 60));
-    if (timedifference >= 24) {
+    // console.log(donationTime[0].time);
+    const campaginCreationTime = new Date(donationTime[0].time);
+    // console.log(currentTime, campaginCreationTime);
+    let timedifference = Math.abs(campaginCreationTime - currentTime);
+    // console.log(timedifference);
+
+    timedifference = Math.abs(timedifference / (1000 * 60 * 60));
+    // console.log(timedifference);
+    if (timedifference <= 24) {
       let instance = new Razorpay({
         key_id: process.env.RAZORPAY_API_KEY,
         key_secret: process.env.RAZORPAY_API_KEY_SECRET,
       });
 
-      const paymentDocument = user.donationhistory.filter((data) => {
-        data.campaignID == campaignid;
-      });
-      let amount = await instance.payments.fetch(paymentDocument.paymentID);
-
-      let response = await instance.payments.refund(paymentDocument.paymentID, {
-        amount: amount,
-        speed: "normal",
-        notes: {
-          notes_key_1: "Beam me up Scotty.",
-          notes_key_2: "Engage",
-        },
-        receipt: "Receipt No. 31",
-      });
+      const paymentDocument = user.donationhistory.filter(
+        (data) => data.campaignID == campaignid
+      );
+      console.log(paymentDocument, "paymentDocument");
+      let amount = await instance.payments.fetch(paymentDocument[0].paymentID);
+      console.log(amount);
+      let response = await instance.payments.refund(
+        paymentDocument[0].paymentID,
+        {
+          amount: amount.amount,
+          speed: "normal",
+          notes: {
+            notes_key_1: "Beam me up Scotty.",
+            notes_key_2: "Engage",
+          },
+          receipt: "Receipt No. 31",
+        }
+      );
+      console.log(response);
       if (response) {
-        const donationhistory = user.donationhistory;
+        let donationhistory = user.donationhistory;
         donationhistory = donationhistory.filter((data) => {
           data.campaignID != campaignid;
         });
+        console.log(donationhistory);
         await UserProfile.findByIdAndUpdate(
-          { _id: userid },
+          { _id: "661e5367d79b469a29a53814" },
           { donationhistory: donationhistory }
         );
       } else {
         return res.status(400).json({
-          success: true,
+          success: false,
           message: "refund failed ",
         });
       }
       return res.status(200).json({
         success: true,
-        message: "refund accepted you wili get your amount in 5 to 7 days ",
+        message: "refund accepted you wil get your amount in 5 to 7 days ",
       });
     } else {
       return res.status(200).json({
-        success: true,
+        success: false,
         message: "Time exceeded you cannot ask for refund now",
       });
     }
   } catch (error) {
+    console.log(error);
     return res.status(500).json({
       success: false,
       message:
@@ -322,4 +334,13 @@ export const toAcceptCampaignDeletionByAdmin = async (req, res) => {
       message: "error while deleting the campaign in server",
     });
   }
+};
+
+export const requestDonationMoney = async (req, res) => {
+  try {
+    const campaign = await Campaign.findById(req.body?.id);
+    const isPermitted = campaign.request;
+    if (isPermitted === "yes") {
+    }
+  } catch (error) {}
 };

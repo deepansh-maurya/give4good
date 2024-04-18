@@ -74,16 +74,32 @@ export const paymentVerification = async (req, res) => {
     });
     const payment = await instance.payments.fetch(razorpay_payment_id);
 
-    const campaign = await Campaign.findByIdAndUpdate(
+    const campaign = await Campaign.findById({ _id: req.params.campaignID });
+
+    const updatedCampaign = await Campaign.findByIdAndUpdate(
       {
         _id: req.params.campaignID,
       },
-      { progress: payment.amount / 100 },
+      { progress: campaign.goal + payment.amount / 100 },
       { new: true }
     );
-    if (!updatedUser || !campaign) {
+    if (updatedCampaign.progress >= updatedCampaign.deadline) {
+      const progress = await Campaign.findByIdAndUpdate(
+        { _id: req.params.campaignID },
+        { status: "inactive" },
+        { new: true }
+      );
+      if (!progress) {
+        return res.status(400).json({
+          success: true,
+          messgae: "payment donation failed, payment refunded",
+        });
+      }
+    }
+    console.log(req.params.campaignID);
+    if (!updatedUser || !updatedCampaign) {
       //refund
-      res.status(400).json({
+      return res.status(400).json({
         success: true,
         messgae: "payment donation failed, payment refunded",
       });
@@ -150,3 +166,5 @@ export const paymentVerificationForRefund = async (req, res) => {
 };
 
 // handle refund
+
+/// payouts to the needy  after completion of the deadline

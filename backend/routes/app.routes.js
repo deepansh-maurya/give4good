@@ -60,11 +60,9 @@ router
   .route("/accept-campaign-deletion")
   .delete(toAcceptCampaignDeletionByAdmin);
 // payment routes
-router.route("/create-order").post(authenticationMiddleware, orderCreation);
-router.route("/get-payment-key").get(authenticationMiddleware, getPaymentKey);
-router
-  .route("/payment-verification/:id/:campaignID")
-  .post(authenticationMiddleware, paymentVerification);
+router.route("/create-order").post(orderCreation);
+router.route("/get-payment-key").get(getPaymentKey);
+router.route("/payment-verification/:id/:campaignID").post(paymentVerification);
 router
   .route("payment-verifiaction-for-refund")
   .post(authenticationMiddleware, paymentVerificationForRefund);

@@ -22,7 +22,8 @@ const userProfileSchema = new Schema(
     },
     campaigns: [
       {
-        type: String,
+        type: Schema.Types.ObjectId,
+        ref: "Campaign",
       },
     ],
     donationhistory: [

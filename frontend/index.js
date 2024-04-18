@@ -1,12 +1,14 @@
 document.querySelector("#rzp-button1").addEventListener("click", payment);
 
 async function payment() {
+  console.log("aaye ");
   let key = await fetch("http://localhost:3000/api/v1/get-payment-key");
   key = await key.json();
   console.log(key);
-  const amount = "5000";
-  const campaignID = "660f76e6e604f022d3c5758e";
-  const id = "660ece1b49b080c09c752b5f";
+  const amount = "50000";
+  const campaignID = "661f83d2064e9fa2c77874bc";
+  const id = "661e5367d79b469a29a53814";
+  console.log(campaignID, "  ", id);
   const response = await fetch("http://localhost:3000/api/v1/create-order", {
     method: "post",
     mode: "cors",
@@ -26,13 +28,13 @@ async function payment() {
   console.log(order);
 
   var options = {
-    key: key, // Enter the Key ID generated from the Dashboard
-    amount: "50000", // Amount is in currency subunits. Default currency is INR. Hence, 50000 refers to 50000 paise
+    key: key,
+    amount: "50000",
     currency: "INR",
     name: "Give4Good",
     description: "Test Transaction",
     image: "https://avatars.githubusercontent.com/u/147298285?s=96&v=4",
-    order_id: order.order.id, //This is a sample Order ID. Pass the `id` obtained in the response of Step 1
+    order_id: order.order.id,
     callback_url: `http://localhost:3000/api/v1/payment-verification/${id}/${campaignID}`,
     prefill: {
       name: "Gaurav Kumar",

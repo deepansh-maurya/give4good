@@ -12,12 +12,13 @@ const campaigneSchema = new Schema(
       required: true,
     },
     goal: {
-      type: String,
+      type: Number,
       required: true,
+      default: 0,
     },
-    fundedAmount: {
-      type: String,
-    },
+    // fundedAmount: {
+    //   type: String,
+    // },
 
     story: {
       type: String,
@@ -45,7 +46,7 @@ const campaigneSchema = new Schema(
       type: String,
     },
     date: {
-      type: Number,
+      type: String,
     },
     deadline: {
       type: String,
@@ -71,6 +72,15 @@ const campaigneSchema = new Schema(
     ],
     shares: {
       type: Number,
+    },
+    request: {
+      type: String,
+      enum: ["yes", "no"],
+      default: "no",
+    },
+    benefciery: {
+      type: Schema.Types.ObjectId,
+      ref: "Beneficiery",
     },
   },
 
