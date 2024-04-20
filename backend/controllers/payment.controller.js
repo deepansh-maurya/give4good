@@ -76,11 +76,14 @@ export const paymentVerification = async (req, res) => {
 
     const campaign = await Campaign.findById({ _id: req.params.campaignID });
 
+    const donorArray = campaign.donors;
+    donorArray.push(req.user.id);
+
     const updatedCampaign = await Campaign.findByIdAndUpdate(
       {
         _id: req.params.campaignID,
       },
-      { progress: campaign.goal + payment.amount / 100 },
+      { progress: campaign.goal + payment.amount / 100, donors: donorArray },
       { new: true }
     );
     if (updatedCampaign.progress >= updatedCampaign.deadline) {
@@ -166,5 +169,3 @@ export const paymentVerificationForRefund = async (req, res) => {
 };
 
 // handle refund
-
-/// payouts to the needy  after completion of the deadline

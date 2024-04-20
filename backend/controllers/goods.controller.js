@@ -51,6 +51,13 @@ export const donateGoods = async (req, res) => {
       category,
     });
 
+    const user = await UserProfile.findById(req.user.id);
+    let donatedGood = user.donatedGood;
+    donatedGood.push(goods._id);
+    await UserProfile.findByIdAndUpdate(req.user.id, {
+      donatedGood: donatedGood,
+    });
+
     if (!goods) {
       return res.status(400).json({
         success: false,

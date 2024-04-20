@@ -186,7 +186,7 @@ export const updateCampaign = async (req, res) => {
     });
   }
 };
-
+// testing
 export const requestDeleteCampaign = async (req, res) => {
   try {
     const adminArray = await Admin.find({});
@@ -331,56 +331,44 @@ export const listOfCampaignsToBeDeleted = async (req, res) => {
 export const toAcceptCampaignDeletionByAdmin = async (req, res) => {
   // handle refund
   try {
-    const reply = req.body.reply;
-    const userId = req.body.userid;
-    if (reply === "yes") {
-      const id = req.body.id;
-      const campaign = await Campaign.findByIdAndDelete({ _id: id });
-      const user = await UserProfile.find({ _id: userId });
-      const refundhistory = user.refundhistory;
-      refundhistory = refundhistory.filter((data, index) => {
-        data.campaignID != id;
-      });
-      let updatedUser = await UserProfile.findByIdAndUpdate(
-        { _id: userId },
-        { refundhistory: refundhistory },
-        {
-          new: true,
-        }
-      );
-      if (!campaign || !updatedUser) {
-        return res.status(400).json({
-          success: false,
-          message: "campaign deletion unsuccessfull",
+    if (req.body.reply == "yes") {
+      const campaign = await Campaign.findById(req.body.id);
+      const donors = campaign.donors;
+      donors.map(async (id) => {
+        const user = await UserProfile.findById(id);
+        let donationhistory = user.donationhistory;
+        donationhistory.map(async (data) => {
+          if (data.campaignID === req.body.id) {
+            let instance = new Razorpay({
+              key_id: process.env.RAZORPAY_API_KEY,
+              key_secret: process.env.RAZORPAY_API_KEY_SECRET,
+            });
+            const payment = await instance.payments.fetch(data.paymentID);
+            await instance.payments.refund(data.paymentID, {
+              amount: payment.amount,
+              speed: "normal",
+              notes: {
+                notes_key_1: "Beam me up Scotty.",
+                notes_key_2: "Engage",
+              },
+              receipt: "Receipt No. 31",
+            });
+          }
         });
-      }
-      return res.status(200).json({
-        success: true,
-        message:
-          "campaign deletion successfull and donation refunded to the respected donors",
+        donationhistory = donationhistory.filter(
+          (data) => data.campaignID != req.body.id
+        );
+        await UserProfile.findByIdAndUpdate(
+          { id },
+          { donationhistory: donationhistory },
+          { new: true }
+        );
       });
+      await Campaign.findByIdAndDelete(req.body.id);
+      return res
+        .status(200)
+        .json({ success: true, message: "camapgin deleted successfully" });
     } else {
-      let instance = new Razorpay({
-        key_id: process.env.RAZORPAY_API_KEY,
-        key_secret: process.env.RAZORPAY_API_KEY_SECRET,
-      });
-      const user = await UserProfile.find({ _id: userId });
-      const paymentid = user.refundhistory.paymentID;
-      let amount = await instance.payments.fetch(paymentId);
-      let response = await instance.payments.refund(paymentid, {
-        amount: amount,
-        speed: "normal",
-        notes: {
-          notes_key_1: "Beam me up Scotty.",
-          notes_key_2: "Engage",
-        },
-        receipt: "Receipt No. 31",
-      });
-
-      return res.status(200).json({
-        success: true,
-        message: "your request denied, try again after sometime  ",
-      });
     }
   } catch (error) {
     return req.status(500).json({
@@ -389,7 +377,6 @@ export const toAcceptCampaignDeletionByAdmin = async (req, res) => {
     });
   }
 };
-
 export const requestDonationMoney = async (req, res) => {
   try {
     const campaign = await Campaign.findById(req.body?.id);
@@ -460,7 +447,7 @@ export const requestDonationMoney = async (req, res) => {
       const payoutdata = {
         account_number: moreUpdatedBene.account_number,
         fund_account_id: moreUpdatedBene.account_id,
-        amount: req.body.amount,
+        amount: campaign.progress,
         currency: "INR",
         mode: "IMPS",
         purpose: "payout",

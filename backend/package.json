@@ -11,6 +11,7 @@
   "license": "ISC",
   "dependencies": {
     "@easypost/api": "^7.2.0",
+    "@jumio/websdk": "^0.1.5",
     "api": "^6.1.1",
     "axios": "^1.6.8",
     "bcrypt": "^5.1.1",

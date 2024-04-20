@@ -82,6 +82,12 @@ const campaigneSchema = new Schema(
       type: Schema.Types.ObjectId,
       ref: "Beneficiery",
     },
+    donors: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: "UserProfile",
+      },
+    ],
   },
 
   { timestamps: true }

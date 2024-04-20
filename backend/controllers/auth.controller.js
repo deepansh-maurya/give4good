@@ -7,7 +7,6 @@ import { Admin } from "../models/admin.models.js";
 import { Owner } from "../models/owner.models.js";
 dotenv.config({ path: "./env" });
 export const registerUser = async (req, res) => {
-  console.log("Sdf");
   try {
     const { username, email, password } = req.body;
     if (
