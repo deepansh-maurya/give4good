@@ -4,6 +4,9 @@ import Razorpay from "razorpay";
 import { Admin } from "../models/admin.models.js";
 import { UserProfile } from "../models/userProfile.models.js";
 import { Beneficiery } from "../models/beneficiary.model.js";
+import { notification } from "../utils/noti.utils.js";
+
+//comment reammaning
 export const kycOfBeneficiery = async (req, res) => {
   try {
     const {
@@ -207,6 +210,10 @@ export const requestDeleteCampaign = async (req, res) => {
         message: "request unsuccessfull try again",
       });
     }
+    notification(
+      req.user.id,
+      "Your request is submitted for Campaign deletion"
+    );
     return res.status(200).json({
       success: true,
       message: "requested submitted succesfully",
@@ -223,23 +230,17 @@ export const requestDeleteCampaign = async (req, res) => {
 export const askForRefund = async (req, res) => {
   try {
     const campaignid = req.body?.id;
-    // console.log(campaignid);
+    const campiagn = await Campaign.findById(campaignid);
     const user = await UserProfile.findById({
       _id: "661e5367d79b469a29a53814",
     });
     const donationTime = user.donationhistory.filter(
       (data) => data.campaignID == campaignid
     );
-    // console.log(donationTime);
     const currentTime = new Date();
-    // console.log(donationTime[0].time);
     const campaginCreationTime = new Date(donationTime[0].time);
-    // console.log(currentTime, campaginCreationTime);
     let timedifference = Math.abs(campaginCreationTime - currentTime);
-    // console.log(timedifference);
-
     timedifference = Math.abs(timedifference / (1000 * 60 * 60));
-    // console.log(timedifference);
     if (timedifference <= 24) {
       let instance = new Razorpay({
         key_id: process.env.RAZORPAY_API_KEY,
@@ -281,11 +282,16 @@ export const askForRefund = async (req, res) => {
           message: "refund failed ",
         });
       }
+      notification(
+        req.user.id,
+        `Donated amount refunded for ${campiagn.name} Campaign `
+      );
       return res.status(200).json({
         success: true,
         message: "refund accepted you wil get your amount in 5 to 7 days ",
       });
     } else {
+      notification(req.user.id, "Time exceeded you cannot ask for refund now");
       return res.status(200).json({
         success: false,
         message: "Time exceeded you cannot ask for refund now",
@@ -329,10 +335,10 @@ export const listOfCampaignsToBeDeleted = async (req, res) => {
 };
 //controller for admin route
 export const toAcceptCampaignDeletionByAdmin = async (req, res) => {
-  // handle refund
   try {
+    const campaign = await Campaign.findById(req.body.id);
+
     if (req.body.reply == "yes") {
-      const campaign = await Campaign.findById(req.body.id);
       const donors = campaign.donors;
       donors.map(async (id) => {
         const user = await UserProfile.findById(id);
@@ -365,10 +371,22 @@ export const toAcceptCampaignDeletionByAdmin = async (req, res) => {
         );
       });
       await Campaign.findByIdAndDelete(req.body.id);
+      notification(
+        campaign.creator,
+        `Your request for ${campaign.name} campgin deletion accepted`
+      );
       return res
         .status(200)
         .json({ success: true, message: "camapgin deleted successfully" });
     } else {
+      notification(
+        campaign.creator,
+        `Your request for ${campaign.name} campgin deletion rejected`
+      );
+      return res.status(200).json({
+        success: true,
+        message: "requset for campgin deletion rejected",
+      });
     }
   } catch (error) {
     return req.status(500).json({
@@ -376,6 +394,8 @@ export const toAcceptCampaignDeletionByAdmin = async (req, res) => {
       message: "error while deleting the campaign in server",
     });
   }
+
+  // reason why the admin should not accept the request
 };
 export const requestDonationMoney = async (req, res) => {
   try {
@@ -466,7 +486,10 @@ export const requestDonationMoney = async (req, res) => {
         { payout_id: payoutResponse.id },
         { new: true }
       );
-
+      notification(
+        campaign.creator,
+        `Fund transfered to bank account for ${campaign.name}`
+      );
       return res
         .status(200)
         .json({ success: true, message: "payout successfull" });

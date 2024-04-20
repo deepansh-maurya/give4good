@@ -121,6 +121,11 @@ const userProfileSchema = new Schema(
         goodinfo: { type: Schema.Types.ObjectId, ref: "Goods" },
       },
     ],
+    notification: [
+      {
+        type: String,
+      },
+    ],
   },
   { timestamps: true }
 );

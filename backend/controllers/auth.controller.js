@@ -5,7 +5,9 @@ import dotenv from "dotenv";
 import jwt from "jsonwebtoken";
 import { Admin } from "../models/admin.models.js";
 import { Owner } from "../models/owner.models.js";
+import { notification } from "../utils/noti.utils.js";
 dotenv.config({ path: "./env" });
+// report
 export const registerUser = async (req, res) => {
   try {
     const { username, email, password } = req.body;
@@ -38,7 +40,11 @@ export const registerUser = async (req, res) => {
           message: "user register failed",
         });
       }
-      console.log(register);
+
+      notification(
+        register._id,
+        "You are now a registered user, complete your profile to start fundraising"
+      );
       return res.status(201).json({
         success: true,
         message: "user registered",
