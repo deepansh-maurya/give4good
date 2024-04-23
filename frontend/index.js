@@ -15,6 +15,7 @@ async function payment() {
     headers: {
       "Content-Type": "application/json",
     },
+
     cache: "no-cache",
     body: JSON.stringify({
       details: {

@@ -5,7 +5,6 @@ import { Admin } from "../models/admin.models.js";
 import { UserProfile } from "../models/userProfile.models.js";
 import { Beneficiery } from "../models/beneficiary.model.js";
 import { notification } from "../utils/noti.utils.js";
-
 //comment reammaning
 export const kycOfBeneficiery = async (req, res) => {
   try {
@@ -110,7 +109,6 @@ export const createCampaign = async (req, res) => {
     });
   }
 };
-//kyc
 export const getCampaigns = async (req, res) => {
   try {
     const keyword = req.body.tag;
@@ -139,7 +137,6 @@ export const getCampaigns = async (req, res) => {
     });
   }
 };
-
 export const updateCampaign = async (req, res) => {
   try {
     const {
@@ -189,7 +186,6 @@ export const updateCampaign = async (req, res) => {
     });
   }
 };
-// testing
 export const requestDeleteCampaign = async (req, res) => {
   try {
     const adminArray = await Admin.find({});
@@ -226,7 +222,6 @@ export const requestDeleteCampaign = async (req, res) => {
     });
   }
 };
-
 export const askForRefund = async (req, res) => {
   try {
     const campaignid = req.body?.id;
@@ -306,7 +301,6 @@ export const askForRefund = async (req, res) => {
     });
   }
 };
-//controller for the admin route
 export const listOfCampaignsToBeDeleted = async (req, res) => {
   // handle refund
   try {
@@ -333,7 +327,6 @@ export const listOfCampaignsToBeDeleted = async (req, res) => {
     });
   }
 };
-//controller for admin route
 export const toAcceptCampaignDeletionByAdmin = async (req, res) => {
   try {
     const campaign = await Campaign.findById(req.body.id);
