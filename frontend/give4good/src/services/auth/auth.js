@@ -14,6 +14,7 @@ export const loginFunc = async ({ email, password, role }) => {
     let response = await fetch(`${baseURL}/login`, options);
 
     if (response.success) return true;
+    else return false;
   } catch (error) {
     // TODO:display toast
   }
@@ -35,6 +36,7 @@ export const sinupFunc = async ({ name, email, password }) => {
     };
     let response = await fetch(`${baseURL}/login`, options);
     if (response.success) return true;
+    else return false;
   } catch (error) {
     // TODO:display toast
   }

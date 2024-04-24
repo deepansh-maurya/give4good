@@ -1,4 +1,4 @@
-import React, { Suspense } from "react";
+import React, { Suspense, lazy } from "react";
 import ReactDOM from "react-dom/client";
 import "./index.css";
 import App from "./App.jsx";
@@ -10,12 +10,14 @@ import {
 } from "react-router-dom";
 import Home from "./pages/home/Home.jsx";
 import KYCform from "./components/KYCform.jsx";
-import { Campaign } from "../../../backend/models/campaign.models.js";
 const LazyCamppaign = React.lazy(() =>
   import("./pages/create-campaign/CreateCampaign.jsx")
 );
 const LazyExplore = React.lazy(() => import("./pages/explore/Explore.jsx"));
 const LazyGoods = React.lazy(() => import("./pages/goods/ExploreGoods.jsx"));
+const LazyDonateGoods = React.lazy(() =>
+  import("./pages/donate-goods/DonateGoods.jsx")
+);
 const LazyUserProfile = React.lazy(() =>
   import("./pages/profile/UserProfile.jsx")
 );
@@ -67,6 +69,14 @@ const router = createBrowserRouter(
         element={
           <Suspense fallback={<div>Loading....</div>}>
             <LazyGoods />
+          </Suspense>
+        }
+      />
+      <Route
+        path="/donate-goods"
+        element={
+          <Suspense fallback={<div>Loading....</div>}>
+            <LazyDonateGoods />
           </Suspense>
         }
       />

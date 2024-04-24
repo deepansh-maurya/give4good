@@ -28,6 +28,7 @@ export const kycVerification = async ({
     // TODO: handle cookie token
     const response = await fetch(`${baseURL}/kyc-verification`, options);
     if (response.success) return true;
+    else return false;
   } catch (error) {
     //   TODO: display toast
   }
@@ -63,6 +64,7 @@ export const createCapaign = async ({
     // TODO: handle cookie token
     const response = await fetch(`${baseURL}/campaign-creation`, options);
     if (response.success) return true;
+    else return false;
   } catch (error) {
     // TODO: display taost
   }

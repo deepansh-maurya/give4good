@@ -27,7 +27,7 @@ export const Navbar = () => {
           >
             Start Campaign
           </Link>
-          <Link to="/donate-campaign" className="hover:text-gray-700">
+          <Link to="/donate-goods" className="hover:text-gray-700">
             Donate Goods
           </Link>
           <Link to="/login" className="hover:text-gray-700">
