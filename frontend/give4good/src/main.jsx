@@ -9,6 +9,8 @@ import {
   createRoutesFromElements,
 } from "react-router-dom";
 import Home from "./pages/home/Home.jsx";
+import KYCform from "./components/KYCform.jsx";
+import { Campaign } from "../../../backend/models/campaign.models.js";
 const LazyCamppaign = React.lazy(() =>
   import("./pages/create-campaign/CreateCampaign.jsx")
 );
@@ -19,10 +21,21 @@ const LazyUserProfile = React.lazy(() =>
 );
 const LazyLogin = React.lazy(() => import("./pages/login/Login.jsx"));
 const LazySignup = React.lazy(() => import("./pages/signup/Signup.jsx"));
+const LazyCamppaignForm = React.lazy(() =>
+  import("./components/CampaignForm.jsx")
+);
 const router = createBrowserRouter(
   createRoutesFromElements(
     <Route path="/" element={<App />}>
       <Route path="/" element={<Home />}></Route>
+      {/* <Route
+        path="/create-campaign"
+        element={
+          <Suspense fallback={<div>Loading....</div>}>
+            <LazyCamppaign />
+          </Suspense>
+        }
+      /> */}
       <Route
         path="/create-campaign"
         element={
@@ -30,7 +43,17 @@ const router = createBrowserRouter(
             <LazyCamppaign />
           </Suspense>
         }
-      />
+      >
+        <Route path="/create-campaign/kyc-verification" element={<KYCform />} />
+        <Route
+          path="/create-campaign/campaign-form"
+          element={
+            <Suspense fallback={<div>loading...</div>}>
+              <LazyCamppaignForm />
+            </Suspense>
+          }
+        />
+      </Route>
       <Route
         path="/explore-campaign"
         element={

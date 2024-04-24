@@ -1,7 +1,7 @@
 import { useNavigate } from "react-router-dom";
 const baseURL = import.meta.env.REACT_API_BASE_URL;
 export const loginFunc = async ({ email, password, role }) => {
-    TODO: check usehistory
+  // TODO: check usehistory
   const nav = useNavigate();
   try {
     const options = {
@@ -12,11 +12,10 @@ export const loginFunc = async ({ email, password, role }) => {
       body: JSON.stringify({ email: email, password: password, role: role }),
     };
     let response = await fetch(`${baseURL}/login`, options);
-    if (response.success) {
-      nav("/home");
-    }
+
+    if (response.success) return true;
   } catch (error) {
-    TODO:display toast
+    // TODO:display toast
   }
 };
 export const sinupFunc = async ({ name, email, password }) => {
@@ -34,11 +33,9 @@ export const sinupFunc = async ({ name, email, password }) => {
         role: role,
       }),
     };
-    let response = await fetch(`${baseURL}/login`,options);
-    if (response.success) {
-      nav("/home");
-    }
+    let response = await fetch(`${baseURL}/login`, options);
+    if (response.success) return true;
   } catch (error) {
-    TODO:display toast
+    // TODO:display toast
   }
 };

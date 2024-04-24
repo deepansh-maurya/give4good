@@ -4,7 +4,10 @@ import {
   registerUser,
   resetPassword,
 } from "../controllers/auth.controller.js";
-import { createCampaign } from "../controllers/campaign.controller.js";
+import {
+  createCampaign,
+  kycOfBeneficiery,
+} from "../controllers/campaign.controller.js";
 import { loginUser } from "../controllers/auth.controller.js";
 import { getCampaigns } from "../controllers/campaign.controller.js";
 import { updateCampaign } from "../controllers/campaign.controller.js";
@@ -48,6 +51,7 @@ router.route("/admin-register").get(adminregister);
 // router.route("/form-submit").post(handleSubmitForm);
 router.route("/owner-register").post(ownerShip);
 // campaign routes
+router.route("/kyc-verification").post(kycOfBeneficiery);
 router.route("/campaign-creation").post(createCampaign);
 router.route("/get-campaign").post(getCampaigns);
 router.route("/update-campaign").post(authenticationMiddleware, updateCampaign);

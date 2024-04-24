@@ -4,7 +4,7 @@ import { Link, NavLink } from "react-router-dom";
 export const Navbar = () => {
   return (
     <>
-      <nav className="bg-white text-black py-4 px-8 flex justify-between items-center">
+      <nav className="bg-white text-black w-[100%] py-4 px-8 flex justify-between items-center fixed z-10">
         {/* Logo */}
         <Link to="/">
           <div className="font-extrabold">Give4Good</div>
@@ -21,7 +21,10 @@ export const Navbar = () => {
           <Link to="/explore-goods" className="hover:text-gray-700">
             Explore Goods
           </Link>
-          <Link to="/create-campaign" className="hover:text-gray-700">
+          <Link
+            to="/create-campaign/kyc-verification"
+            className="hover:text-gray-700"
+          >
             Start Campaign
           </Link>
           <Link to="/donate-campaign" className="hover:text-gray-700">
