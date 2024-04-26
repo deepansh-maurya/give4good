@@ -1,22 +1,27 @@
 import React, { useState } from "react";
+import { sinupFunc } from "../../services/auth/auth";
+import { useNavigate } from "react-router-dom";
 
 const Signup = () => {
+  const nav = useNavigate();
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [role, setRole] = useState("donor");
 
   const handleNameChange = (e) => setName(e.target.value);
   const handleEmailChange = (e) => setEmail(e.target.value);
   const handlePasswordChange = (e) => setPassword(e.target.value);
-  const handleRoleChange = (e) => setRole(e.target.value);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log("Name:", name);
-    console.log("Email:", email);
-    console.log("Password:", password);
-    console.log("Role:", role);
+    const respones = await sinupFunc({ name, email, password });
+    console.log(respones);
+    if (respones) {
+      console.log(respones);
+      nav("/login");
+    } //TODO: handle toast
+    else {
+    } // TODO: handle toast message
   };
 
   return (
@@ -60,20 +65,7 @@ const Signup = () => {
               className="w-full border border-gray-300 rounded px-3 py-2 text-black"
             />
           </div>
-          <div>
-            <label htmlFor="role" className="block mb-1">
-              Role
-            </label>
-            <select
-              id="role"
-              value={role}
-              onChange={handleRoleChange}
-              className="w-full border border-gray-300 rounded px-3 py-2 text-black"
-            >
-              <option value="donor">Donor</option>
-              <option value="admin">Admin</option>
-            </select>
-          </div>
+
           <button
             type="submit"
             className="w-full bg-white text-black rounded py-2"

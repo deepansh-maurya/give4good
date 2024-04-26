@@ -1,20 +1,26 @@
 import React, { useState } from "react";
+import { loginFunc } from "../../services/auth/auth";
+import { useNavigate } from "react-router-dom";
 
 const Login = () => {
-  const [email, setEmail] = useState("");
+  const nav = useNavigate();
+  const [username, setusername] = useState("");
   const [password, setPassword] = useState("");
   const [role, setRole] = useState("donor"); // Default role is donor
 
-  const handleEmailChange = (e) => setEmail(e.target.value);
+  const handleUsernameChange = (e) => setusername(e.target.value);
   const handlePasswordChange = (e) => setPassword(e.target.value);
   const handleRoleChange = (e) => setRole(e.target.value);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     // Handle form submission with email, password, and role
-    console.log("Email:", email);
-    console.log("Password:", password);
-    console.log("Role:", role);
+    const response = await loginFunc({ username, password, role });
+    if (response) {
+      nav("/");
+    } //TODO: handle toast
+    else {
+    } //TODO: handle taost
   };
 
   return (
@@ -24,13 +30,13 @@ const Login = () => {
         <form className="space-y-4" onSubmit={handleSubmit}>
           <div>
             <label htmlFor="email" className="block mb-1">
-              Email
+              Username
             </label>
             <input
-              type="email"
-              id="email"
-              value={email}
-              onChange={handleEmailChange}
+              type="username"
+              id="username"
+              value={username}
+              onChange={handleUsernameChange}
               className="w-full border border-gray-300 rounded px-3 py-2 text-black"
             />
           </div>

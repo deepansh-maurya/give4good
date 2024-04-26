@@ -1,41 +1,45 @@
 import { useNavigate } from "react-router-dom";
 const baseURL = import.meta.env.REACT_API_BASE_URL;
-export const loginFunc = async ({ email, password, role }) => {
+// TODO: not receiving the base url
+export const loginFunc = async ({ username, password, role }) => {
   // TODO: check usehistory
-  const nav = useNavigate();
   try {
-    const options = {
+    console.log(username, password, role);
+    let response = await fetch(`http://localhost:3000/api/v1/login`, {
       method: "POST",
-      header: {
+      headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ email: email, password: password, role: role }),
-    };
-    let response = await fetch(`${baseURL}/login`, options);
-
-    if (response.success) return true;
+      body: JSON.stringify({
+        username: username,
+        password: password,
+        role: role,
+      }),
+    });
+    const injson = await response.json();
+    console.log(injson, document.cookie, cookie);
+    if (injson.success) return true;
     else return false;
   } catch (error) {
     // TODO:display toast
   }
 };
-export const sinupFunc = async ({ name, email, password }) => {
-  const nav = useNavigate();
+export const sinupFunc = async ({ name, email, password, role }) => {
   try {
-    const options = {
+    let response = await fetch(`http://localhost:3000/api/v1/register`, {
       method: "POST",
-      header: {
+      headers: {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        name: name,
+        username: name,
         email: email,
         password: password,
         role: role,
       }),
-    };
-    let response = await fetch(`${baseURL}/login`, options);
-    if (response.success) return true;
+    });
+    const injson = await response.json();
+    if (injson.success) return true;
     else return false;
   } catch (error) {
     // TODO:display toast

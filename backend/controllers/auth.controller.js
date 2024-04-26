@@ -9,15 +9,11 @@ import { notification } from "../utils/noti.utils.js";
 dotenv.config({ path: "./env" });
 // report
 export const registerUser = async (req, res) => {
+  console.log("Request accpeted");
   try {
+    console.log(req.body);
     const { username, email, password } = req.body;
-    if (
-      email != "" &&
-      email.includes("@gmail.com") &&
-      username != "" &&
-      password != "" &&
-      password.length > 8
-    ) {
+    if (email != "" && username != "" && password != "") {
       const existedUser = await UserProfile.findOne({
         $or: [{ username }, { email }],
       });
@@ -69,9 +65,12 @@ export const registerUser = async (req, res) => {
 
 export const loginUser = async (req, res) => {
   try {
+    console.log(req.body);
     const { username, password, role } = req.body;
-    const user = "";
+    console.log(username, password, role);
+    let user;
     if (role == "donor") {
+      console.log(user);
       user = await UserProfile.findOne({
         username,
       });
@@ -90,7 +89,10 @@ export const loginUser = async (req, res) => {
         messgae: " user is not signed up",
       });
     }
+    console.log("Sfd");
+    console.log(user.hashpassword);
     const hashpassword = await bcrypt.compare(password, user.hashpassword);
+    console.log(hashpassword);
     if (!hashpassword) {
       return res.status(401).json({
         success: false,
@@ -116,7 +118,7 @@ export const loginUser = async (req, res) => {
       secure: true,
     };
     console.log(token);
-    return res.status(200).cookie("token", token, options).json({
+    return res.status(200).cookie("token", token).json({
       success: true,
       messgae: "user logged in",
     });

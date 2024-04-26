@@ -1,3 +1,4 @@
+import { UserProfile } from "../models/userProfile.models.js";
 export const notification = async (id, message) => {
   const user = await UserProfile.findById(id);
   let noti = user.notification;
@@ -5,3 +6,5 @@ export const notification = async (id, message) => {
 
   await UserProfile.findByIdAndUpdate(id, { notification: noti });
 };
+
+// TODO: handle error

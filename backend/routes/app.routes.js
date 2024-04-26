@@ -49,7 +49,7 @@ router.route("/forget-pasword").post(authenticationMiddleware, resetPassword);
 router.route("/delete-account").delete(authenticationMiddleware, deleteAccount);
 router.route("/admin-register").get(adminregister);
 // profile routes
-router.route("/user-profile").get(authenticationMiddleware, userProfile);
+// router.route("/user-profile").get(authenticationMiddleware, userProfile);
 // router.route("/form-submit").post(handleSubmitForm);
 router.route("/owner-register").post(ownerShip);
 // campaign routes
