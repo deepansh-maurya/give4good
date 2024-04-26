@@ -8,25 +8,25 @@ import { notification } from "../utils/noti.utils.js";
 //comment reammaning
 export const kycOfBeneficiery = async (req, res) => {
   try {
+    var i = 0;
+    console.log(req.body, i++);
     const {
       name,
       date_of_birth,
       gender,
       nationlaity,
       address,
-      documentm,
+      document,
       beneficiary_relationship,
     } = req.body;
     if (
-      [
-        name,
-        date_of_birth,
-        gender,
-        nationlaity,
-        address,
-        documentm,
-        beneficiary_relationship,
-      ].filter((data) => data != "")
+      name == "" &&
+      date_of_birth == "" &&
+      gender == "" &&
+      nationlaity == "" &&
+      address == "" &&
+      document == "" &&
+      beneficiary_relationship == ""
     ) {
       return res
         .status(400)
@@ -40,7 +40,7 @@ export const kycOfBeneficiery = async (req, res) => {
       gender,
       nationlaity,
       address,
-      documentm,
+      document,
       beneficiary_relationship,
     });
     if (!bene) {
@@ -53,6 +53,7 @@ export const kycOfBeneficiery = async (req, res) => {
       .status(200)
       .json({ success: true, message: "kyc successfull, you can proceed" });
   } catch (error) {
+    console.log(error);
     return res
       .status(500)
       .json({ success: false, message: "server error while kyc" });
@@ -60,15 +61,19 @@ export const kycOfBeneficiery = async (req, res) => {
 };
 export const createCampaign = async (req, res) => {
   try {
+    console.log(req.body);
     const { title, description, story, tags, goal, deadline, image, video } =
       req.body;
     let ans = [title, description, tags, goal, story, deadline];
     console.log("0.5", ans);
     if (
-      [title, description, goal, story, deadline].some(
-        (field) => field.trim() == ""
-      ) &&
-      fields.length > 0
+      title == "" &&
+      description == "" &&
+      goal == "" &&
+      story == "" &&
+      deadline == "" &&
+      image == "" &&
+      video == ""
     ) {
       return res.status(401).json({
         success: false,

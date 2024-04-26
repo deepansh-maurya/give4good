@@ -12,9 +12,8 @@ const campaigneSchema = new Schema(
       required: true,
     },
     goal: {
-      type: Number,
+      type: String,
       required: true,
-      default: 0,
     },
     // fundedAmount: {
     //   type: String,

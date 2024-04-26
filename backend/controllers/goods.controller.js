@@ -8,30 +8,27 @@ let expiryOfToken;
 // routes to add goods to donate
 export const donateGoods = async (req, res) => {
   try {
+    console.log(req.body);
     const {
-      donor,
       name,
       description,
       boughtdate,
       expirydate,
-      status,
       condition,
       quantity,
       category,
+      resaonOfDonation,
     } = req.body;
 
     if (
-      [
-        donor,
-        name,
-        description,
-        boughtdate,
-        expirydate,
-        status,
-        condition,
-        quantity,
-        category,
-      ].filter((data) => data == "")
+      name == "" &&
+      description == "" &&
+      boughtdate == "" &&
+      expirydate == "" &&
+      condition == "" &&
+      quantity == "" &&
+      category == "" &&
+      resaonOfDonation == ""
     ) {
       return res.status(400).json({
         success: false,
@@ -40,15 +37,16 @@ export const donateGoods = async (req, res) => {
     }
 
     const goods = await Goods.create({
-      donor,
+      donor: req.user._id,
       name,
       description,
       boughtdate,
       expirydate,
-      status,
+      status: "available",
       condition,
       quantity,
       category,
+      resaonOfDonation,
     });
 
     const user = await UserProfile.findById(req.user.id);
@@ -69,6 +67,7 @@ export const donateGoods = async (req, res) => {
       message: "goods donated",
     });
   } catch (error) {
+    console.log(error);
     return res.status(500).json({
       success: true,
       message: "internal error",

@@ -25,6 +25,7 @@ const CampaignForm = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    console.log(formData, "formdata");
     const response = await createCapaign(formData);
     if (response) nav("/home");
     else {
@@ -89,7 +90,7 @@ const CampaignForm = () => {
             Goal
           </label>
           <input
-            type="number"
+            type="text"
             id="goal"
             name="goal"
             value={formData.goal}

@@ -4,17 +4,16 @@ import { useNavigate } from "react-router-dom";
 const categories = ["Category 1", "Category 2", "Category 3"];
 
 const DonateGoods = () => {
-  const nva = useNavigate();
+  const nav = useNavigate();
   const [formData, setFormData] = useState({
-    donor: "",
     name: "",
     description: "",
     boughtdate: "",
     expirydate: "",
-    status: "",
     condition: "",
     quantity: "",
-    category: categories[0], // Default to the first category
+    resaonOfDonation: "",
+    category: categories[0],
   });
 
   const handleChange = (e) => {
@@ -32,7 +31,7 @@ const DonateGoods = () => {
     if (response) nav("/home");
     else {
     } //TODO: handle error
-    console.log(formData);
+    // console.log(formData);
   };
 
   return (
@@ -47,19 +46,6 @@ const DonateGoods = () => {
           className="max-w-md w-full p-8 space-y-4 border border-white"
         >
           <div>
-            <label htmlFor="donor" className="block mb-1">
-              Donor
-            </label>
-            <input
-              type="text"
-              id="donor"
-              name="donor"
-              value={formData.donor}
-              onChange={handleChange}
-              className="w-full border border-gray-300 rounded px-3 py-2"
-            />
-          </div>
-          <div>
             <label htmlFor="name" className="block mb-1">
               Name of Good
             </label>
@@ -71,6 +57,19 @@ const DonateGoods = () => {
               onChange={handleChange}
               className="w-full border border-gray-300 rounded px-3 py-2"
             />
+          </div>
+          <div>
+            <label htmlFor="name" className="block mb-1">
+              Reason of Donation
+            </label>
+            <textarea
+              type="text"
+              id="resaonOfDonation"
+              name="resaonOfDonation"
+              value={formData.resaonOfDonation}
+              onChange={handleChange}
+              className="w-full border border-gray-300 rounded px-3 py-2"
+            ></textarea>
           </div>
           <div>
             <label htmlFor="description" className="block mb-1">
@@ -110,19 +109,7 @@ const DonateGoods = () => {
               className="w-full border border-gray-300 rounded px-3 py-2"
             />
           </div>
-          <div>
-            <label htmlFor="status" className="block mb-1">
-              Status
-            </label>
-            <input
-              type="text"
-              id="status"
-              name="status"
-              value={formData.status}
-              onChange={handleChange}
-              className="w-full border border-gray-300 rounded px-3 py-2"
-            />
-          </div>
+
           <div>
             <label htmlFor="condition" className="block mb-1">
               Condition

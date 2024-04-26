@@ -118,9 +118,10 @@ export const loginUser = async (req, res) => {
       secure: true,
     };
     console.log(token);
-    return res.status(200).cookie("token", token).json({
+    return res.status(200).cookie("token", token, options).json({
       success: true,
       messgae: "user logged in",
+      token,
     });
   } catch (error) {
     return res.status(500).json({

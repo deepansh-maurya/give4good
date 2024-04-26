@@ -2,31 +2,39 @@ const baseURL = import.meta.env.REACT_API_BASE_URL;
 
 export const kycVerification = async ({
   name,
-  date_of_birth,
+  dateOfBirth,
   gender,
-  nationlaity,
+  nationality,
   address,
-  documentm,
-  beneficiary_relationship,
+  documents,
+  beneficiaryRelationship,
 }) => {
   try {
+    const token = localStorage.getItem("token");
+    console.log(token, "token");
     let options = {
       method: "POST",
-      header: {
+      headers: {
         "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
       },
       body: JSON.stringify({
-        name,
-        date_of_birth,
+        name: name,
+        date_of_birth: dateOfBirth,
         gender,
-        nationlaity,
+        nationlaity: nationality,
         address,
-        documentm,
-        beneficiary_relationship,
+        document: documents.name,
+        beneficiary_relationship: beneficiaryRelationship,
       }),
     };
     // TODO: handle cookie token
-    const response = await fetch(`${baseURL}/kyc-verification`, options);
+    const response = await fetch(
+      `http://localhost:3000/api/v1/kyc-verification`,
+      options
+    );
+    const inJson = await response.json();
+    console.log(inJson);
     if (response.success) return true;
     else return false;
   } catch (error) {
@@ -45,10 +53,13 @@ export const createCapaign = async ({
   video,
 }) => {
   try {
+    console.log(title, description, story, tags, goal, deadline, image, video);
+    const token = localStorage.getItem("token");
     let options = {
       method: "POST",
-      header: {
+      headers: {
         "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
       },
       body: JSON.stringify({
         title,
@@ -62,7 +73,12 @@ export const createCapaign = async ({
       }),
     };
     // TODO: handle cookie token
-    const response = await fetch(`${baseURL}/campaign-creation`, options);
+    const response = await fetch(
+      `http://localhost:3000/api/v1/campaign-creation`,
+      options
+    );
+    const injson = await response.json();
+    console.log(injson);
     if (response.success) return true;
     else return false;
   } catch (error) {

@@ -25,6 +25,7 @@ const KYCform = ({ setsampaign, settitlecolor }) => {
     e.preventDefault();
     setsampaign(true);
     settitlecolor(true);
+    console.log(formData, "kyc form");
     let response = await kycVerification(formData);
     if (response) {
     } // TODO: display toast;

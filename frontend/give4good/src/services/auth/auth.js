@@ -16,8 +16,10 @@ export const loginFunc = async ({ username, password, role }) => {
         role: role,
       }),
     });
+    console.log(response);
     const injson = await response.json();
-    console.log(injson, document.cookie, cookie);
+    localStorage.setItem("token", injson.token);
+    console.log(injson);
     if (injson.success) return true;
     else return false;
   } catch (error) {

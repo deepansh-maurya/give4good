@@ -29,11 +29,11 @@ const goodsSchema = new Schema(
       type: String,
       required: true,
     },
-    boughtDate: {
+    boughtdate: {
       type: String,
       required: true,
     },
-    expiryIf: {
+    expirydate: {
       type: String,
       required: true,
     },
