@@ -22,6 +22,10 @@ const beneficiaryModel = new Schema(
       type: String,
       required: true,
     },
+    city: {
+      type: String,
+      required: true,
+    },
     document: {
       type: String,
       required: true,

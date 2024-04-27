@@ -10,6 +10,7 @@ const KYCform = ({ setsampaign, settitlecolor }) => {
     gender: "",
     nationality: "",
     address: "",
+    city: "",
     documents: "",
     beneficiaryRelationship: "",
   });
@@ -98,6 +99,19 @@ const KYCform = ({ setsampaign, settitlecolor }) => {
               id="address"
               name="address"
               value={formData.address}
+              onChange={handleChange}
+              className="w-full border border-gray-300 rounded px-3 py-2"
+            />
+          </div>
+          <div>
+            <label htmlFor="city" className="block mb-1">
+              City
+            </label>
+            <input
+              type="text"
+              id="city"
+              name="city"
+              value={formData.city}
               onChange={handleChange}
               className="w-full border border-gray-300 rounded px-3 py-2"
             />

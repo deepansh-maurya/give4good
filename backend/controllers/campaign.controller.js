@@ -16,6 +16,7 @@ export const kycOfBeneficiery = async (req, res) => {
       gender,
       nationlaity,
       address,
+      city,
       document,
       beneficiary_relationship,
     } = req.body;
@@ -40,6 +41,7 @@ export const kycOfBeneficiery = async (req, res) => {
       gender,
       nationlaity,
       address,
+      city,
       document,
       beneficiary_relationship,
     });
@@ -73,7 +75,8 @@ export const createCampaign = async (req, res) => {
       story == "" &&
       deadline == "" &&
       image == "" &&
-      video == ""
+      video == "" &&
+      category == ""
     ) {
       return res.status(401).json({
         success: false,
@@ -92,6 +95,7 @@ export const createCampaign = async (req, res) => {
       staus: "active",
       goal,
       deadline,
+      category,
       image: image || "",
       video: video || "",
       creator: req.user?._id || "661e52b1d0158f33e59db5a5",
@@ -114,12 +118,60 @@ export const createCampaign = async (req, res) => {
     });
   }
 };
-export const getCampaigns = async (req, res) => {
+export const getCampaignsByTagAndSearch = async (req, res) => {
   try {
-    const keyword = req.body.tag;
+    if (req.body.location) {
+      let camapgin = await Campaign.find({ city: { $in: req.body.location } });
+      if (!camapgin) {
+        return res.status(404).json({
+          success: false,
+          message: "campaign not exist with this keyword",
+        });
+      }
+      return res.status(200).json({
+        success: true,
+        message: "campaigns found successfully",
+        campaigns,
+      });
+    }
+    const keyword = req.body.keyword;
     let campaigns = "";
     if (keyword != "") {
       campaigns = await Campaign.find({ tags: { $in: [keyword] } });
+      if (!campaigns) {
+        campaigns = await Campaign.find({
+          title: { $regex: keyword, $options: "i" },
+        });
+
+        if (!campaigns) {
+          return res.status(404).json({
+            success: false,
+            message: "campaign not exist with this keyword",
+          });
+        }
+      }
+    } else {
+      campaigns = await Campaign.find({});
+    }
+    return res.status(200).json({
+      success: true,
+      message: "campaigns found successfully",
+      campaigns,
+    });
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({
+      success: false,
+      message: "error while getting campaigns",
+    });
+  }
+};
+export const getCampaignsByCategory = async (req, res) => {
+  try {
+    const keyword = req.body.category;
+    let campaigns = "";
+    if (keyword != "") {
+      campaigns = await Campaign.find({ category: { $in: [keyword] } });
       if (!campaigns) {
         return res.status(404).json({
           success: false,

@@ -18,7 +18,9 @@ const campaigneSchema = new Schema(
     // fundedAmount: {
     //   type: String,
     // },
-
+    category: {
+      type: String,
+    },
     story: {
       type: String,
       required: true,

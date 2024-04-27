@@ -4,6 +4,23 @@ import { useNavigate } from "react-router-dom";
 
 const CampaignForm = () => {
   const nav = useNavigate();
+  let category = [
+    "Animal",
+    "Children",
+    "Elderly",
+    "Faith",
+    "Specially Abled",
+    "Hunger",
+    "Education",
+    "Woman",
+    "Transgender",
+    "Medical",
+    "Disaster Relief",
+    "Enviroment",
+    "Mental Health",
+    "LGBTQ+ Rights",
+    "Other",
+  ];
   const [formData, setFormData] = useState({
     title: "",
     description: "",
@@ -84,6 +101,20 @@ const CampaignForm = () => {
             onChange={handleChange}
             className="w-full border border-gray-300 rounded px-3 py-2"
           />
+        </div>
+        <div className="mb-4">
+          <label htmlFor="category" className="block font-semibold mb-1">
+            Category
+          </label>
+          <select
+            name="category"
+            id="category"
+            className="w-full border border-gray-300 rounded px-3 py-2"
+          >
+            {category.map((cate) => {
+              return <option value={cate}>{cate}</option>;
+            })}
+          </select>
         </div>
         <div className="mb-4">
           <label htmlFor="goal" className="block font-semibold mb-1">

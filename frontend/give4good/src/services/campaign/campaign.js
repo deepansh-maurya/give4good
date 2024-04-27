@@ -7,6 +7,7 @@ export const kycVerification = async ({
   nationality,
   address,
   documents,
+  city,
   beneficiaryRelationship,
 }) => {
   try {
@@ -24,6 +25,7 @@ export const kycVerification = async ({
         gender,
         nationlaity: nationality,
         address,
+        city,
         document: documents.name,
         beneficiary_relationship: beneficiaryRelationship,
       }),
@@ -83,5 +85,114 @@ export const createCapaign = async ({
     else return false;
   } catch (error) {
     // TODO: display taost
+  }
+};
+
+export const getLocation = async () => {
+  try {
+    const token = localStorage.getItem("token");
+
+    let options = {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: {
+        tags: "",
+      },
+    };
+    const response = await fetch(
+      `http://localhost:3000/api/v1/get-campaign-tag-search`,
+      options
+    );
+    const injson = await response.json();
+    let locations = [];
+    injson.campaigns.map((data) => locations.push(data.city));
+    let updatedLocation = [...new Set(locations)];
+    if (injson.success) return updatedLocation;
+    else return false;
+  } catch (error) {
+    // TODO: display toast
+  }
+};
+
+export const getCampaignsFromDbbyCategory = async (category) => {
+  try {
+    const token = localStorage.getItem("token");
+
+    let options = {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: {
+        category: category,
+      },
+    };
+    const response = await fetch(
+      `http://localhost:3000/api/v1/get-campaignbycategory`,
+      options
+    );
+    const injson = await response.json();
+    if (injson.success) return injson.campaigns;
+    else return false;
+  } catch (error) {
+    // TODO: display toast
+  }
+};
+
+export const getCampaignFromDBBySearch = async (keyword) => {
+  try {
+    const token = localStorage.getItem("token");
+
+    let options = {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: {
+        keyword: keyword,
+      },
+    };
+    const response = await fetch(
+      `http://localhost:3000/api/v1/get-campaign-tag-search`,
+      options
+    );
+    const injson = await response.json();
+
+    if (injson.success) return injson.campaigns;
+    else return false;
+  } catch (error) {
+    // TODO: display toast
+  }
+};
+
+export const getCampaignFromDBByLocation = async (location) => {
+  try {
+    const token = localStorage.getItem("token");
+
+    let options = {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: {
+        city: location,
+      },
+    };
+    const response = await fetch(
+      `http://localhost:3000/api/v1/get-campaign-tag-search`,
+      options
+    );
+    const injson = await response.json();
+
+    if (injson.success) return injson.campaigns;
+    else return false;
+  } catch (error) {
+    // TODO: display toast
   }
 };

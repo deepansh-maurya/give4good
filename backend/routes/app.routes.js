@@ -6,10 +6,11 @@ import {
 } from "../controllers/auth.controller.js";
 import {
   createCampaign,
+  getCampaignsByCategory,
+  getCampaignsByTagAndSearch,
   kycOfBeneficiery,
 } from "../controllers/campaign.controller.js";
 import { loginUser } from "../controllers/auth.controller.js";
-import { getCampaigns } from "../controllers/campaign.controller.js";
 import { updateCampaign } from "../controllers/campaign.controller.js";
 import {
   orderCreation,
@@ -57,7 +58,9 @@ router
   .route("/kyc-verification")
   .post(authenticationMiddleware, kycOfBeneficiery);
 router.route("/campaign-creation").post(createCampaign);
-router.route("/get-campaign").post(getCampaigns);
+router.route("/get-campaign-tag-search").post(getCampaignsByTagAndSearch);
+router.route("/get-campaignbycategory").post(getCampaignsByCategory);
+
 router.route("/update-campaign").post(authenticationMiddleware, updateCampaign);
 router
   .route("/request-delete-campiagn")
