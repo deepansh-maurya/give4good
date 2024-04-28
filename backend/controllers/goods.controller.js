@@ -75,11 +75,63 @@ export const donateGoods = async (req, res) => {
   }
 };
 
+export const listGoodsBySeacrhAndTags = async () => {
+  try {
+    let keyword = req.body.keyword;
+
+    let goods;
+    if (!keyword) {
+      goods = await Goods.find({});
+      if (!goods) {
+        return res.status(404).json({
+          success: false,
+          messagae: "goods not found",
+        });
+      }
+      return res
+        .status(200)
+        .json({ success: true, message: "goods found", goods });
+    }
+    goods = await Goods.find({ name: { $regex: keyword, $options: "i" } });
+
+    if (!goods) {
+      goods = await Goods.find({ tags: { $in: [keyword] } });
+      if (!goods) {
+        return res.status(404).json({
+          success: false,
+          messagae: "goods not found",
+        });
+      }
+    }
+    return res.status(200).json({
+      success: false,
+      messagae: "goods  found",
+      goods,
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      messagae: "goods not found, internal error",
+    });
+  }
+};
+
 export const listGoods = async (req, res) => {
   try {
+    if (req.body.location) {
+      let goods = await Goods.find({ city: req.body.location });
+      if (!goods)
+        return res
+          .status(404)
+          .json({ success: false, message: "goods not found" });
+
+      return res
+        .status(200)
+        .json({ success: false, message: "goods found", goods });
+    }
     const category = req.body.category;
     let goods;
-    if (category) {
+    if (category != "") {
       goods = await Goods.find({ category: category });
     } else {
       goods = await Goods.find({});

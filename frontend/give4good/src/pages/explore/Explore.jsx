@@ -1,6 +1,7 @@
 // TODO: handle type
 import React, { useEffect, useState } from "react";
 import {
+  getCampaignFromDBByLocation,
   getCampaignFromDBBySearch,
   getCampaignsFromDbbyCategory,
   getLocation,
@@ -94,7 +95,7 @@ export default function Explore() {
               <div className=" text-sm flex gap-9 ">
                 <div>Donations</div>
                 <div>Donors</div>
-                <div>Products Donated</div>
+                <div>Total Cappaigns</div>
               </div>
             </div>
           </div>
@@ -109,7 +110,7 @@ export default function Explore() {
               <input
                 type="text"
                 className=" border-b-2 w-56 inset-y-0  relative  left-5  text-black    focus:outline-none  "
-                placeholder="Search By Campaign / Category"
+                placeholder="Search By Campaign / Tags"
                 onChange={(e) => setsearch(e.target.value)}
               />
             </div>
@@ -151,7 +152,7 @@ export default function Explore() {
           return (
             <div
               onClick={() => getCampaignsCategory(cate.cate)}
-              className=" shadow-black shadow-sm flex-col h-[80px] w-[80px] text-white font-bold  bg-slate-400 flex items-center justify-center"
+              className=" shadow-black cursor-pointer shadow-sm flex-col h-[80px] w-[80px] text-white font-bold  bg-slate-400 flex items-center justify-center"
             >
               {cate.icons}
               {cate.cate}
@@ -160,7 +161,7 @@ export default function Explore() {
         })}
         <div
           onClick={() => getCampaignsCategory("")}
-          className="w-[249px] shadow-black shadow-sm  text-white font-bold   bg-slate-400 relative right-[84%] flex items-center justify-center"
+          className="w-[249px] cursor-pointer shadow-black shadow-sm  text-white font-bold   bg-slate-400 relative right-[84%] flex items-center justify-center"
         >
           All
         </div>

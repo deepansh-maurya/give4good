@@ -34,6 +34,7 @@ import {
   acceptOrRejectGoods,
   donateGoods,
   listGoods,
+  listGoodsBySeacrhAndTags,
   listRequestedGoods,
   listRequests,
   requestGoods,
@@ -79,9 +80,12 @@ router
   .post(authenticationMiddleware, paymentVerificationForRefund);
 // special route to for a owner
 router.route("/appoint-admins").post(appointAdmin);
-// route to donate the goods
+// route for goods
 router.route("/donate-goods").post(authenticationMiddleware, donateGoods);
 router.route("list-goods").post(authenticationMiddleware, listGoods);
+router
+  .route("list-goods-seacrh-tags")
+  .post(authenticationMiddleware, listGoodsBySeacrhAndTags);
 router.route("request-goods").post(authenticationMiddleware, requestGoods);
 router.route("list-requests").post(authenticationMiddleware, listRequests);
 router

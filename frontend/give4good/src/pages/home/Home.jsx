@@ -6,7 +6,7 @@ const Home = () => {
       <div className="relative min-h-screen bg-black text-white">
         {/* Background image */}
         <img
-          src="https://cdn.pixabay.com/photo/2017/06/08/06/04/poor-2382641_640.jpg"
+          src="https://img.freepik.com/premium-photo/poor-sad-indian-family-flooded-polluted-street-high-quality-photo_409674-2835.jpg"
           alt="Background"
           className="absolute inset-0 w-full h-full object-cover"
         />

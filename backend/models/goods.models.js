@@ -29,6 +29,15 @@ const goodsSchema = new Schema(
       type: String,
       required: true,
     },
+    tags: [
+      {
+        type: String,
+      },
+    ],
+    city: {
+      type: String,
+      required: true,
+    },
     boughtdate: {
       type: String,
       required: true,
