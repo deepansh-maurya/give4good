@@ -1,5 +1,10 @@
 import React from "react";
-
+import { FaHandHoldingMedical } from "react-icons/fa6";
+import { SiAnimalplanet } from "react-icons/si";
+import { BiSolidBabyCarriage } from "react-icons/bi";
+import { FaBookReader } from "react-icons/fa";
+import { ImWoman } from "react-icons/im";
+import { LuAlertCircle } from "react-icons/lu";
 const Home = () => {
   return (
     <>
@@ -91,69 +96,47 @@ const Home = () => {
           </div>
         </div>
       </div>
-      <div className="bg-white py-20">
+      <div className="bg-slate-200 py-20">
         <div className="max-w-4xl mx-auto px-8">
           <h2 className="text-4xl font-bold text-center mb-12">
             Causes you can raise funds for
           </h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
-            <div className="flex flex-col items-center space-y-4">
+            <div className="flex flex-col items-center space-y-4 shadow-black shadow-md">
               <div className="w-24 h-24 rounded-full bg-teal-500 flex items-center justify-center">
-                <img
-                  src="/medical-icon.svg"
-                  alt="Medical"
-                  className="w-12 h-12"
-                />
+                <div className="w-56">
+                  <FaHandHoldingMedical className=" w-[100%]" />
+                </div>
               </div>
               <h3 className="text-lg font-semibold">MEDICAL</h3>
             </div>
-            <div className="flex flex-col items-center space-y-4">
+            <div className="flex flex-col shadow-black shadow-md items-center space-y-4">
               <div className="w-24 h-24 rounded-full bg-teal-500 flex items-center justify-center">
-                <img
-                  src="/memorial-icon.svg"
-                  alt="Memorial"
-                  className="w-12 h-12"
-                />
+                <SiAnimalplanet />
               </div>
-              <h3 className="text-lg font-semibold">MEMORIAL</h3>
+              <h3 className="text-lg font-semibold">Animal</h3>
             </div>
-            <div className="flex flex-col items-center space-y-4">
+            <div className="flex flex-col shadow-black shadow-md items-center space-y-4">
               <div className="w-24 h-24 rounded-full bg-teal-500 flex items-center justify-center">
-                <img
-                  src="/children-icon.svg"
-                  alt="Children"
-                  className="w-12 h-12"
-                />
+                <BiSolidBabyCarriage />
               </div>
               <h3 className="text-lg font-semibold">CHILDREN</h3>
             </div>
-            <div className="flex flex-col items-center space-y-4">
+            <div className="flex flex-col shadow-black shadow-md items-center space-y-4">
               <div className="w-24 h-24 rounded-full bg-teal-500 flex items-center justify-center">
-                <img
-                  src="/education-icon.svg"
-                  alt="Education"
-                  className="w-12 h-12"
-                />
+                <FaBookReader />
               </div>
               <h3 className="text-lg font-semibold">EDUCATION</h3>
             </div>
-            <div className="flex flex-col items-center space-y-4">
+            <div className="flex flex-col shadow-black shadow-md items-center space-y-4">
               <div className="w-24 h-24 rounded-full bg-teal-500 flex items-center justify-center">
-                <img
-                  src="/animal-icon.svg"
-                  alt="Animal"
-                  className="w-12 h-12"
-                />
+                <ImWoman />
               </div>
-              <h3 className="text-lg font-semibold">ANIMAL</h3>
+              <h3 className="text-lg font-semibold">WOMAN</h3>
             </div>
-            <div className="flex flex-col items-center space-y-4">
+            <div className="flex flex-col shadow-black shadow-lg items-center space-y-4">
               <div className="w-24 h-24 rounded-full bg-teal-500 flex items-center justify-center">
-                <img
-                  src="/others-icon.svg"
-                  alt="Others"
-                  className="w-12 h-12"
-                />
+                <LuAlertCircle />
               </div>
               <h3 className="text-lg font-semibold">OTHERS</h3>
             </div>

@@ -6,6 +6,7 @@ import jwt from "jsonwebtoken";
 import { Admin } from "../models/admin.models.js";
 import { Owner } from "../models/owner.models.js";
 import { notification } from "../utils/noti.utils.js";
+import { emailservice } from "../utils/emailservice.js";
 dotenv.config({ path: "./env" });
 // report
 export const registerUser = async (req, res) => {
@@ -37,16 +38,16 @@ export const registerUser = async (req, res) => {
         });
       }
 
-      notification(
-        register._id,
-        "You are now a registered user, complete your profile to start fundraising"
-      );
+      // TODO: handle confirmation email
+
+      emailservice(register.email, `Welcome to GIVE4GOOD!`, register.username);
+
       return res.status(201).json({
         success: true,
-        message: "user registered",
+        message: "user registered,log in to proceed",
       });
     } else {
-      return res.status(401).json({
+      return res.status(400).json({
         success: false,
         message: "wrong credentials",
         email,
@@ -86,7 +87,7 @@ export const loginUser = async (req, res) => {
     if (!user) {
       return res.status(401).json({
         success: false,
-        messgae: " user is not signed up",
+        message: " user is not signed up",
       });
     }
     console.log("Sfd");
@@ -96,10 +97,9 @@ export const loginUser = async (req, res) => {
     if (!hashpassword) {
       return res.status(401).json({
         success: false,
-        messgae: "wrong passsword",
+        message: "wrong passsword",
       });
     }
-    // creating a jwt token
     const header = {
       alg: "HS256",
       typ: "JWT",
@@ -120,13 +120,13 @@ export const loginUser = async (req, res) => {
     console.log(token);
     return res.status(200).cookie("token", token, options).json({
       success: true,
-      messgae: "user logged in",
+      message: "you are logged in",
       token,
     });
   } catch (error) {
     return res.status(500).json({
       success: false,
-      messgae: " logged in failed",
+      message: " logged in failed",
     });
   }
 };
@@ -165,6 +165,24 @@ export const changePassword = async (req, res) => {
       success: false,
       message: "erorr while changing the password",
     });
+  }
+};
+
+export const userProfile = async (req, res) => {
+  try {
+    const user = await UserProfile.findById(req.user._id).select(
+      "-hashpassword"
+    );
+    if (!user) {
+      return res
+        .status(404)
+        .json({ success: false, message: "User not found" });
+    }
+    return res.status(200).json({ success: true, message: "user found", user });
+  } catch (error) {
+    return res
+      .status(500)
+      .json({ success: false, message: "internal error, User not found" });
   }
 };
 

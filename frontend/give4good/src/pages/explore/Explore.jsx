@@ -110,7 +110,7 @@ export default function Explore() {
               <input
                 type="text"
                 className=" border-b-2 w-56 inset-y-0  relative  left-5  text-black    focus:outline-none  "
-                placeholder="Search By Campaign / Tags"
+                placeholder="Search By Campaign / Tags  "
                 onChange={(e) => setsearch(e.target.value)}
               />
             </div>

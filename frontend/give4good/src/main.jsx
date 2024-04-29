@@ -10,6 +10,7 @@ import {
 } from "react-router-dom";
 import Home from "./pages/home/Home.jsx";
 import KYCform from "./components/KYCform.jsx";
+import { ToastContainer } from "react-toastify";
 const LazyCamppaign = React.lazy(() =>
   import("./pages/create-campaign/CreateCampaign.jsx")
 );

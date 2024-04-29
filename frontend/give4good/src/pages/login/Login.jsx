@@ -1,12 +1,15 @@
 import React, { useState } from "react";
 import { loginFunc } from "../../services/auth/auth";
 import { useNavigate } from "react-router-dom";
-
+import { Link } from "react-router-dom";
+import { ToastContainer, toast } from "react-toastify";
+import { useAuth } from "../../contexts/AuthContext";
 const Login = () => {
+  const { isauth, setisauth } = useAuth();
   const nav = useNavigate();
   const [username, setusername] = useState("");
   const [password, setPassword] = useState("");
-  const [role, setRole] = useState("donor"); // Default role is donor
+  const [role, setRole] = useState("donor");
 
   const handleUsernameChange = (e) => setusername(e.target.value);
   const handlePasswordChange = (e) => setPassword(e.target.value);
@@ -14,13 +17,36 @@ const Login = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    // Handle form submission with email, password, and role
     const response = await loginFunc({ username, password, role });
-    if (response) {
-      nav("/");
-    } //TODO: handle toast
-    else {
-    } //TODO: handle taost
+    if (response.success) {
+      setisauth(true);
+      await toast.success(`${response.message.toUpperCase()}`, {
+        position: "bottom-center",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "dark",
+        transition: "Bounce",
+      });
+      setTimeout(() => {
+        nav("/");
+      }, 1000);
+    } else {
+      toast.success(`${response.message.toUpperCase()}`, {
+        position: "bottom-center",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "dark",
+        transition: "Bounce",
+      });
+    }
   };
 
   return (
@@ -73,7 +99,16 @@ const Login = () => {
             Login
           </button>
         </form>
+        <div className="flex justify-center gap-4">
+          No Registered{" "}
+          <span>
+            <Link className="text-blue-500 underline" to="/signup">
+              go for sinup
+            </Link>
+          </span>
+        </div>
       </div>
+      <ToastContainer />
     </div>
   );
 };

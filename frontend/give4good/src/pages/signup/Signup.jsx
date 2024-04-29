@@ -1,7 +1,8 @@
 import React, { useState } from "react";
 import { sinupFunc } from "../../services/auth/auth";
 import { useNavigate } from "react-router-dom";
-
+import { Link } from "react-router-dom";
+import { ToastContainer, toast } from "react-toastify";
 const Signup = () => {
   const nav = useNavigate();
   const [name, setName] = useState("");
@@ -15,13 +16,35 @@ const Signup = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     const respones = await sinupFunc({ name, email, password });
-    console.log(respones);
-    if (respones) {
-      console.log(respones);
-      nav("/login");
-    } //TODO: handle toast
-    else {
-    } // TODO: handle toast message
+    console.log(respones.message);
+    if (respones.success) {
+      toast.success(`${respones.message.toUpperCase()}`, {
+        position: "bottom-center",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "dark",
+        transition: "Bounce",
+      });
+      setEmail("");
+      setName("");
+      setPassword("");
+    } else {
+      toast.error(`${respones.message.toUpperCase()}`, {
+        position: "bottom-center",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "dark",
+        transition: "Bounce",
+      });
+    }
   };
 
   return (
@@ -31,7 +54,7 @@ const Signup = () => {
         <form className="space-y-4" onSubmit={handleSubmit}>
           <div>
             <label htmlFor="name" className="block mb-1">
-              Name
+              Username
             </label>
             <input
               type="text"
@@ -68,12 +91,33 @@ const Signup = () => {
 
           <button
             type="submit"
-            className="w-full bg-white text-black rounded py-2"
+            className="w-full cursor-pointer bg-white text-black rounded py-2"
           >
             Sign Up
           </button>
         </form>
+        <div className="flex justify-center gap-4">
+          Already Registered{" "}
+          <span>
+            <Link className="text-blue-500 underline" to="/login">
+              go for login
+            </Link>
+          </span>
+        </div>
       </div>
+      <ToastContainer
+        position="bottom-center"
+        autoClose={5000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="dark"
+        transition:Bounce
+      />
     </div>
   );
 };

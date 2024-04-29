@@ -20,13 +20,13 @@ export const loginFunc = async ({ username, password, role }) => {
     const injson = await response.json();
     localStorage.setItem("token", injson.token);
     console.log(injson);
-    if (injson.success) return true;
-    else return false;
+    if (injson.success) return injson;
+    else return injson;
   } catch (error) {
-    // TODO:display toast
+    return { message: "error while signup" };
   }
 };
-export const sinupFunc = async ({ name, email, password, role }) => {
+export const sinupFunc = async ({ name, email, password }) => {
   try {
     let response = await fetch(`http://localhost:3000/api/v1/register`, {
       method: "POST",
@@ -37,13 +37,11 @@ export const sinupFunc = async ({ name, email, password, role }) => {
         username: name,
         email: email,
         password: password,
-        role: role,
       }),
     });
     const injson = await response.json();
-    if (injson.success) return true;
-    else return false;
+    return injson;
   } catch (error) {
-    // TODO:display toast
+    return false;
   }
 };
