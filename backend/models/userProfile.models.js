@@ -23,6 +23,12 @@ const userProfileSchema = new Schema(
       required: true,
       default: "donor",
     },
+    address: {
+      type: String,
+    },
+    document: {
+      type: String,
+    },
     campaigns: [
       {
         type: Schema.Types.ObjectId,
@@ -66,14 +72,6 @@ const userProfileSchema = new Schema(
     profilePicture: {
       type: String,
     },
-    bio: {
-      type: String,
-    },
-    links: [
-      {
-        type: String,
-      },
-    ],
     donatedGood: [
       {
         id: {
@@ -119,11 +117,6 @@ const userProfileSchema = new Schema(
       {
         shippedinfo: { type: Schema.Types.ObjectId, ref: "Shippedgood" },
         goodinfo: { type: Schema.Types.ObjectId, ref: "Goods" },
-      },
-    ],
-    notification: [
-      {
-        type: String,
       },
     ],
   },

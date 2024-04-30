@@ -1,4 +1,3 @@
-import { useNavigate } from "react-router-dom";
 const baseURL = import.meta.env.REACT_API_BASE_URL;
 // TODO: not receiving the base url
 export const loginFunc = async ({ username, password, role }) => {
@@ -39,6 +38,27 @@ export const sinupFunc = async ({ name, email, password }) => {
         password: password,
       }),
     });
+    const injson = await response.json();
+    return injson;
+  } catch (error) {
+    return false;
+  }
+};
+
+export const checkAuthStatus = async () => {
+  try {
+    const token = localStorage.getItem("token");
+
+    let response = await fetch(
+      `http://localhost:3000/api/v1/check-auth-status`,
+      {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
     const injson = await response.json();
     return injson;
   } catch (error) {

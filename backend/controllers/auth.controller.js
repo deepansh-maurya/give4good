@@ -9,6 +9,17 @@ import { notification } from "../utils/noti.utils.js";
 import { emailservice } from "../utils/emailservice.js";
 dotenv.config({ path: "./env" });
 // report
+export const checkauthstatus = async (req, res) => {
+  try {
+    return res
+      .status(200)
+      .json({ success: true, message: "you are loggin in" });
+  } catch (error) {
+    return res
+      .staus(500)
+      .json({ succcess: false, message: "you are not logged in" });
+  }
+};
 export const registerUser = async (req, res) => {
   console.log("Request accpeted");
   try {
@@ -167,7 +178,53 @@ export const changePassword = async (req, res) => {
     });
   }
 };
-
+export const updateProfile = async (req, res) => {
+  try {
+    const user = UserProfile.findById(req.user._id);
+    if (user) {
+      if (user.username != req.body.username) {
+        let username = req.body.username;
+        let user = await UserProfile.find({ username });
+        if (user.length > 0) {
+          return res
+            .status(400)
+            .json({ sucess: false, message: "username already taken" });
+        }
+      }
+    } else {
+      return res
+        .status(400)
+        .json({ success: false, msessage: "you are not authenticated" });
+    }
+    const { name, username, email, address, profilePicture } = req.body;
+    const updateduser = await UserProfile.findByIdAndUpdate(
+      req.user._id,
+      {
+        name,
+        username,
+        email,
+        address,
+        profilePicture,
+      },
+      { new: true }
+    );
+    if (!updateduser) {
+      return res
+        .status(400)
+        .json({ success: false, message: "updation failed, try agian" });
+    }
+    return res.status(200).json({
+      success: true,
+      message: "profile updated successfully",
+      updateduser,
+    });
+  } catch (error) {
+    console.log(error);
+    return res
+      .status(500)
+      .json({ success: false, message: "profile updation failed" });
+  }
+};
 export const userProfile = async (req, res) => {
   try {
     const user = await UserProfile.findById(req.user._id).select(

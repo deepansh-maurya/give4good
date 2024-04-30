@@ -1,8 +1,10 @@
 import { Router } from "express";
 import {
   adminregister,
+  checkauthstatus,
   registerUser,
   resetPassword,
+  updateProfile,
   userProfile,
 } from "../controllers/auth.controller.js";
 import {
@@ -51,8 +53,12 @@ router.route("/get-verification-code").post(forVerifiactionCode);
 router.route("/forget-pasword").post(authenticationMiddleware, resetPassword);
 router.route("/delete-account").delete(authenticationMiddleware, deleteAccount);
 router.route("/admin-register").get(adminregister);
+router
+  .route("/check-auth-status")
+  .get(authenticationMiddleware, checkauthstatus);
 // profile routes
 router.route("/user-profile").get(authenticationMiddleware, userProfile);
+router.route("/update-profile").post(authenticationMiddleware, updateProfile);
 // router.route("/form-submit").post(handleSubmitForm);
 router.route("/owner-register").post(ownerShip);
 // campaign routes

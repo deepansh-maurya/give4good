@@ -1,6 +1,6 @@
 import React from "react";
 import { Link, NavLink } from "react-router-dom";
-import { useAuth } from "../contexts/AuthContext";
+import { useAuth } from "../contexts/AppContext";
 import { CgProfile } from "react-icons/cg";
 import { Flip, ToastContainer, toast } from "react-toastify";
 export const Navbar = () => {
@@ -24,15 +24,59 @@ export const Navbar = () => {
             <Link to="/explore-goods" className="hover:text-gray-700">
               Explore Goods
             </Link>
-            <Link
-              to="/create-campaign/kyc-verification"
-              className="hover:text-gray-700"
-            >
-              Start Campaign
-            </Link>
-            <Link to="/donate-goods" className="hover:text-gray-700">
-              Donate Goods
-            </Link>
+            {isauth == true ? (
+              <Link
+                to="/create-campaign/kyc-verification"
+                className="hover:text-gray-700"
+              >
+                Start Campaign
+              </Link>
+            ) : (
+              <span
+                onClick={() => {
+                  toast.info("YOU ARE NOT LOGGED IN!", {
+                    position: "bottom-center",
+                    autoClose: 5000,
+                    hideProgressBar: false,
+                    closeOnClick: true,
+                    pauseOnHover: true,
+                    draggable: true,
+                    progress: undefined,
+                    theme: "dark",
+                    transition: "Bounce",
+                  });
+                }}
+                className="hover:text-gray-700"
+              >
+                Start Campaign
+              </span>
+            )}
+
+            {isauth == true ? (
+              <Link to="/donate-goods" className="hover:text-gray-700">
+                Donate Goods
+              </Link>
+            ) : (
+              <span
+                onClick={() => {
+                  toast.info("YOU ARE NOT LOGGED IN!", {
+                    position: "bottom-center",
+                    autoClose: 5000,
+                    hideProgressBar: false,
+                    closeOnClick: true,
+                    pauseOnHover: true,
+                    draggable: true,
+                    progress: undefined,
+                    theme: "dark",
+                    transition: "Bounce",
+                  });
+                }}
+                className="hover:text-gray-700"
+              >
+                Donate Goods
+              </span>
+            )}
+
             {isauth == false ? (
               <div className="flex space-x-6">
                 <Link to="/login" className="hover:text-gray-700">
@@ -52,7 +96,11 @@ export const Navbar = () => {
           </div>
 
           {isauth == true ? (
-            <div></div>
+            <div>
+              <Link to="/user-profile">
+                <CgProfile />
+              </Link>
+            </div>
           ) : (
             <div>
               <span className="hover:text-gray-700 flex  cursor-pointer items-center">
