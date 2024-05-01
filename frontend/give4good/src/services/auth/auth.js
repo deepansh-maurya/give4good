@@ -1,3 +1,5 @@
+import { CgPathCrop } from "react-icons/cg";
+
 const baseURL = import.meta.env.REACT_API_BASE_URL;
 // TODO: not receiving the base url
 export const loginFunc = async ({ username, password, role }) => {
@@ -64,4 +66,40 @@ export const checkAuthStatus = async () => {
   } catch (error) {
     return false;
   }
+};
+
+export const changePassword = async () => {
+  try {
+    const token = localStorage.getItem("token");
+    let response = await fetch(`http://localhost:3000/api/v1/change-password`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    const injson = await response.json();
+    return injson;
+  } catch (error) {
+    return {};
+  }
+};
+
+export const getCode = async () => {
+  try {
+    const token = localStorage.getItem("token");
+    let response = await fetch(
+      `http://localhost:3000/api/v1/get-verification-code`,
+      {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+    const injson = await response.json();
+    console.log(injson);
+    return injson;
+  } catch (error) {}
 };

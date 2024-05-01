@@ -16,6 +16,7 @@ app.use(
     credentials: true,
   })
 );
+app.use(express.urlencoded({ extended: false }));
 app.set("view engine", "ejs");
 app.set("views", path.resolve("./views"));
 app.post("/api/v1/form-submit", handleSubmitForm);

@@ -5,8 +5,9 @@ import dotenv from "dotenv";
 import jwt from "jsonwebtoken";
 import { Admin } from "../models/admin.models.js";
 import { Owner } from "../models/owner.models.js";
-import { notification } from "../utils/noti.utils.js";
+import fs from "fs";
 import { emailservice } from "../utils/emailservice.js";
+import { upoadFile } from "../utils/cloudinary.js";
 dotenv.config({ path: "./env" });
 // report
 export const checkauthstatus = async (req, res) => {
@@ -101,10 +102,7 @@ export const loginUser = async (req, res) => {
         message: " user is not signed up",
       });
     }
-    console.log("Sfd");
-    console.log(user.hashpassword);
     const hashpassword = await bcrypt.compare(password, user.hashpassword);
-    console.log(hashpassword);
     if (!hashpassword) {
       return res.status(401).json({
         success: false,
@@ -148,7 +146,7 @@ export const changePassword = async (req, res) => {
     if (newPassword <= 8) {
       return res.status(401).json({
         success: false,
-        messgae: "wrong credentail",
+        messgae: "wrong credential",
         newPassword,
       });
     }
@@ -157,7 +155,7 @@ export const changePassword = async (req, res) => {
     if (!hashpassword) {
       return res.status(401).json({
         success: false,
-        messgae: "wrong passsword",
+        messgae: "wrong old passsword",
       });
     }
     await UserProfile.findByIdAndUpdate(
@@ -168,7 +166,7 @@ export const changePassword = async (req, res) => {
 
     return res.status(200).json({
       success: true,
-      message: "password changes succesfully",
+      message: "password changed succesfully",
     });
   } catch (error) {
     console.log(error);
@@ -180,9 +178,10 @@ export const changePassword = async (req, res) => {
 };
 export const updateProfile = async (req, res) => {
   try {
-    const user = UserProfile.findById(req.user._id);
+    const user = await UserProfile.findById(req.user._id);
     if (user) {
       if (user.username != req.body.username) {
+        console.log(user.username, req.body.username);
         let username = req.body.username;
         let user = await UserProfile.find({ username });
         if (user.length > 0) {
@@ -196,11 +195,25 @@ export const updateProfile = async (req, res) => {
         .status(400)
         .json({ success: false, msessage: "you are not authenticated" });
     }
-    const { name, username, email, address, profilePicture } = req.body;
+    const { name, username, email, address } = req.body;
+
+    const documentPath = req.files?.document[0]?.path;
+    const profilePicturePath = req.files?.profilePicture[0]?.path;
+
+    if (!(documentPath || profilePicturePath)) {
+      throw new Error("fail to upload");
+    }
+
+    const document = await upoadFile(documentPath);
+    const profilePicture = await upoadFile(profilePicturePath);
+
+    if (!(document || profilePicture)) throw new Error("file required");
+
     const updateduser = await UserProfile.findByIdAndUpdate(
       req.user._id,
       {
         name,
+        document,
         username,
         email,
         address,

@@ -44,12 +44,15 @@ import {
   shipTheGoods,
   trackOrder,
 } from "../controllers/goods.controller.js";
+import { upload } from "../middlwares/multer.middleware.js";
 const router = Router();
 // auth routes
 router.route("/register").post(registerUser); //
 router.route("/login").post(loginUser); //
 router.route("/change-password").put(authenticationMiddleware, changePassword);
-router.route("/get-verification-code").post(forVerifiactionCode);
+router
+  .route("/get-verification-code")
+  .get(authenticationMiddleware, forVerifiactionCode);
 router.route("/forget-pasword").post(authenticationMiddleware, resetPassword);
 router.route("/delete-account").delete(authenticationMiddleware, deleteAccount);
 router.route("/admin-register").get(adminregister);
@@ -58,7 +61,14 @@ router
   .get(authenticationMiddleware, checkauthstatus);
 // profile routes
 router.route("/user-profile").get(authenticationMiddleware, userProfile);
-router.route("/update-profile").post(authenticationMiddleware, updateProfile);
+router.route("/update-profile").post(
+  authenticationMiddleware,
+  upload.fields([
+    { name: "profilePicture", maxCount: 1 },
+    { name: "document", maxCount: 1 },
+  ]),
+  updateProfile
+);
 // router.route("/form-submit").post(handleSubmitForm);
 router.route("/owner-register").post(ownerShip);
 // campaign routes

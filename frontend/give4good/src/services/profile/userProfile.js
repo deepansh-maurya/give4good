@@ -1,9 +1,10 @@
+import { json } from "react-router-dom";
+
 const baseURL = import.meta.env.REACT_API_BASE_URL;
 
 export const userProfile = async () => {
   try {
     const token = localStorage.getItem("token");
-    console.log(token);
     let options = {
       method: "GET",
       headers: {
@@ -24,29 +25,16 @@ export const userProfile = async () => {
   }
 };
 
-export const updateProfile = async ({
-  name,
-  address,
-  email,
-  username,
-  profilePicture,
-}) => {
+export const updateProfile = async (formdata) => {
   try {
     const token = localStorage.getItem("token");
     console.log(token);
     let options = {
       method: "POST",
       headers: {
-        "Content-Type": "application/json",
         Authorization: `Bearer ${token}`,
       },
-      body: JSON.stringify({
-        name,
-        address,
-        email,
-        username,
-        profilePicture,
-      }),
+      body: formdata,
     };
     const response = await fetch(
       `http://localhost:3000/api/v1/update-profile`,

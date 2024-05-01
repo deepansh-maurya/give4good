@@ -35,7 +35,7 @@ const Login = () => {
         nav("/");
       }, 1000);
     } else {
-      toast.success(`${response.message.toUpperCase()}`, {
+      toast.warning(`${response.message.toUpperCase()}`, {
         position: "bottom-center",
         autoClose: 5000,
         hideProgressBar: false,

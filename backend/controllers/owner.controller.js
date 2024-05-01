@@ -96,7 +96,7 @@ export const forVerifiactionCode = async (req, res) => {
     console.log(codetoverify);
     const info = await transporter.sendMail({
       from: ` Deepansh <${process.env.EMAIL_FOR_EMAIL_SERVICE}>`,
-      to: req.body.to,
+      to: req.user.email,
       subject: "Your verification code for password reset",
       text: codetoverify,
       html: ``,
@@ -104,20 +104,20 @@ export const forVerifiactionCode = async (req, res) => {
 
     if (!info) {
       return res.status(400).json({
-        success: true,
-        message: "code sent unsuccesfully",
+        success: false,
+        message: "code sent unsuccesfully,try again",
       });
     }
     return res.status(400).json({
       success: true,
-      message: "code sent succesfully",
+      message: "code sent succesfully, check gmail",
       codetoverify,
     });
   } catch (error) {
     console.log(error);
     return res.status(400).json({
-      success: true,
-      message: "system error while sending code ",
+      success: false,
+      message: "code sent unsuccesfully,try again",
     });
   }
 };
