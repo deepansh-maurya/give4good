@@ -21,7 +21,9 @@ import {
   getProductsFromDBByCategory,
   getProductsFromDBBySeacrh,
 } from "../../services/goods/donateGood";
+import { GoodDonateCard } from "../../components/GoodDonateCard";
 export default function Explore() {
+  let goods = [1, 3, 4, 56, 4];
   const [location, setlocation] = useState();
   const [search, setsearch] = useState();
   let [data, setdata] = useState([]);
@@ -100,6 +102,11 @@ export default function Explore() {
                 <div>Products Donated</div>
               </div>
             </div>
+          </div>
+          <div className="relative left-16 mt-14 flex flex-row flex-wrap w-[80%] gap-14 ">
+            {goods.map((good, index) => (
+              <GoodDonateCard key={index} goods={good} />
+            ))}
           </div>
         </div>
         <div className="left   bottom-[89%] fixed  left-[78%] shadow-black shadow-xl ">

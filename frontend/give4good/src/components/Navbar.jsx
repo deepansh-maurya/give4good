@@ -97,7 +97,7 @@ export const Navbar = () => {
 
           {isauth == true ? (
             <div>
-              <Link to="/user-profile">
+              <Link to="/user-profile/profile">
                 <CgProfile />
               </Link>
             </div>

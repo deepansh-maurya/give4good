@@ -1,15 +1,6 @@
 const baseURL = import.meta.env.REACT_API_BASE_URL;
 
-export const donateGoods = async ({
-  name,
-  description,
-  boughtdate,
-  expirydate,
-  condition,
-  quantity,
-  category,
-  resaonOfDonation,
-}) => {
+export const donateGoods = async (donateData) => {
   try {
     const token = localStorage.getItem("token");
     console.log(token);
@@ -17,32 +8,18 @@ export const donateGoods = async ({
     let options = {
       method: "POST",
       headers: {
-        "Content-Type": "application/json",
         Authorization: `Bearer ${token}`,
       },
-      body: JSON.stringify({
-        token: token,
-        name,
-        description,
-        boughtdate,
-        expirydate,
-        condition,
-        quantity,
-        category,
-        resaonOfDonation,
-      }),
+      body: donateData,
     };
-    // TODO: handle cookie token
     const response = await fetch(
       `http://localhost:3000/api/v1/donate-goods`,
       options
     );
     const injson = await response.json();
-    console.log(injson);
-    if (injson.success) return true;
-    else return false;
+    return injson;
   } catch (error) {
-    // TODO: display toast handle error
+    return { success: false, message: "Failed to list your donation" };
   }
 };
 

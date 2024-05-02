@@ -8,6 +8,7 @@ import { Owner } from "../models/owner.models.js";
 import fs from "fs";
 import { emailservice } from "../utils/emailservice.js";
 import { upoadFile } from "../utils/cloudinary.js";
+import { upload } from "../middlwares/multer.middleware.js";
 dotenv.config({ path: "./env" });
 // report
 export const checkauthstatus = async (req, res) => {
@@ -179,9 +180,9 @@ export const changePassword = async (req, res) => {
 export const updateProfile = async (req, res) => {
   try {
     const user = await UserProfile.findById(req.user._id);
+
     if (user) {
       if (user.username != req.body.username) {
-        console.log(user.username, req.body.username);
         let username = req.body.username;
         let user = await UserProfile.find({ username });
         if (user.length > 0) {
@@ -197,27 +198,26 @@ export const updateProfile = async (req, res) => {
     }
     const { name, username, email, address } = req.body;
 
-    const documentPath = req.files?.document[0]?.path;
-    const profilePicturePath = req.files?.profilePicture[0]?.path;
-
-    if (!(documentPath || profilePicturePath)) {
-      throw new Error("fail to upload");
+    if (
+      name == "" &&
+      document == "" &&
+      profilePicture == "" &&
+      email == "" &&
+      address == "" &&
+      username == ""
+    ) {
+      return res
+        .status(400)
+        .json({ success: false, message: "empty fields cannot be updated" });
     }
-
-    const document = await upoadFile(documentPath);
-    const profilePicture = await upoadFile(profilePicturePath);
-
-    if (!(document || profilePicture)) throw new Error("file required");
 
     const updateduser = await UserProfile.findByIdAndUpdate(
       req.user._id,
       {
-        name,
-        document,
-        username,
-        email,
-        address,
-        profilePicture,
+        name: name,
+        username: username,
+        email: email,
+        address: address,
       },
       { new: true }
     );
@@ -236,6 +236,63 @@ export const updateProfile = async (req, res) => {
     return res
       .status(500)
       .json({ success: false, message: "profile updation failed" });
+  }
+};
+
+export const updateDocument = async (req, res) => {
+  try {
+    const documentPath = req.file?.path;
+    const document = await upoadFile(documentPath);
+    if (!document)
+      return res
+        .status(500)
+        .json({ success: true, message: "Document updation failed" });
+    const user = await UserProfile.findByIdAndUpdate(
+      req.user._id,
+      {
+        document,
+      },
+      { new: true }
+    );
+    if (!user)
+      return res
+        .status(500)
+        .json({ success: true, message: "Document updation failed" });
+    return res
+      .status(200)
+      .json({ success: true, message: "Document updated successfully" });
+  } catch (error) {
+    return res
+      .status(500)
+      .json({ success: true, message: "Document updation failed" });
+  }
+};
+export const updateProfilePicture = async (req, res) => {
+  try {
+    const profilePIcturePath = req.file?.path;
+    const profilePicture = await upoadFile(profilePIcturePath);
+    if (!profilePicture)
+      return res
+        .status(500)
+        .json({ success: true, message: "Picture updation failed" });
+    const user = await UserProfile.findByIdAndUpdate(
+      req.user._id,
+      {
+        profilePicture,
+      },
+      { new: true }
+    );
+    if (!user)
+      return res
+        .status(500)
+        .json({ success: true, message: "Picture updation failed" });
+    return res
+      .status(200)
+      .json({ success: true, message: "Picture updated successfully" });
+  } catch (error) {
+    return res
+      .status(500)
+      .json({ success: true, message: "Picture updation failed" });
   }
 };
 export const userProfile = async (req, res) => {

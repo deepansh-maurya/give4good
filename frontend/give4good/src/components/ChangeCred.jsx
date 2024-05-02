@@ -1,10 +1,14 @@
+//TODO: create separate route for updating photos
 import React, { useState } from "react";
-import axios from "axios";
 import { FaTimes } from "react-icons/fa";
 import { MdClose } from "react-icons/md";
 import { FaCheck } from "react-icons/fa";
 import { ToastContainer, toast } from "react-toastify";
-import { updateProfile } from "../services/profile/userProfile";
+import {
+  updateDoc,
+  updatePciture,
+  updateProfile,
+} from "../services/profile/userProfile";
 import ChangePassword from "./ChangePassword";
 export default function ChangeCred({
   setTriggerChanegeCred,
@@ -13,15 +17,15 @@ export default function ChangeCred({
 }) {
   const [tochangeCred, setTochangeCred] = useState(false);
   const [toChangePassword, setTOchangepassword] = useState(false);
+  const [document, setdocument] = useState("");
+  const [profilePicture, setProiflePicture] = useState("");
   const [updateCred, setUPdateCred] = useState({
     name: profileData.name,
     username: profileData.username,
     email: profileData.email,
     address: profileData.address,
-    document: profileData.document,
-    profilePicture: profileData.profilePicture,
   });
-  console.log(tochangeCred);
+  console.log(updateCred?.profilePicture);
   function handlechange(e) {
     const { name, value } = e.target;
     setUPdateCred({ ...updateCred, [name]: value });
@@ -29,44 +33,102 @@ export default function ChangeCred({
 
   async function handleUpdateProfileChange(e) {
     e.preventDefault();
-    let formdata = new FormData();
-    console.log(formdata);
-    Object.entries(updateCred).forEach((data) =>
-      formdata.append(data[0], data[1])
-    );
-    const response = await updateProfile(formdata);
-    console.log(response);
-    if (response.success) {
-      setPRofileData(response.updateduser);
-      toast.success(`${response.message.toUpperCase()}`, {
-        position: "bottom-center",
-        autoClose: 5000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
-        theme: "dark",
-        transition: "Bounce",
-      });
-      setTimeout(() => {
-        setTriggerChanegeCred(false);
-      }, 1000);
-    } else {
-      toast.info(`${response.message.toUpperCase()}`, {
-        position: "bottom-center",
-        autoClose: 5000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
-        theme: "dark",
-        transition: "Bounce",
-      });
-      setTimeout(() => {
-        setTriggerChanegeCred(false);
-      }, 1000);
+    if (document != "") {
+      const docINform = new FormData();
+      docINform.append("document", document);
+      const response = await updateDoc(docINform);
+      //TODO:
+      if (response.success) {
+        toast.success(`Document Updated successfully`, {
+          position: "bottom-center",
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          theme: "dark",
+          transition: Bounce,
+        });
+      } else {
+        toast.error(`Document Updation failed`, {
+          position: "bottom-center",
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          theme: "dark",
+          transition: Bounce,
+        });
+      }
+    }
+    if (profilePicture != "") {
+      const pictureInForm = new FormData();
+      pictureInForm.append("profilePicture", profilePicture);
+      const response = await updatePciture(pictureInForm);
+      if (response.success) {
+        toast.success(`Picture Updated successfully`, {
+          position: "bottom-center",
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          theme: "dark",
+          transition: Bounce,
+        });
+      } else {
+        toast.error(`Picture Updation failed`, {
+          position: "bottom-center",
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          theme: "dark",
+          transition: Bounce,
+        });
+      }
+    }
+    if (JSON.stringify(updateCred) !== JSON.stringify(profileData)) {
+      const response = await updateProfile(updateCred);
+      console.log(response);
+      if (response.success) {
+        setPRofileData(response.updateduser);
+        toast.success(`${response.message.toUpperCase()}`, {
+          position: "bottom-center",
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          theme: "dark",
+          transition: "Bounce",
+        });
+        setTimeout(() => {
+          setTriggerChanegeCred(false);
+        }, 1000);
+      } else {
+        toast.info(`${response.message.toUpperCase()}`, {
+          position: "bottom-center",
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          theme: "dark",
+          transition: "Bounce",
+        });
+        setTimeout(() => {
+          setTriggerChanegeCred(false);
+        }, 1000);
+      }
     }
   }
   return (
@@ -92,18 +154,13 @@ export default function ChangeCred({
                     type="file"
                     name="profilePicture"
                     className="border w-[80px] border-gray-300 px-3 py-2 rounded-md focus:outline-none focus:border-blue-500"
-                    onChange={(e) =>
-                      setUPdateCred({
-                        ...updateCred,
-                        profilePicture: e.target.files[0],
-                      })
-                    }
+                    onChange={(e) => setProiflePicture(e.target.files[0])}
                   />
                 ) : (
                   <div className="w-16 h-16 rounded-full overflow-hidden mr-4">
                     <img
                       className="w-full h-full object-cover"
-                      src={updateCred?.profilePicture}
+                      src={profileData?.profilePicture}
                       alt="Profile"
                     />
                   </div>
@@ -191,12 +248,7 @@ export default function ChangeCred({
                     id="document"
                     type="file"
                     name="document"
-                    onChange={(e) =>
-                      setUPdateCred({
-                        ...updateCred,
-                        document: e.target.files[0],
-                      })
-                    }
+                    onChange={(e) => setdocument(e.target.files[0])}
                     className="border w-[207px] border-gray-300 px-3 py-2 rounded-md focus:outline-none focus:border-blue-500"
                   />
                 ) : profileData.document == null ? (

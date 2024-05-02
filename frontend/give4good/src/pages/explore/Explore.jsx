@@ -23,7 +23,9 @@ import { RiMentalHealthFill } from "react-icons/ri";
 import { TbGenderFemale } from "react-icons/tb";
 import { FaTransgender } from "react-icons/fa";
 import { BsMotherboardFill } from "react-icons/bs";
+import { FundRaisingCard } from "../../components/FundRaiserCard";
 export default function Explore() {
+  let campaigns = [3, 5, 4, 3, 5, 6];
   const [location, setlocation] = useState();
   const [search, setsearch] = useState();
   let [data, setdata] = useState([]);
@@ -80,10 +82,10 @@ export default function Explore() {
     setdata(response);
   }
   return (
-    <div className="w-[100%] h-[100%] overflow-x-hidden  ">
+    <div className="w-[100%] h-[100%] overflow-x-hidden bg-slate-200  ">
       <div className=" ">
-        <div className="right ">
-          <div className="w-[80%] h-[70%] relative  ">
+        <div className="right">
+          <div className="w-[80%] h-[70%] relative    ">
             <img
               src="https://img.freepik.com/premium-photo/collage-photos-from-poor-family-india_915071-1947.jpg"
               alt="people"
@@ -99,8 +101,13 @@ export default function Explore() {
               </div>
             </div>
           </div>
+          <div className="relative left-16 mt-14 flex flex-wrap w-[80%] gap-14 ">
+            {campaigns.map((campaign, index) => (
+              <FundRaisingCard key={index} campaign={campaign} />
+            ))}
+          </div>
         </div>
-        <div className="left   bottom-[89%] fixed  left-[78%] shadow-black shadow-xl ">
+        <div className="left   bottom-[89%] fixed  left-[78%] shadow-black shadow-xl bg-slate-500 ">
           <div className="flex flex-col absolute ">
             <div className="border-red-400">
               <FaSearch

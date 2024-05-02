@@ -4,7 +4,9 @@ import {
   checkauthstatus,
   registerUser,
   resetPassword,
+  updateDocument,
   updateProfile,
+  updateProfilePicture,
   userProfile,
 } from "../controllers/auth.controller.js";
 import {
@@ -61,14 +63,17 @@ router
   .get(authenticationMiddleware, checkauthstatus);
 // profile routes
 router.route("/user-profile").get(authenticationMiddleware, userProfile);
-router.route("/update-profile").post(
-  authenticationMiddleware,
-  upload.fields([
-    { name: "profilePicture", maxCount: 1 },
-    { name: "document", maxCount: 1 },
-  ]),
-  updateProfile
-);
+router.route("/update-profile").post(authenticationMiddleware, updateProfile);
+router
+  .route("/update-document")
+  .post(authenticationMiddleware, upload.single("document"), updateDocument);
+router
+  .route("/update-profile-picture")
+  .post(
+    authenticationMiddleware,
+    upload.single("profilePicture"),
+    updateProfilePicture
+  );
 // router.route("/form-submit").post(handleSubmitForm);
 router.route("/owner-register").post(ownerShip);
 // campaign routes
@@ -98,7 +103,14 @@ router
 // special route to for a owner
 router.route("/appoint-admins").post(appointAdmin);
 // route for goods
-router.route("/donate-goods").post(authenticationMiddleware, donateGoods);
+router.route("/donate-goods").post(
+  authenticationMiddleware,
+  upload.fields([
+    { name: "image", maxCount: 1 },
+    { name: "video", maxCount: 1 },
+  ]),
+  donateGoods
+);
 router.route("list-goods").post(authenticationMiddleware, listGoods);
 router
   .route("list-goods-seacrh-tags")

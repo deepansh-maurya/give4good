@@ -42,6 +42,12 @@ const goodsSchema = new Schema(
       type: String,
       required: true,
     },
+    image: {
+      type: String,
+    },
+    video: {
+      type: String,
+    },
     expirydate: {
       type: String,
       required: true,

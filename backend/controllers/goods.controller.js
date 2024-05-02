@@ -3,6 +3,7 @@ import axios from "axios";
 import { token } from "../constants.js";
 import { UserProfile } from "../models/userProfile.models.js";
 import { Shippedgood } from "../models/shippedGoods.model.js";
+import { upoadFile } from "../utils/cloudinary.js";
 
 let expiryOfToken;
 // routes to add goods to donate
@@ -35,6 +36,33 @@ export const donateGoods = async (req, res) => {
         message: "wrong credentials",
       });
     }
+    if (
+      req.files &&
+      Array.isArray(req.files.image) &&
+      req.files.image.length > 0
+    )
+      return res
+        .status(400)
+        .json({ succes: false, message: "ALl feilds required" });
+    if (
+      req.files &&
+      Array.isArray(req.files.video) &&
+      req.files.video.length > 0
+    )
+      return res
+        .status(400)
+        .json({ succes: false, message: "ALl feilds required" });
+    const imagePath = req.files?.image[0]?.path;
+    const videoPath = req.files?.video[0]?.path;
+    console.log(imagePath, videoPath);
+
+    // if (imagePath == undefined || videoPath == undefined)
+    //   return res
+    //     .status(400)
+    //     .json({ succes: false, message: "ALl feilds required" });
+
+    const image = await upoadFile(imagePath);
+    const video = await upoadFile(videoPath);
 
     const goods = await Goods.create({
       donor: req.user._id,
@@ -45,6 +73,8 @@ export const donateGoods = async (req, res) => {
       status: "available",
       condition,
       quantity,
+      image,
+      video,
       category,
       resaonOfDonation,
     });
@@ -69,7 +99,7 @@ export const donateGoods = async (req, res) => {
   } catch (error) {
     console.log(error);
     return res.status(500).json({
-      success: true,
+      success: false,
       message: "internal error",
     });
   }

@@ -10,7 +10,9 @@ import {
 } from "react-router-dom";
 import Home from "./pages/home/Home.jsx";
 import KYCform from "./components/KYCform.jsx";
-import { ToastContainer } from "react-toastify";
+import UserProfile from "./pages/profile/UserProfile.jsx";
+import { FundRaisingCard } from "./components/FundRaiserCard.jsx";
+import { GoodDonateCard } from "./components/GoodDonateCard.jsx";
 const LazyCamppaign = React.lazy(() =>
   import("./pages/create-campaign/CreateCampaign.jsx")
 );
@@ -98,13 +100,26 @@ const router = createBrowserRouter(
         }
       />
       <Route
-        path="/user-profile"
+        path="/user-profile/profile"
         element={
           <Suspense fallback={<div>Loading....</div>}>
             <LazyUserProfile />
           </Suspense>
         }
-      />
+      >
+        <Route path="/user-profile/profile" element={<UserProfile />} />
+        <Route
+          path="/user-profile/profile/my-campaigns"
+          element={<FundRaisingCard />}
+        />
+        {/* <Route path="/user-profile/donation-history" /> */}
+        <Route
+          path="/user-profile/profile/donated-goods"
+          element={<GoodDonateCard />}
+        />
+        {/* <Route path="/user-profile/obtained-goods" /> */}
+        <Route path="/user-profile/profile/delete-account" />
+      </Route>
     </Route>
   )
 );
