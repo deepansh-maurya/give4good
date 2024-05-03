@@ -79,8 +79,15 @@ router.route("/owner-register").post(ownerShip);
 // campaign routes
 router
   .route("/kyc-verification")
-  .post(authenticationMiddleware, kycOfBeneficiery);
-router.route("/campaign-creation").post(createCampaign);
+  .post(authenticationMiddleware, upload.single("document"), kycOfBeneficiery);
+router.route("/campaign-creation/:id").post(
+  authenticationMiddleware,
+  upload.fields([
+    { name: "image", maxCount: 1 },
+    { name: "video", maxCount: 1 },
+  ]),
+  createCampaign
+);
 router.route("/get-campaign-tag-search").post(getCampaignsByTagAndSearch);
 router.route("/get-campaignbycategory").post(getCampaignsByCategory);
 

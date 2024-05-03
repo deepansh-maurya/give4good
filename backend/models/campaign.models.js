@@ -1,6 +1,8 @@
 import { Schema } from "mongoose";
 import { model } from "mongoose";
 
+// TODO: comment, report
+
 const campaigneSchema = new Schema(
   {
     title: {

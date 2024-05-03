@@ -37,7 +37,9 @@ const ChangePassword = ({
         theme: "dark",
         transition: "Bounce",
       });
-      setTOchangepassword(false);
+      setTimeout(() => {
+        setTOchangepassword(false);
+      }, 2000);
     }
     setCodeFromServer(toGetCode.codetoverify);
   };

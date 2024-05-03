@@ -1,10 +1,11 @@
 import { createContext, useContext, useEffect, useState } from "react";
-import { userProfile } from "../services/profile/userProfile";
 import { checkAuthStatus } from "../services/auth/auth";
 
 const AuthContext = createContext();
 export const AuthContextProvider = ({ children }) => {
   const [isauth, setisauth] = useState(false);
+  const [id, setId] = useState("");
+  console.log(id);
   console.log("isauth", isauth);
   useEffect(() => {
     new Promise(async (resolve, reject) => {
@@ -20,7 +21,7 @@ export const AuthContextProvider = ({ children }) => {
     checkAuthStatus();
   }, []);
   return (
-    <AuthContext.Provider value={{ isauth, setisauth }}>
+    <AuthContext.Provider value={{ isauth, setisauth, id, setId }}>
       {children}
     </AuthContext.Provider>
   );

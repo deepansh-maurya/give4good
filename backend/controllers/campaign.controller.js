@@ -5,87 +5,126 @@ import { Admin } from "../models/admin.models.js";
 import { UserProfile } from "../models/userProfile.models.js";
 import { Beneficiery } from "../models/beneficiary.model.js";
 import { notification } from "../utils/noti.utils.js";
-//comment reammaning
+import { upoadFile } from "../utils/cloudinary.js";
+import mongoose, { Schema, mongo } from "mongoose";
+//comment reammaning , report
+// TODO: handle large videos
 export const kycOfBeneficiery = async (req, res) => {
   try {
-    var i = 0;
-    console.log(req.body, i++);
+    console.log(req.body);
     const {
       name,
-      date_of_birth,
+      dateOfBirth,
       gender,
-      nationlaity,
+      nationality,
       address,
       city,
+      contact,
       document,
-      beneficiary_relationship,
+      beneficiaryRelationship,
     } = req.body;
     if (
       name == "" &&
-      date_of_birth == "" &&
+      dateOfBirth == "" &&
       gender == "" &&
-      nationlaity == "" &&
+      nationality == "" &&
       address == "" &&
       document == "" &&
-      beneficiary_relationship == ""
+      beneficiaryRelationship == "" &&
+      contact == ""
     ) {
       return res
         .status(400)
         .json({ success: false, message: "fill all the fields for kyc " });
     }
 
+    if (!req.file || !req.file.path)
+      return res
+        .status(400)
+        .json({ succcess: false, message: "DOcument required" });
+
+    const documentPath = req.file.path;
+    const documentUrl = await upoadFile(documentPath);
+
     // document verification
     const bene = await Beneficiery.create({
       name,
-      date_of_birth,
+      date_of_birth: dateOfBirth,
       gender,
-      nationlaity,
+      nationlaity: nationality,
       address,
       city,
-      document,
-      beneficiary_relationship,
+      document: documentUrl,
+      beneficiary_relationship: beneficiaryRelationship,
     });
     if (!bene) {
-      return res
-        .status(401)
-        .json({ success: false, message: "kyc failed try again " });
+      return res.status(401).json({
+        success: false,
+        message: "kyc failed try again ",
+      });
     }
-
-    return res
-      .status(200)
-      .json({ success: true, message: "kyc successfull, you can proceed" });
+    return res.status(200).json({
+      success: true,
+      message: "kyc successfull, you can proceed",
+      beneId: bene._id,
+    });
   } catch (error) {
     console.log(error);
     return res
       .status(500)
-      .json({ success: false, message: "server error while kyc" });
+      .json({ success: false, message: "KYC failed, Try again  " });
   }
 };
 export const createCampaign = async (req, res) => {
   try {
-    console.log(req.body);
-    const { title, description, story, tags, goal, deadline, image, video } =
+    const { title, description, goal, story, tags, deadline, category } =
       req.body;
-    let ans = [title, description, tags, goal, story, deadline];
-    console.log("0.5", ans);
     if (
       title == "" &&
       description == "" &&
       goal == "" &&
+      tags == "" &&
       story == "" &&
       deadline == "" &&
-      image == "" &&
-      video == "" &&
       category == ""
     ) {
-      return res.status(401).json({
+      return res.status(400).json({
         success: false,
         message: "wrong credential",
         credential: [title, description, tags, goal, story, deadline],
       });
     }
 
-    // handle user updation
+    if (
+      !req.files ||
+      !Array.isArray(req.files.image) ||
+      !req.files.image.length > 0
+    )
+      return res
+        .status(400)
+        .json({ success: false, message: "All fileds required" });
+    if (
+      !req.files ||
+      !Array.isArray(req.files.video) ||
+      !req.files.video.length > 0
+    )
+      return res
+        .status(400)
+        .json({ success: false, message: "All fileds required" });
+
+    const imagePAth = req.files.image[0].path;
+    const videoPath = req.files.video[0].path;
+
+    const imageURL = await upoadFile(imagePAth);
+    const videoURL = await upoadFile(videoPath);
+
+    console.log(imageURL, videoURL);
+
+    if (!imageURL || !videoURL)
+      return res.status(400).json({
+        success: false,
+        message: "Failed to create campaign Try again",
+      });
     const campaign = await Campaign.create({
       title,
       description,
@@ -96,9 +135,10 @@ export const createCampaign = async (req, res) => {
       goal,
       deadline,
       category,
-      image: image || "",
-      video: video || "",
-      creator: req.user?._id || "661e52b1d0158f33e59db5a5",
+      image: imageURL,
+      video: videoURL,
+      creator: req.user?._id,
+      benefciery: new mongoose.Types.ObjectId(req.params.id),
     });
     if (!campaign) {
       return res.status(401).json({

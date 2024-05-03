@@ -8,7 +8,7 @@ export const Navbar = () => {
   console.log(isauth);
   return (
     <>
-      <nav className="bg-white shadow-black shadow-md text-black w-[100%] py-4 px-8 flex justify-between items-center fixed z-10">
+      <nav className="bg-white z-50 shadow-black shadow-md text-black w-[100%] py-4 px-8 flex justify-between items-center fixed z-10">
         <Link to="/">
           <div className="font-extrabold">Give4Good</div>
         </Link>
