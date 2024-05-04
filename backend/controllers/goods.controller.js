@@ -15,6 +15,7 @@ export const donateGoods = async (req, res) => {
       description,
       boughtdate,
       expirydate,
+      city,
       condition,
       quantity,
       category,
@@ -26,6 +27,7 @@ export const donateGoods = async (req, res) => {
       description == "" &&
       boughtdate == "" &&
       expirydate == "" &&
+      city == "" &&
       condition == "" &&
       quantity == "" &&
       category == "" &&
@@ -36,18 +38,30 @@ export const donateGoods = async (req, res) => {
         message: "wrong credentials",
       });
     }
-    if (
-      req.files &&
-      Array.isArray(req.files.image) &&
+    console.log(
+      2,
+      req.files.video,
+      Array.isArray(req.files.video),
+      req.files.video.length > 0
+    );
+    console.log(
+      1,
+      req.files.image,
+      Array.isArray(req.files.image),
       req.files.image.length > 0
+    );
+    if (
+      !req.files ||
+      !Array.isArray(req.files.image) ||
+      !req.files.image.length > 0
     )
       return res
         .status(400)
         .json({ succes: false, message: "ALl feilds required" });
     if (
-      req.files &&
-      Array.isArray(req.files.video) &&
-      req.files.video.length > 0
+      !req.files ||
+      !Array.isArray(req.files.video) ||
+      !req.files.video.length > 0
     )
       return res
         .status(400)
@@ -55,11 +69,6 @@ export const donateGoods = async (req, res) => {
     const imagePath = req.files?.image[0]?.path;
     const videoPath = req.files?.video[0]?.path;
     console.log(imagePath, videoPath);
-
-    // if (imagePath == undefined || videoPath == undefined)
-    //   return res
-    //     .status(400)
-    //     .json({ succes: false, message: "ALl feilds required" });
 
     const image = await upoadFile(imagePath);
     const video = await upoadFile(videoPath);
@@ -73,6 +82,7 @@ export const donateGoods = async (req, res) => {
       status: "available",
       condition,
       quantity,
+      city,
       image,
       video,
       category,

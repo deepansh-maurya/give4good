@@ -2,7 +2,7 @@ import { useState } from "react";
 import { createCapaign } from "../services/campaign/campaign";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../contexts/AppContext";
-import { ToastContainer, toast } from "react-toastify";
+import { Toaster, toast } from "react-hot-toast";
 const CampaignForm = () => {
   const { id, setId } = useAuth();
   const nav = useNavigate();
@@ -31,6 +31,7 @@ const CampaignForm = () => {
     tags: "",
     goal: "",
     deadline: "",
+    city: "",
     category: category[0],
     image: "",
     video: "",
@@ -43,7 +44,6 @@ const CampaignForm = () => {
       [name]: value,
     });
   };
-  console.log(id);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -51,38 +51,18 @@ const CampaignForm = () => {
     Object.entries(formData).forEach(([key, value]) => {
       campaignData.append(key, value);
     });
-    console.log(id);
+    console.log(typeof campaignData);
     const response = await createCapaign(campaignData, id);
     console.log(response);
     if (response.success) {
-      toast.success(`${response.message}`, {
-        position: "bottom-center",
-        autoClose: 5000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
-        theme: "dark",
-        transition: "Bounce",
-      });
+      toast.success(`${response.message}`);
       setId("");
       setTimeout(() => {
         console.log("SDfs");
-        nav("/home");
+        nav("/");
       }, 2000);
     } else {
-      toast.error(`${response.message}`, {
-        position: "bottom-center",
-        autoClose: 5000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
-        theme: "dark",
-        transition: "Bounce",
-      });
+      toast.error(`${response.message}`);
     }
     setTimeout(() => {
       setFormData({
@@ -149,6 +129,19 @@ const CampaignForm = () => {
               id="tags"
               name="tags"
               value={formData.tags}
+              onChange={handleChange}
+              className="w-full border border-gray-300 rounded px-3 py-2"
+            />
+          </div>
+          <div className="mb-4">
+            <label htmlFor="city" className="block font-semibold mb-1">
+              City
+            </label>
+            <input
+              type="text"
+              id="city"
+              name="city"
+              value={formData.city}
               onChange={handleChange}
               className="w-full border border-gray-300 rounded px-3 py-2"
             />
@@ -235,7 +228,7 @@ const CampaignForm = () => {
           </button>
         </form>
       </div>
-      <ToastContainer />
+      <Toaster />
     </>
   );
 };

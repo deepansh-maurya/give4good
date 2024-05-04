@@ -9,6 +9,8 @@ import fs from "fs";
 import { emailservice } from "../utils/emailservice.js";
 import { upoadFile } from "../utils/cloudinary.js";
 import { upload } from "../middlwares/multer.middleware.js";
+import { Beneficiery } from "../models/beneficiary.model.js";
+import mongoose from "mongoose";
 dotenv.config({ path: "./env" });
 // report
 export const checkauthstatus = async (req, res) => {
@@ -20,6 +22,34 @@ export const checkauthstatus = async (req, res) => {
     return res
       .staus(500)
       .json({ succcess: false, message: "you are not logged in" });
+  }
+};
+export const getProfile = async (req, res) => {
+  try {
+    let user;
+    console.log(req.body.id);
+    if (req.body.user) {
+      console.log(1);
+      user = await UserProfile.findById(
+        new mongoose.Types.ObjectId(req.body.id)
+      );
+    } else if (req.body.beneficiery) {
+      user = await Beneficiery.findById(
+        new mongoose.Types.ObjectId(req.body.id)
+      );
+      console.log(user);
+    }
+    const name = user?.name || "";
+    if (!name)
+      return res
+        .status(404)
+        .json({ success: false, message: "no name found", name: "" });
+    return res.status(200).json({ success: true, message: "name found", name });
+  } catch (error) {
+    console.log(error);
+    return res
+      .status(500)
+      .json({ success: false, message: "error, name not found" });
   }
 };
 export const registerUser = async (req, res) => {
@@ -127,7 +157,7 @@ export const loginUser = async (req, res) => {
       httpOnly: true,
       secure: true,
     };
-    console.log(token);
+    console.log(token, "Sdf");
     return res.status(200).cookie("token", token, options).json({
       success: true,
       message: "you are logged in",

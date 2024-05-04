@@ -3,6 +3,7 @@ import React, { useEffect, useState } from "react";
 import {
   getCampaignFromDBByLocation,
   getCampaignFromDBBySearch,
+  getCampaignFromDBByTypes,
   getCampaignsFromDbbyCategory,
   getLocation,
 } from "../../services/campaign/campaign";
@@ -25,11 +26,11 @@ import { FaTransgender } from "react-icons/fa";
 import { BsMotherboardFill } from "react-icons/bs";
 import { FundRaisingCard } from "../../components/FundRaiserCard";
 export default function Explore() {
-  let campaigns = [3, 5, 4, 3, 5, 6];
   const [location, setlocation] = useState();
+  const [types, setTypes] = useState();
   const [search, setsearch] = useState();
   let [data, setdata] = useState([]);
-  const [locvalue, setlocvalue] = useState();
+  console.log(location);
   let icons = [
     <FiTriangle />,
     <SiAnimalplanet />,
@@ -65,20 +66,32 @@ export default function Explore() {
     { cate: "LGBTQ+", icons: icons[13] },
     { cate: "Other", icons: icons[14] },
   ];
-  useEffect(() => {
-    let response = getLocation();
+  async function funcToHandleLoc() {
+    let response = await getLocation();
+    console.log(response);
     setlocation(response);
-  }, []);
+  }
   useEffect(() => {
-    let response = getCampaignFromDBByLocation(locvalue);
-    setdata(response);
-  }, [locvalue]);
-  function getCampaignsCategory(category) {
-    let response = getCampaignsFromDbbyCategory(category);
+    funcToHandleLoc();
+  }, []);
+  async function handleCategory(category) {
+    let response = await getCampaignsFromDbbyCategory(category);
     setdata(response);
   }
-  function getCampaignSearch() {
-    let response = getCampaignFromDBBySearch(search);
+  async function handleSearch() {
+    console.log(search);
+    let response = await getCampaignFromDBBySearch(search);
+    setdata(response);
+  }
+
+  async function handleTypes() {
+    const response = await getCampaignFromDBByTypes(types);
+    if (response.success) setdata(response.campaign);
+    else {
+    } // TODO: handletaost
+  }
+  async function handleLocation(loc) {
+    const response = await getCampaignFromDBByLocation(loc);
     setdata(response);
   }
   return (
@@ -102,16 +115,17 @@ export default function Explore() {
             </div>
           </div>
           <div className="relative left-16 mt-14 flex flex-wrap w-[80%] gap-14 ">
-            {campaigns.map((campaign, index) => (
-              <FundRaisingCard key={index} campaign={campaign} />
-            ))}
+            {data.length > 0 &&
+              data.map((campaign, index) => (
+                <FundRaisingCard key={index} campaign={campaign} />
+              ))}
           </div>
         </div>
         <div className="left   bottom-[89%] fixed  left-[78%] shadow-black shadow-xl bg-slate-500 ">
           <div className="flex flex-col absolute ">
             <div className="border-red-400">
               <FaSearch
-                onClick={() => getCampaignSearch(search)}
+                onClick={() => handleSearch(search)}
                 className="relative top-5 right-7 cursor-pointer  w-16"
               />
               <input
@@ -125,6 +139,11 @@ export default function Explore() {
               name=""
               id=""
               className="shadow-black w-60 shadow-sm shadow-inner relative top-3"
+              value={types}
+              onChange={(e) => {
+                setTypes(e.target.value);
+                handleTypes();
+              }}
             >
               <option className="font-bold" value="Choose location">
                 All Types
@@ -139,9 +158,9 @@ export default function Explore() {
               name="location"
               id="location"
               className="shadow-black shadow-sm shadow-inner relative top-6"
-              onChange={(e) => setlocvalue(e.target.value)}
+              onChange={(e) => handleLocation(e.target.value)}
             >
-              <option value=""></option>
+              <option value="Select Location">Select Location</option>
               {location?.length > 0 &&
                 location.map((locs, index) => {
                   return (
@@ -158,7 +177,7 @@ export default function Explore() {
         {category.map((cate) => {
           return (
             <div
-              onClick={() => getCampaignsCategory(cate.cate)}
+              onClick={() => handleCategory(cate.cate)}
               className=" shadow-black cursor-pointer shadow-sm flex-col h-[80px] w-[80px] text-white font-bold  bg-slate-400 flex items-center justify-center"
             >
               {cate.icons}
@@ -167,7 +186,7 @@ export default function Explore() {
           );
         })}
         <div
-          onClick={() => getCampaignsCategory("")}
+          onClick={() => handleCategory("")}
           className="w-[249px] cursor-pointer shadow-black shadow-sm  text-white font-bold   bg-slate-400 relative right-[84%] flex items-center justify-center"
         >
           All

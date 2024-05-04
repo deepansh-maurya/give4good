@@ -103,3 +103,27 @@ export const getCode = async () => {
     return injson;
   } catch (error) {}
 };
+
+export const getProfile = async (id, user, benefciery) => {
+  try {
+    const token = localStorage.getItem("token");
+    let response = await fetch(`http://localhost:3000/api/v1/get-profile`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({
+        id,
+        user: user,
+        beneficiery: benefciery,
+      }),
+    });
+    const injson = await response.json();
+    console.log(injson);
+    if (injson.success) return injson.name;
+    else return "";
+  } catch (error) {
+    return "";
+  }
+};

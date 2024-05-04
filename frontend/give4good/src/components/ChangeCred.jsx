@@ -48,7 +48,7 @@ export default function ChangeCred({
           draggable: true,
           progress: undefined,
           theme: "dark",
-          transition: Bounce,
+          transition: "Bounce",
         });
       } else {
         toast.error(`Document Updation failed`, {
@@ -60,7 +60,7 @@ export default function ChangeCred({
           draggable: true,
           progress: undefined,
           theme: "dark",
-          transition: Bounce,
+          transition: "Bounce",
         });
       }
     }

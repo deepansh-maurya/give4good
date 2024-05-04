@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { donateGoods } from "../../services/goods/donateGood";
 import { userProfile } from "../../services/profile/userProfile";
-import { ToastContainer, toast } from "react-toastify";
+import { Toaster, toast } from "react-hot-toast";
 const categories = [
   "Select Category",
   "Apparel",
@@ -48,7 +48,7 @@ const DonateGoods = () => {
     resaonOfDonation: "",
     category: categories[0],
   });
-
+  console.log(formData);
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prevData) => ({
@@ -61,30 +61,10 @@ const DonateGoods = () => {
     const doc = data.user.document;
     console.log(data, doc);
     if (!doc) {
-      toast.warn(`Upload Document, Before Donating, For Verification`, {
-        position: "bottom-center",
-        autoClose: 5000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
-        theme: "dark",
-        transition: "Bounce",
-      });
+      toast.error(`Upload Document, Before Donating, For Verification`);
     } else {
       setISAllowedDonate(true);
-      toast.success(`You are Verified, You can Donate`, {
-        position: "bottom-center",
-        autoClose: 5000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
-        theme: "dark",
-        transition: "Bounce",
-      });
+      toast.success(`You are Verified, You can Donate`);
     }
   };
 
@@ -104,17 +84,7 @@ const DonateGoods = () => {
       });
       const response = await donateGoods(donateData);
       if (response.success) {
-        toast.success(`Thanks for donating! Your listing has been submitted`, {
-          position: "bottom-center",
-          autoClose: 5000,
-          hideProgressBar: false,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
-          progress: undefined,
-          theme: "dark",
-          transition: "Bounce",
-        });
+        toast.success(`Thanks for donating! Your listing has been submitted`);
         setTimeout(() => {
           setFormData({
             name: "",
@@ -134,17 +104,7 @@ const DonateGoods = () => {
           });
         }, 2000);
       } else {
-        toast.info(`${response.message}`, {
-          position: "bottom-center",
-          autoClose: 5000,
-          hideProgressBar: false,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
-          progress: undefined,
-          theme: "dark",
-          transition: "Bounce",
-        });
+        toast.error(`${response.message}`);
         setTimeout(() => {
           setFormData({
             name: "",
@@ -331,7 +291,7 @@ const DonateGoods = () => {
                   setFormData({ ...formData, video: e.target.files[0] });
                 }}
                 className="w-full border border-gray-300 rounded px-3 py-2"
-                accept="video/*"
+                accept="image/*"
               />
             </div>
             <div>
@@ -387,7 +347,7 @@ const DonateGoods = () => {
           </form>
         </div>
       </div>
-      <ToastContainer />
+      <Toaster />
     </>
   );
 };

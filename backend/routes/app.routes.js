@@ -2,6 +2,7 @@ import { Router } from "express";
 import {
   adminregister,
   checkauthstatus,
+  getProfile,
   registerUser,
   resetPassword,
   updateDocument,
@@ -11,6 +12,7 @@ import {
 } from "../controllers/auth.controller.js";
 import {
   createCampaign,
+  getCampaignByType,
   getCampaignsByCategory,
   getCampaignsByTagAndSearch,
   kycOfBeneficiery,
@@ -88,14 +90,22 @@ router.route("/campaign-creation/:id").post(
   ]),
   createCampaign
 );
-router.route("/get-campaign-tag-search").post(getCampaignsByTagAndSearch);
-router.route("/get-campaignbycategory").post(getCampaignsByCategory);
+router
+  .route("/get-campaign-by-tag-search")
+  .post(authenticationMiddleware, getCampaignsByTagAndSearch);
+router
+  .route("/get-campaignbycategory")
+  .post(authenticationMiddleware, getCampaignsByCategory);
+router
+  .route("/get-campaign-by-type")
+  .post(authenticationMiddleware, getCampaignByType);
 
 router.route("/update-campaign").post(authenticationMiddleware, updateCampaign);
 router
   .route("/request-delete-campiagn")
   .post(authenticationMiddleware, requestDeleteCampaign);
 router.route("/ask-for-refund").post(authenticationMiddleware, askForRefund);
+// admin routes
 router.route("/campaign-list-for-deletion").get(listOfCampaignsToBeDeleted);
 router
   .route("/accept-campaign-deletion")
@@ -132,4 +142,7 @@ router.route("track-order").post(authenticationMiddleware, trackOrder);
 router
   .route("list-requested-good")
   .get(authenticationMiddleware, listRequestedGoods);
+
+//special routes
+router.route("/get-profile").post(authenticationMiddleware, getProfile);
 export default router;

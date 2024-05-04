@@ -1,8 +1,8 @@
 import React, { useState } from "react";
 import { kycVerification } from "../services/campaign/campaign";
 import { useNavigate } from "react-router-dom";
-import { ToastContainer, toast } from "react-toastify";
 import { useAuth } from "../contexts/AppContext";
+import { Toaster, toast } from "react-hot-toast";
 const KYCform = ({ setsampaign, settitlecolor }) => {
   const nav = useNavigate();
   const { id, setId } = useAuth();
@@ -27,27 +27,14 @@ const KYCform = ({ setsampaign, settitlecolor }) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
     const kycData = new FormData();
-    console.log(formData);
     Object.entries(formData).forEach(([key, value]) => {
       kycData.append(key, value);
     });
-    console.log(kycData);
     let response = await kycVerification(kycData);
     if (response.success) {
       setId(response.beneId);
-      toast.success(`Kyc Successfull`, {
-        position: "bottom-center",
-        autoClose: 5000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
-        theme: "dark",
-        transition: "Bounce",
-      });
+      toast.success(`Kyc Successfull`);
       setFormData({
         name: "",
         dateOfBirth: "",
@@ -64,17 +51,7 @@ const KYCform = ({ setsampaign, settitlecolor }) => {
         settitlecolor(true);
       }, 2000);
     } else {
-      toast.error(`${response?.message || "Kyc unsuccessfull"} `, {
-        position: "bottom-center",
-        autoClose: 5000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
-        theme: "dark",
-        transition: "Bounce",
-      });
+      toast.error(`${response?.message || "Kyc unsuccessfull"} `);
       setFormData({
         name: "",
         dateOfBirth: "",
@@ -228,7 +205,7 @@ const KYCform = ({ setsampaign, settitlecolor }) => {
           </form>
         </div>
       </div>
-      <ToastContainer></ToastContainer>
+      <Toaster />
     </>
   );
 };

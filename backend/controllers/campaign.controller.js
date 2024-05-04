@@ -77,7 +77,7 @@ export const kycOfBeneficiery = async (req, res) => {
 };
 export const createCampaign = async (req, res) => {
   try {
-    const { title, description, goal, story, tags, deadline, category } =
+    const { title, description, goal, story, tags, city, deadline, category } =
       req.body;
     if (
       title == "" &&
@@ -86,7 +86,8 @@ export const createCampaign = async (req, res) => {
       tags == "" &&
       story == "" &&
       deadline == "" &&
-      category == ""
+      category == "" &&
+      city == ""
     ) {
       return res.status(400).json({
         success: false,
@@ -94,6 +95,8 @@ export const createCampaign = async (req, res) => {
         credential: [title, description, tags, goal, story, deadline],
       });
     }
+
+    console.log(city);
 
     if (
       !req.files ||
@@ -125,21 +128,27 @@ export const createCampaign = async (req, res) => {
         success: false,
         message: "Failed to create campaign Try again",
       });
+    console.log(req.params.id, "id");
     const campaign = await Campaign.create({
       title,
       description,
       story,
-      date: new Date().toDateString(),
+      date: new Date(),
       tags,
       staus: "active",
       goal,
       deadline,
+      city,
       category,
       image: imageURL,
       video: videoURL,
       creator: req.user?._id,
-      benefciery: new mongoose.Types.ObjectId(req.params.id),
+      benefciery:
+        req.params.id == "null"
+          ? req.user._id
+          : new mongoose.Types.ObjectId(req.params?.id),
     });
+    console.log(campaign);
     if (!campaign) {
       return res.status(401).json({
         success: false,
@@ -160,12 +169,27 @@ export const createCampaign = async (req, res) => {
 };
 export const getCampaignsByTagAndSearch = async (req, res) => {
   try {
-    if (req.body.location) {
-      let camapgin = await Campaign.find({ city: { $in: req.body.location } });
-      if (!camapgin) {
+    console.log("SDFDSF");
+
+    if (req.body.city) {
+      let campaigns = await Campaign.find({ city: { $in: req.body.city } });
+      if (!campaigns) {
         return res.status(404).json({
           success: false,
-          message: "campaign not exist with this keyword",
+          message: "campaign not exist for this location",
+        });
+      }
+      return res.status(200).json({
+        success: true,
+        message: "campaigns found successfully",
+        campaigns,
+      });
+    } else if (req.body.city == "Select Location") {
+      let campaigns = await Campaign.find({ city: { $in: req.body.city } });
+      if (!campaigns) {
+        return res.status(404).json({
+          success: false,
+          message: "campaign not exist for this location",
         });
       }
       return res.status(200).json({
@@ -174,19 +198,23 @@ export const getCampaignsByTagAndSearch = async (req, res) => {
         campaigns,
       });
     }
-    const keyword = req.body.keyword;
+    console.log("SDFDSF");
+    const keyword = req.body.tags;
+    console.log(keyword);
     let campaigns = "";
-    if (keyword != "") {
+    if (keyword != "" && keyword != undefined && keyword != null) {
       campaigns = await Campaign.find({ tags: { $in: [keyword] } });
-      if (!campaigns) {
+      console.log("yaha bhi");
+      if (campaigns.length == 0) {
+        console.log("aa gay");
         campaigns = await Campaign.find({
           title: { $regex: keyword, $options: "i" },
         });
 
-        if (!campaigns) {
+        if (campaigns.length == 0) {
           return res.status(404).json({
             success: false,
-            message: "campaign not exist with this keyword",
+            message: "campaigns not exist with this keyword",
           });
         }
       }
@@ -215,13 +243,13 @@ export const getCampaignsByCategory = async (req, res) => {
       if (!campaigns) {
         return res.status(404).json({
           success: false,
-          message: "campaign not exist with this tag",
+          message: "campaign does not exist for this category",
         });
       }
     } else {
       campaigns = await Campaign.find({});
     }
-    res.status(200).json({
+    return res.status(200).json({
       success: true,
       message: "campaigns found successfully",
       campaigns,
@@ -231,6 +259,44 @@ export const getCampaignsByCategory = async (req, res) => {
     return res.status(500).json({
       success: false,
       message: "error while getting campaigns",
+    });
+  }
+};
+export const getCampaignByType = async (req, res) => {
+  try {
+    const type = req.body.type;
+    let campaigns;
+    if (type == "All types") campaigns = await Campaign.find({});
+    else if (type == "active")
+      campaigns = await Campaign.find({ status: "active" });
+    else if (type == "active")
+      campaigns = await Campaign.find({ status: "active" });
+    else if (type == "closed")
+      campaigns = await Campaign.find({ status: "closed" });
+    else if (type == "Most Raised") {
+      campaigns = await Campaign.find().sort({ progress: -1 }).exec();
+    } else if (type == "Newly Launched") {
+      let currentDate = new Date();
+      let oneMonthBfeoreDate = new Date(currentDate);
+      oneMonthBfeoreDate.setMonth(oneMonthBfeoreDate.getMonth() - 1);
+      campaigns = await Campaign.find({
+        date: {
+          $gte: oneMonthBfeoreDate,
+          $lte: currentDate,
+        },
+      });
+    }
+
+    if (campaigns.length == 0)
+      return res
+        .status(404)
+        .json({ success: false, message: "Campaigns not found" });
+
+    return res.status(200).json({ success: false, message: "Campaigns found" });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: "Error while fetching Campaigns ",
     });
   }
 };

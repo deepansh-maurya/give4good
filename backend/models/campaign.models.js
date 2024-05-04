@@ -40,6 +40,9 @@ const campaigneSchema = new Schema(
         required: true,
       },
     ],
+    city: {
+      type: String,
+    },
     creator: {
       type: Schema.Types.ObjectId,
       ref: "UserProfile",
