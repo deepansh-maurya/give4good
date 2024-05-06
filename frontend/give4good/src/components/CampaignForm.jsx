@@ -1,9 +1,10 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { createCapaign } from "../services/campaign/campaign";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../contexts/AppContext";
 import { Toaster, toast } from "react-hot-toast";
 const CampaignForm = () => {
+  const inputref = useRef();
   const { id, setId } = useAuth();
   const nav = useNavigate();
   let category = [
@@ -24,11 +25,12 @@ const CampaignForm = () => {
     "LGBTQ+ Rights",
     "Other",
   ];
+  const [emptyState, setEmptyState] = useState("");
   const [formData, setFormData] = useState({
     title: "",
     description: "",
     story: "",
-    tags: "",
+    tags: [],
     goal: "",
     deadline: "",
     city: "",
@@ -79,6 +81,8 @@ const CampaignForm = () => {
     }, 2000);
   };
 
+  console.log(formData);
+
   return (
     <>
       <div className=" mx-auto p-6 w-2/4 mt-48  shadow-sm shadow-black rounded-md shadow-md ">
@@ -120,18 +124,64 @@ const CampaignForm = () => {
               className="w-full border border-gray-300 rounded px-3 py-2"
             ></textarea>
           </div>
+
           <div className="mb-4">
-            <label htmlFor="tags" className="block font-semibold mb-1">
+            <label htmlFor="tags" className="block flex font-semibold mb-1">
               Tags
+              <div
+                onClick={() => setFormData({ ...formData, tags: [] })}
+                className=" cursor-pointer font-extrabold"
+              >
+                (-)
+              </div>
             </label>
-            <input
-              type="text"
-              id="tags"
-              name="tags"
-              value={formData.tags}
-              onChange={handleChange}
-              className="w-full border border-gray-300 rounded px-3 py-2"
-            />
+            <div>
+              <div className="w-full border flex  justify-between border-gray-300 rounded px-3 py-2">
+                <input
+                  ref={inputref}
+                  type="text"
+                  id="tags"
+                  name="tags"
+                  placeholder="Enter a Tag"
+                  className=" pl-1 outline-none"
+                />
+                <div
+                  onClick={() => {
+                    let newTag = formData.tags;
+                    newTag.push(inputref.current.value);
+                    setFormData({ ...formData, tags: newTag });
+                    inputref.current.value = "";
+                  }}
+                  className=" cursor-pointer  text-lg"
+                >
+                  +
+                </div>
+              </div>
+              <div className="flex mt-3 flex-wrap">
+                {formData.tags.map((data, index) => {
+                  return (
+                    <div
+                      key={index}
+                      className="bg-slate-100 mr-2 m-2 border-2 border-black rounded-3xl p-1"
+                    >
+                      {data}
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+            {/* <div className="flex mt-3 flex-wrap">
+              {formData.tags.map((data, index) => {
+                return (
+                  <div
+                    key={index}
+                    className="bg-slate-100 mr-2 m-2 border-2 border-black rounded-3xl p-1"
+                  >
+                    {data}
+                  </div>
+                );
+              })}
+            </div> */}
           </div>
           <div className="mb-4">
             <label htmlFor="city" className="block font-semibold mb-1">
@@ -160,7 +210,11 @@ const CampaignForm = () => {
               className="w-full border border-gray-300 rounded px-3 py-2"
             >
               {category.map((cate) => {
-                return <option value={cate}>{cate}</option>;
+                return (
+                  <option key={cate} value={cate}>
+                    {cate}
+                  </option>
+                );
               })}
             </select>
           </div>

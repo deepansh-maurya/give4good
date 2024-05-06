@@ -1,6 +1,6 @@
 import { Campaign } from "../models/campaign.models.js";
-import axios from "axios";
 import Razorpay from "razorpay";
+import axios from "axios";
 import { Admin } from "../models/admin.models.js";
 import { UserProfile } from "../models/userProfile.models.js";
 import { Beneficiery } from "../models/beneficiary.model.js";
@@ -148,8 +148,23 @@ export const createCampaign = async (req, res) => {
           ? req.user._id
           : new mongoose.Types.ObjectId(req.params?.id),
     });
-    console.log(campaign);
-    if (!campaign) {
+
+    const user = await UserProfile.findById(req.user._id);
+    let userCampaign = user.campaigns;
+    console.log(userCampaign);
+    userCampaign.push(campaign._id);
+    console.log(userCampaign);
+    const updatedUser = await UserProfile.findByIdAndUpdate(
+      req.user._id,
+      {
+        campaigns: userCampaign,
+      },
+      { new: true }
+    );
+
+    console.log(updatedUser);
+
+    if (!campaign || !updatedUser) {
       return res.status(401).json({
         success: false,
         message: "failed to create campaign ",
@@ -167,6 +182,23 @@ export const createCampaign = async (req, res) => {
     });
   }
 };
+
+export const isDonatedOrNot = async (req, res) => {
+  try {
+    const user = await UserProfile.findById(req.user._id);
+    const history = user.donationhistory;
+    const value = history.filter((data) => data.campaignID == req.body.id);
+    console.log(value);
+    if (!value)
+      return res
+        .status(404)
+        .json({ success: false, message: "no donation for this campagin" });
+    return res.status(200).json({ success: true, message: "donation found" });
+  } catch (error) {
+    return res.status(500).json({ success: false, message: "internal error" });
+  }
+};
+
 export const getCampaignsByTagAndSearch = async (req, res) => {
   try {
     console.log("SDFDSF");
@@ -654,5 +686,100 @@ export const requestDonationMoney = async (req, res) => {
     return res
       .status(500)
       .json({ success: false, message: "internal error while payout" });
+  }
+};
+
+export const getDonationInshightsData = async (req, res) => {
+  try {
+    const campaignID = req.body.id;
+    const campaign = await Campaign.findById(campaignID);
+
+    if (!campaign)
+      return res
+        .status(404)
+        .json({ success: false, message: "campaign not found" });
+    //calculate average
+    const totalDonor = campaign.donors.length;
+    const campaignFunds = campaign.progress;
+    const average = totalDonor / Number(campaignFunds);
+
+    // find donor list
+    const donors = campaign.donors;
+    const donorsData = [{ name: "", location: "", amountFunded: "" }];
+
+    const promise = donors.map(async (id, index) => {
+      let user = await UserProfile.findById(id);
+
+      let donatioHisotry = user.donationhistory;
+
+      let campagin = donatioHisotry.filter(
+        (data) => data.campaignID == campaignID
+      );
+      let paymentID = campagin.paymentID;
+      let instance = new Razorpay({
+        key_id: process.env.RAZORPAY_API_KEY,
+        key_secret: process.env.RAZORPAY_API_KEY_SECRET,
+      });
+      const payment = await instance.payments.fetch(paymentID);
+      donorsData.push({
+        name: user?.name,
+        location: user?.location,
+        amountFunded: payment.amount,
+      });
+    });
+    await Promise.all(promise);
+
+    // caluclate conversion list
+
+    const visitors = campaign.visitors;
+    const conversionData = (Number(visitors) / Number(totalDonor)) * 100;
+
+    // comments
+
+    const comments = campaign.comments;
+
+    // goal completion chances till deadline
+
+    const startingDate = new Date(campaign.date);
+    const deadline = new Date(campaign.deadline);
+
+    const difference = deadline - startingDate;
+    const days = difference / (1000 * 60 * 60 * 24);
+    const goal = Number(campaign.goal);
+
+    const estimateAmount = average * days;
+    const esitmateChance = (estimateAmount / goal) * 100;
+
+    // performance among other campaigns
+
+    const allCampaigns = await Campaign.find({});
+    let performance = 0;
+    const allCampaignsPromise = allCampaigns.map(async (data) => {
+      const visitors = data.visitors;
+      const donorsList = data.donors;
+      const conversionDatathis = (visitors / donorsList) * 100;
+      if (conversionDatathis < conversionData) performance++;
+    });
+
+    const campaignPerformance =
+      (Number(performance) / Number(allCampaigns.length)) * 100;
+
+    Promise.all(allCampaignsPromise);
+
+    return res.status(200).json({
+      success: true,
+      message: "data found",
+      average,
+      donorsData,
+      conversionData,
+      comments,
+      esitmateChance,
+      campaignPerformance,
+    });
+  } catch (error) {
+    console.log(error);
+    return res
+      .status(500)
+      .json({ success: false, message: "failed to get the data" });
   }
 };

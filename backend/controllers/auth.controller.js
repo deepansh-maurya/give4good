@@ -27,7 +27,7 @@ export const checkauthstatus = async (req, res) => {
 export const getProfile = async (req, res) => {
   try {
     let user;
-    console.log(req.body.id);
+    console.log(req.body.id, "fdfgfdgdfgfdg");
     if (req.body.user) {
       console.log(1);
       user = await UserProfile.findById(
@@ -37,8 +37,8 @@ export const getProfile = async (req, res) => {
       user = await Beneficiery.findById(
         new mongoose.Types.ObjectId(req.body.id)
       );
-      console.log(user);
     }
+    console.log(user, "user");
     const name = user?.name || "";
     if (!name)
       return res
@@ -144,7 +144,7 @@ export const loginUser = async (req, res) => {
       alg: "HS256",
       typ: "JWT",
     };
-    const expiresIn = "1d";
+    const expiresIn = "10d";
     const userData = {
       id: user._id,
       username: username,
@@ -330,12 +330,26 @@ export const userProfile = async (req, res) => {
     const user = await UserProfile.findById(req.user._id).select(
       "-hashpassword"
     );
-    if (!user) {
+
+    const cid = user.campaigns;
+    const campaignPromises = cid.map((id) => Campaign.findById(id));
+    let campaign;
+    await Promise.all(campaignPromises)
+      .then((campaigns) => {
+        campaign = campaigns;
+      })
+      .catch((error) => {
+        console.error("Error fetching campaigns:", error);
+      });
+    console.log(campaign);
+    if (!user || !campaign) {
       return res
         .status(404)
         .json({ success: false, message: "User not found" });
     }
-    return res.status(200).json({ success: true, message: "user found", user });
+    return res
+      .status(200)
+      .json({ success: true, message: "user found", user, campaign });
   } catch (error) {
     return res
       .status(500)

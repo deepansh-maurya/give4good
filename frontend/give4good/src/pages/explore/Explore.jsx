@@ -71,8 +71,14 @@ export default function Explore() {
     console.log(response);
     setlocation(response);
   }
+  async function allcampaigns() {
+    let response = await getCampaignFromDBBySearch("");
+    console.log(response, "data");
+    setdata(response);
+  }
   useEffect(() => {
     funcToHandleLoc();
+    allcampaigns();
   }, []);
   async function handleCategory(category) {
     let response = await getCampaignsFromDbbyCategory(category);
@@ -115,7 +121,8 @@ export default function Explore() {
             </div>
           </div>
           <div className="relative left-16 mt-14 flex flex-wrap w-[80%] gap-14 ">
-            {data.length > 0 &&
+            {data &&
+              data.length > 0 &&
               data.map((campaign, index) => (
                 <FundRaisingCard key={index} campaign={campaign} />
               ))}

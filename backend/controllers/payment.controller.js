@@ -83,7 +83,10 @@ export const paymentVerification = async (req, res) => {
       {
         _id: req.params.campaignID,
       },
-      { progress: campaign.goal + payment.amount / 100, donors: donorArray },
+      {
+        progress: campaign.progress || 0 + payment.amount / 100,
+        donors: donorArray,
+      },
       { new: true }
     );
     if (updatedCampaign.progress >= updatedCampaign.deadline) {

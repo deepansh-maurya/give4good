@@ -5,7 +5,9 @@ import { Owner } from "../models/owner.models.js";
 export const authenticationMiddleware = async (req, res, next) => {
   try {
     const token =
-      req.cookies?.token || req.header("Authorization").replace("Bearer ", "");
+      req.cookies?.token ||
+      req?.header("Authorization")?.replace("Bearer ", "") ||
+      req.params.token;
     if (!token) {
       return res.status(400).json({
         success: false,

@@ -8,20 +8,19 @@ import { FundRaisingCard } from "../../components/FundRaiserCard";
 import { GoodDonateCard } from "../../components/GoodDonateCard";
 export default function UserProfile() {
   const [profileData, setPRofileData] = useState();
+  const [campaignData, setCampaignDAta] = useState();
   const [triggerChangeCrd, setTriggerChanegeCred] = useState(false);
   const [currentPage, setCurrentPAge] = useState("profile");
   const nav = useNavigate();
-  let campaigns = [3, 4, 5, 6];
   const getPRofileDAta = async () => {
     const data = await userProfile();
     console.log(data);
     if (data.success) {
       setPRofileData(data.user);
+      setCampaignDAta(data.campaign);
     } else {
     }
   };
-
-  console.log(profileData);
 
   useEffect(() => {
     getPRofileDAta();
@@ -122,8 +121,12 @@ export default function UserProfile() {
             </div>
 
             <div className=" flex  mt-14 flex-wrap gap-12 justify-center ">
-              {campaigns.map((campaign, index) => (
-                <FundRaisingCard key={index} campaign={campaign} />
+              {campaignData.map((campaign, index) => (
+                <FundRaisingCard
+                  key={index}
+                  campaign={campaign}
+                  mycamp={true}
+                />
               ))}
             </div>
           </div>

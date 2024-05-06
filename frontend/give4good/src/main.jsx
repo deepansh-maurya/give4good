@@ -16,6 +16,12 @@ import { GoodDonateCard } from "./components/GoodDonateCard.jsx";
 const LazyCamppaign = React.lazy(() =>
   import("./pages/create-campaign/CreateCampaign.jsx")
 );
+const LazyMyCampaignPage = React.lazy(() =>
+  import("./components/MyCampaignPage.jsx")
+);
+const LazyCampaignPage = React.lazy(() =>
+  import("./components/CampaignPage.jsx")
+);
 const LazyExplore = React.lazy(() => import("./pages/explore/Explore.jsx"));
 const LazyGoods = React.lazy(() => import("./pages/goods/ExploreGoods.jsx"));
 const LazyDonateGoods = React.lazy(() =>
@@ -29,6 +35,7 @@ const LazySignup = React.lazy(() => import("./pages/signup/Signup.jsx"));
 const LazyCamppaignForm = React.lazy(() =>
   import("./components/CampaignForm.jsx")
 );
+
 const router = createBrowserRouter(
   createRoutesFromElements(
     <Route path="/" element={<App />}>
@@ -100,6 +107,22 @@ const router = createBrowserRouter(
         }
       />
       <Route
+        path="/campaign-page"
+        element={
+          <Suspense fallback={<div>loading...</div>}>
+            <LazyCampaignPage />
+          </Suspense>
+        }
+      />
+      <Route
+        path="/my-campaign-page"
+        element={
+          <Suspense fallback={<div>...loading</div>}>
+            <LazyMyCampaignPage />
+          </Suspense>
+        }
+      />
+      <Route
         path="/user-profile/profile"
         element={
           <Suspense fallback={<div>Loading....</div>}>
@@ -111,7 +134,16 @@ const router = createBrowserRouter(
         <Route
           path="/user-profile/profile/my-campaigns"
           element={<FundRaisingCard />}
-        />
+        >
+          <Route
+            path="/user-profile/profile/my-campaigns/page"
+            element={
+              <Suspense fallback={<div>loading...</div>}>
+                <LazyMyCampaignPage />
+              </Suspense>
+            }
+          />
+        </Route>
         {/* <Route path="/user-profile/donation-history" /> */}
         <Route
           path="/user-profile/profile/donated-goods"

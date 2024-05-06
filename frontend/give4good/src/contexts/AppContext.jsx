@@ -5,8 +5,6 @@ const AuthContext = createContext();
 export const AuthContextProvider = ({ children }) => {
   const [isauth, setisauth] = useState(false);
   const [id, setId] = useState("");
-  console.log(id);
-  console.log("isauth", isauth);
   useEffect(() => {
     new Promise(async (resolve, reject) => {
       const data = await checkAuthStatus();

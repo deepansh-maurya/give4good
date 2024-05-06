@@ -15,6 +15,8 @@ import {
   getCampaignByType,
   getCampaignsByCategory,
   getCampaignsByTagAndSearch,
+  getDonationInshightsData,
+  isDonatedOrNot,
   kycOfBeneficiery,
 } from "../controllers/campaign.controller.js";
 import { loginUser } from "../controllers/auth.controller.js";
@@ -79,6 +81,7 @@ router
 // router.route("/form-submit").post(handleSubmitForm);
 router.route("/owner-register").post(ownerShip);
 // campaign routes
+router.route("/is-donated").post(authenticationMiddleware, isDonatedOrNot);
 router
   .route("/kyc-verification")
   .post(authenticationMiddleware, upload.single("document"), kycOfBeneficiery);
@@ -105,15 +108,20 @@ router
   .route("/request-delete-campiagn")
   .post(authenticationMiddleware, requestDeleteCampaign);
 router.route("/ask-for-refund").post(authenticationMiddleware, askForRefund);
+router
+  .route("/campaign-donation-insights")
+  .get(authenticationMiddleware, getDonationInshightsData);
 // admin routes
 router.route("/campaign-list-for-deletion").get(listOfCampaignsToBeDeleted);
 router
   .route("/accept-campaign-deletion")
   .delete(toAcceptCampaignDeletionByAdmin);
 // payment routes
-router.route("/create-order").post(orderCreation);
-router.route("/get-payment-key").get(getPaymentKey);
-router.route("/payment-verification/:id/:campaignID").post(paymentVerification);
+router.route("/create-order").post(authenticationMiddleware, orderCreation);
+router.route("/get-payment-key").get(authenticationMiddleware, getPaymentKey);
+router
+  .route("/payment-verification/:id/:campaignID/:token")
+  .post(authenticationMiddleware, paymentVerification);
 router
   .route("payment-verifiaction-for-refund")
   .post(authenticationMiddleware, paymentVerificationForRefund);

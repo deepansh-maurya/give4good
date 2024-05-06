@@ -124,10 +124,10 @@ export const getCampaignFromDBBySearch = async (keyword) => {
     );
     const injson = await response.json();
     console.log(injson);
-    // if (injson.success) return injson.campaigns;
-    // else return false;
+    if (injson.success) return injson.campaigns;
+    else return [];
   } catch (error) {
-    // TODO: display toast
+    return [];
   }
 };
 
@@ -179,5 +179,56 @@ export const getCampaignFromDBByTypes = async (type) => {
     return injson;
   } catch (error) {
     return { success: false };
+  }
+};
+
+export const checkForDonation = async (id) => {
+  try {
+    const token = localStorage.getItem("token");
+
+    let options = {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({
+        id: id,
+      }),
+    };
+    const response = await fetch(
+      `http://localhost:3000/api/v1/is-donated`,
+      options
+    );
+    const injson = await response.json();
+    if (injson.success) return true;
+    else return false;
+  } catch (error) {
+    return "error";
+  }
+};
+
+export const campaignInsights = async (id) => {
+  try {
+    const token = localStorage.getItem("token");
+    let options = {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({
+        id: id,
+      }),
+    };
+    const response = await fetch(
+      `http://localhost:3000/api/v1//campaign-donation-insights`,
+      options
+    );
+    const injson = await response.json();
+    if (injson.success) return true;
+    else false;
+  } catch (error) {
+    return "error";
   }
 };
