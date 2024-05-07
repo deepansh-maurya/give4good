@@ -3,6 +3,7 @@ import {
   adminregister,
   checkauthstatus,
   getProfile,
+  isCampaignActive,
   registerUser,
   resetPassword,
   updateDocument,
@@ -81,6 +82,9 @@ router
 // router.route("/form-submit").post(handleSubmitForm);
 router.route("/owner-register").post(ownerShip);
 // campaign routes
+router
+  .route("/is-campaign-active")
+  .get(authenticationMiddleware, isCampaignActive);
 router.route("/is-donated").post(authenticationMiddleware, isDonatedOrNot);
 router
   .route("/kyc-verification")

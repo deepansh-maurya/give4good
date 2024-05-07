@@ -1,4 +1,5 @@
 import { UserProfile } from "../models/userProfile.models.js";
+import Razorpay from "razorpay";
 import bcrypt from "bcrypt";
 import { Campaign } from "../models/campaign.models.js";
 import dotenv from "dotenv";
@@ -356,22 +357,93 @@ export const userProfile = async (req, res) => {
       .json({ success: false, message: "internal error, User not found" });
   }
 };
-
-// handle refund
 export const deleteAccount = async (req, res) => {
-  //transfer ownership , notifying user about campaigns
+  //TODO: transfer ownership , notifying user about campaigns
   try {
-    const id = req.user?.id;
-    await Campaign.deleteMany({ creator: id });
-    await UserProfile.findByIdAndDelete({ _id: id });
-    return res.status(200).clearCookie("token").json({
-      success: true,
-      message: "user deleted succesfully",
+    const user = await UserProfile.findById(req.user._id);
+    const campaigns = user.campaigns;
+    const promise = campaigns.map(async (data) => {
+      let camapgin = await Campaign.findById(
+        new mongoose.Types.ObjectId(data.id)
+      );
+      let donors = camapgin.donors;
+      donors.map(async (data) => {
+        let donorProfile = await UserProfile.findById(
+          new mongoose.Types.ObjectId(data.id)
+        );
+        let findTheCampaign = donorProfile.filter(
+          (data) => data.campaignID == req.body.id
+        );
+        let instance = new Razorpay({
+          key_id: process.env.RAZORPAY_API_KEY,
+          key_secret: process.env.RAZORPAY_API_KEY_SECRET,
+        });
+        let amount = await instance.payments.fetch(findTheCampaign.paymentID);
+        let response = await instance.payments.refund(
+          findTheCampaign.paymentID,
+          {
+            amount: amount.amount,
+            speed: "normal",
+            notes: {
+              notes_key_1: "Beam me up Scotty.",
+              notes_key_2: "Engage",
+            },
+            receipt: "Receipt No. 31",
+          }
+        );
+        if (!response) {
+          return res
+            .status(400)
+            .json({ success: false, message: "failed to delete the campaign" });
+        }
+      });
     });
-  } catch (erorr) {
+    await Promise.all(promise);
+  } catch (error) {
+    return res
+      .status(500)
+      .json({ success: false, message: "failed to delete the campaign" });
+  }
+};
+
+export const isCampaignActive = async (req, res) => {
+  try {
+    // check is any campagin is active
+    const user = await UserProfile.findById(req.user._id);
+    let activeCampaigns = 0;
+    const campaigns = user.campaigns;
+    console.log(campaigns);
+    if (campaigns) {
+      let promise = campaigns.map(async (data) => {
+        let campgin = await Campaign.findById(
+          new mongoose.Types.ObjectId(data.id)
+        );
+        console.log(campgin);
+        let status = campgin.status;
+        if (status == "active") {
+          activeCampaigns += 1;
+        }
+      });
+      await Promise.all(promise);
+
+      if (activeCampaigns != 0) {
+        console.log(activeCampaigns);
+        return res.status(200).json({
+          success: true,
+          message: "your campaigns are still active ",
+          activeCampaigns,
+        });
+      }
+    }
+    return res.status(404).json({
+      success: false,
+      message: "no campaigns are  active ",
+    });
+  } catch (error) {
+    console.log(error.message);
     return res.status(500).json({
-      success: true,
-      message: "error while deleting the user ",
+      success: false,
+      message: "internal error ",
     });
   }
 };

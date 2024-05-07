@@ -135,7 +135,7 @@ export const createCampaign = async (req, res) => {
       story,
       date: new Date(),
       tags,
-      staus: "active",
+      status: "active",
       goal,
       deadline,
       city,

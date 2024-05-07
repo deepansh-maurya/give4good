@@ -222,7 +222,7 @@ export const campaignInsights = async (id) => {
       }),
     };
     const response = await fetch(
-      `http://localhost:3000/api/v1//campaign-donation-insights`,
+      `http://localhost:3000/api/v1/campaign-donation-insights`,
       options
     );
     const injson = await response.json();
@@ -230,5 +230,27 @@ export const campaignInsights = async (id) => {
     else false;
   } catch (error) {
     return "error";
+  }
+};
+
+export const checkCampaginStatus = async () => {
+  try {
+    const token = localStorage.getItem("token");
+    let options = {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    };
+    const response = await fetch(
+      `http://localhost:3000/api/v1/is-campaign-active`,
+      options
+    );
+    const injson = await response.json();
+    if (injson.success) return injson;
+    else false;
+  } catch (error) {
+    return false;
   }
 };

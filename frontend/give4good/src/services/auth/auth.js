@@ -46,7 +46,6 @@ export const sinupFunc = async ({ name, email, password }) => {
     return false;
   }
 };
-
 export const checkAuthStatus = async () => {
   try {
     const token = localStorage.getItem("token");
@@ -67,7 +66,6 @@ export const checkAuthStatus = async () => {
     return false;
   }
 };
-
 export const changePassword = async () => {
   try {
     const token = localStorage.getItem("token");
@@ -84,7 +82,6 @@ export const changePassword = async () => {
     return {};
   }
 };
-
 export const getCode = async () => {
   try {
     const token = localStorage.getItem("token");
@@ -103,7 +100,6 @@ export const getCode = async () => {
     return injson;
   } catch (error) {}
 };
-
 export const getProfile = async (id, user, benefciery) => {
   try {
     const token = localStorage.getItem("token");
@@ -126,4 +122,21 @@ export const getProfile = async (id, user, benefciery) => {
   } catch (error) {
     return "";
   }
+};
+
+export const deleteAccount = async () => {
+  try {
+    const token = localStorage.getItem("token");
+    let response = await fetch(`http://localhost:3000/api/v1/delete-account`, {
+      method: "DELETE",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    const injson = await response.json();
+    console.log(injson);
+    if (injson.success) return injson;
+    else return false;
+  } catch (error) {}
 };

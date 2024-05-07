@@ -6,9 +6,12 @@ import { userProfile } from "../../services/profile/userProfile";
 import { useNavigate } from "react-router-dom";
 import { FundRaisingCard } from "../../components/FundRaiserCard";
 import { GoodDonateCard } from "../../components/GoodDonateCard";
+import { checkCampaginStatus } from "../../services/campaign/campaign";
 export default function UserProfile() {
   const [profileData, setPRofileData] = useState();
-  const [campaignData, setCampaignDAta] = useState();
+  const [message, serMessage] = useState(false);
+  const [activeCampaigns, setActiveCampaigns] = useState();
+  const [campaignData, setCampaignDAta] = useState(false);
   const [triggerChangeCrd, setTriggerChanegeCred] = useState(false);
   const [currentPage, setCurrentPAge] = useState("profile");
   const nav = useNavigate();
@@ -26,6 +29,19 @@ export default function UserProfile() {
     getPRofileDAta();
   }, []);
 
+  async function handleDeleteAccount() {
+    let response = await checkCampaginStatus();
+    console.log(response);
+    if (response.success) {
+      setActiveCampaigns(response.activeCampaigns);
+      serMessage(true);
+    }
+  }
+  async function handleDelete() {
+    let response = await deleteAccount();
+    if (response.success) {
+    }
+  }
   return (
     <div className="flex justify-between overflow-y-hidden overflow-x-hidden">
       <div className=" mt-16 flex justify-between w-[100%]">
@@ -152,8 +168,8 @@ export default function UserProfile() {
         {}
         {}
         {currentPage == "deleteaccount" ? (
-          <div className="flex w-4/5 justify-center items-center bg-slate-400 relative left-1 shadow-lg shadow-black  h-[580px] ">
-            <div className="max-w-md mx-auto p-6 bg-gray-800 text-white rounded-md shadow-black shadow-lg">
+          <div className="flex w-[88%] justify-center items-center -z-0 bg-slate-400 relative left-[133px] shadow-lg shadow-black  h-[580px] ">
+            <div className="max-w-md mx-auto p-6 bg-black text-white rounded-md shadow-black shadow-lg">
               <h2 className="text-2xl font-bold mb-4 text-center text-red-500">
                 Request Delete
               </h2>
@@ -161,33 +177,27 @@ export default function UserProfile() {
                 To delete your account, please type{" "}
                 <strong className="text-red-500">Password</strong> below:
               </p>
-              {false ? (
-                <input
-                  type="text"
-                  // value={confirmation}
-                  readOnly
-                  placeholder="Type password to Authenticate"
-                  className="w-full border rounded py-2 px-3 mb-4 bg-gray-700 text-white focus:outline-none focus:border-blue-500"
-                />
-              ) : (
-                <input
-                  type="text"
-                  // value={confirmation}
-                  onChange={(e) => setconfirmation(e.target.value)}
-                  placeholder="Type password to Authenticate"
-                  className="w-full border rounded py-2 px-3 mb-4 bg-gray-700 text-white focus:outline-none focus:border-blue-500"
-                />
-              )}
+
+              <input
+                type="text"
+                placeholder="Type password to Authenticate"
+                className="w-full border rounded py-2 px-3 mb-4 bg-gray-700 text-white focus:outline-none focus:border-blue-500"
+              />
+
               <button
-                // onClick={handleDeleteAccount}
+                onClick={handleDeleteAccount}
                 className="w-full bg-red-500 text-white py-2 px-4 rounded hover:bg-red-600 focus:outline-none focus:shadow-outline-red"
               >
                 Request Delete
+              </button>
+              <button className="text-blue-700 underline mx-auto relative top-3 left-[180px] hover:text-red-700 font-bold">
+                logout
               </button>
             </div>
           </div>
         ) : null}
       </div>
+      // for my profile thing
       {triggerChangeCrd == true ? (
         <ChangeCred
           setTriggerChanegeCred={setTriggerChanegeCred}
@@ -197,6 +207,22 @@ export default function UserProfile() {
       ) : (
         <div></div>
       )}
+      {message == true ? (
+        <div className="fixed top-0 left-0 w-full h-full flex justify-center items-center bg-black bg-opacity-50">
+          <div className="bg-red-200 rounded-lg p-8 shadow-md text-center">
+            <p className="mb-4">
+              Your campaigns are still active. If you still want to Delete
+              Account, press delete.
+            </p>
+            <button
+              className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded"
+              onClick={handleDelete}
+            >
+              Delete
+            </button>
+          </div>
+        </div>
+      ) : null}
     </div>
   );
 }
