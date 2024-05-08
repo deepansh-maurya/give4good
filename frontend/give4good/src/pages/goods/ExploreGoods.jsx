@@ -24,7 +24,7 @@ import {
 import { GoodDonateCard } from "../../components/GoodDonateCard";
 export default function Explore() {
   let goods = [1, 3, 4, 56, 4];
-  const [location, setlocation] = useState();
+  const [location, setlocation] = useState([]);
   const [search, setsearch] = useState();
   let [data, setdata] = useState([]);
   const [locvalue, setlocvalue] = useState();
@@ -61,22 +61,37 @@ export default function Explore() {
     { cate: "Media ", icons: icons[13] },
     { cate: "Other", icons: icons[14] },
   ];
-
+  async function hamdleFirstOfData() {
+    let response = await getProductsFromDBByCategory("");
+    console.log(response, "ggggggggggg");
+    if (response) setdata(response);
+  }
   useEffect(() => {
-    let response = getProductsFromDBByCategory("");
-    setdata(response);
+    console.log(data);
+  }, [data]);
+  async function handleLocs() {
+    let response = await getLocation("");
+    console.log(response);
+    if (response) setlocation(response);
+  }
+  useEffect(() => {
+    hamdleFirstOfData();
   }, []);
   useEffect(() => {
-    let response = getLocation();
-    setlocation(response);
+    handleLocs();
   }, []);
+  async function handleLocChangeFind() {
+    let response = await getGoodsFromDBByLocation(locvalue);
+    console.log(response);
+    if (response) setdata(response);
+  }
   useEffect(() => {
-    let response = getGoodsFromDBByLocation(locvalue);
-    setdata(response);
+    handleLocChangeFind();
   }, [locvalue]);
-  function handleSeacrh(keyword) {
-    let response = getProductsFromDBBySeacrh(keyword);
-    setdata(response);
+  async function handleSeacrh(keyword) {
+    let response = await getProductsFromDBBySeacrh(keyword);
+    console.log(response);
+    if (response) setdata(response);
   }
 
   function handleCategory(category) {
@@ -104,9 +119,11 @@ export default function Explore() {
             </div>
           </div>
           <div className="relative left-16 mt-14 flex flex-row flex-wrap w-[80%] gap-14 ">
-            {goods.map((good, index) => (
-              <GoodDonateCard key={index} goods={good} />
-            ))}
+            {data &&
+              data.length > 0 &&
+              data.map((good, index) => (
+                <GoodDonateCard key={good._id} good={good} />
+              ))}
           </div>
         </div>
         <div className="left   bottom-[89%] fixed  left-[78%] shadow-black shadow-xl ">
@@ -143,7 +160,7 @@ export default function Explore() {
               className="shadow-black shadow-sm shadow-inner relative top-6"
               onChange={(e) => setlocvalue(e.target.value)}
             >
-              <option value=""></option>
+              <option value="Choose location">Choose location</option>
               {location?.length > 0 &&
                 location.map((locs, index) => {
                   return (
@@ -157,9 +174,10 @@ export default function Explore() {
         </div>
       </div>
       <div className="flex gap-1  flex-col flex-wrap h-[450px] w-[200px] fixed left-[78%] bottom-[5px]">
-        {category.map((cate) => {
+        {category.map((cate, index) => {
           return (
             <div
+              key={index}
               onClick={() => handleCategory(cate.cate)}
               className=" shadow-black cursor-pointer shadow-sm flex-col h-[80px] w-[80px] text-white font-bold  bg-slate-400 flex items-center justify-center"
             >

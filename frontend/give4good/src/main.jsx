@@ -35,7 +35,9 @@ const LazySignup = React.lazy(() => import("./pages/signup/Signup.jsx"));
 const LazyCamppaignForm = React.lazy(() =>
   import("./components/CampaignForm.jsx")
 );
-
+const LazyProductPage = React.lazy(() =>
+  import("./components/ProductPage.jsx")
+);
 const router = createBrowserRouter(
   createRoutesFromElements(
     <Route path="/" element={<App />}>
@@ -111,6 +113,15 @@ const router = createBrowserRouter(
         element={
           <Suspense fallback={<div>loading...</div>}>
             <LazyCampaignPage />
+          </Suspense>
+        }
+      />
+
+      <Route
+        path="/product-page"
+        element={
+          <Suspense fallback={<div>loading...</div>}>
+            <LazyProductPage />
           </Suspense>
         }
       />

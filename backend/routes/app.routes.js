@@ -43,6 +43,7 @@ import { appointAdmin } from "../controllers/owner.controller.js";
 import {
   acceptOrRejectGoods,
   donateGoods,
+  fetchProfile,
   listGoods,
   listGoodsBySeacrhAndTags,
   listRequestedGoods,
@@ -140,19 +141,20 @@ router.route("/donate-goods").post(
   ]),
   donateGoods
 );
-router.route("list-goods").post(authenticationMiddleware, listGoods);
+router.route("/fetch-profile").post(authenticationMiddleware, fetchProfile);
+router.route("/list-goods").post(authenticationMiddleware, listGoods);
 router
-  .route("list-goods-seacrh-tags")
+  .route("/list-goods-seacrh-tags")
   .post(authenticationMiddleware, listGoodsBySeacrhAndTags);
-router.route("request-goods").post(authenticationMiddleware, requestGoods);
-router.route("list-requests").post(authenticationMiddleware, listRequests);
+router.route("/request-goods").post(authenticationMiddleware, requestGoods);
+router.route("/list-requests").post(authenticationMiddleware, listRequests);
 router
-  .route("accept-or-reject-request")
+  .route("/accept-or-reject-request")
   .post(authenticationMiddleware, acceptOrRejectGoods);
-router.route("to-ship-the-goods").post(authenticationMiddleware, shipTheGoods);
-router.route("track-order").post(authenticationMiddleware, trackOrder);
+router.route("/to-ship-the-goods").post(authenticationMiddleware, shipTheGoods);
+router.route("/track-order").post(authenticationMiddleware, trackOrder);
 router
-  .route("list-requested-good")
+  .route("/list-requested-good")
   .get(authenticationMiddleware, listRequestedGoods);
 
 //special routes

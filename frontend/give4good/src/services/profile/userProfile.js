@@ -22,7 +22,6 @@ export const userProfile = async () => {
     return false;
   }
 };
-
 export const updateProfile = async (formdata) => {
   try {
     const token = localStorage.getItem("token");
@@ -47,7 +46,6 @@ export const updateProfile = async (formdata) => {
     return { message: "profile updation failed" };
   }
 };
-
 export const updateDoc = async (data) => {
   try {
     const token = localStorage.getItem("token");
@@ -92,5 +90,29 @@ export const updatePciture = async (data) => {
     else return injson;
   } catch (error) {
     return { message: "Picture upload updation failed" };
+  }
+};
+
+export const fetchProfile = async (id) => {
+  try {
+    const token = localStorage.getItem("token");
+    console.log(id);
+    let options = {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({ id: id }),
+    };
+    const response = await fetch(
+      `http://localhost:3000/api/v1/fetch-profile`,
+      options
+    );
+    const injson = await response.json();
+    if (injson.success) return injson.user;
+    else return "not avalable";
+  } catch (error) {
+    return "not avalable";
   }
 };

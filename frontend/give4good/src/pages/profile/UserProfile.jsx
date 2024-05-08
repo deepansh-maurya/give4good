@@ -137,7 +137,7 @@ export default function UserProfile() {
             </div>
 
             <div className=" flex  mt-14 flex-wrap gap-12 justify-center ">
-              {campaignData.map((campaign, index) => (
+              {campaignData?.map((campaign, index) => (
                 <FundRaisingCard
                   key={index}
                   campaign={campaign}

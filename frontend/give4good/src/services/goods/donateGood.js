@@ -33,11 +33,9 @@ export const getProductsFromDBBySeacrh = async (keyword) => {
         Authorization: `Bearer ${token}`,
       },
       body: JSON.stringify({
-        token: token,
         keyword: keyword,
       }),
     };
-    // TODO: handle cookie token
     const response = await fetch(
       `http://localhost:3000/api/v1/list-goods-seacrh-tags`,
       options
@@ -59,11 +57,9 @@ export const getProductsFromDBByCategory = async (category) => {
         Authorization: `Bearer ${token}`,
       },
       body: JSON.stringify({
-        token: token,
         category: category,
       }),
     };
-    // TODO: handle cookie token
     const response = await fetch(
       `http://localhost:3000/api/v1/list-goods`,
       options
@@ -72,10 +68,12 @@ export const getProductsFromDBByCategory = async (category) => {
     console.log(injson);
     if (injson.success) return injson.goods;
     else return false;
-  } catch (error) {}
+  } catch (error) {
+    return false;
+  }
 };
 
-export const getLocation = async () => {
+export const getLocation = async (cate) => {
   try {
     const token = localStorage.getItem("token");
     let options = {
@@ -85,19 +83,18 @@ export const getLocation = async () => {
         Authorization: `Bearer ${token}`,
       },
       body: JSON.stringify({
-        token: token,
-        category: category,
+        category: cate,
       }),
     };
-    // TODO: handle cookie token
     const response = await fetch(
       `http://localhost:3000/api/v1/list-goods`,
       options
     );
     const injson = await response.json();
-    let location;
-    injson.goods.map((data) => location.push(data.city));
     console.log(injson);
+    let location = [];
+    injson.goods.map((data) => location.push(data.city));
+    console.log(location);
     if (injson.success) return location;
     else return false;
   } catch (error) {}
@@ -112,20 +109,17 @@ export const getGoodsFromDBByLocation = async (location) => {
         Authorization: `Bearer ${token}`,
       },
       body: JSON.stringify({
-        token: token,
-        city: location,
+        city: location == "Choose location" ? "" : location,
       }),
     };
-    // TODO: handle cookie token
     const response = await fetch(
       `http://localhost:3000/api/v1/list-goods`,
       options
     );
     const injson = await response.json();
-    let location;
-    injson.goods.map((data) => location.push(data.city));
-    console.log(injson);
-    if (injson.success) return location;
+    if (injson.success) return injson.goods;
     else return false;
-  } catch (error) {}
+  } catch (error) {
+    return false;
+  }
 };

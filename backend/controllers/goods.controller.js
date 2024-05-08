@@ -4,6 +4,7 @@ import { token } from "../constants.js";
 import { UserProfile } from "../models/userProfile.models.js";
 import { Shippedgood } from "../models/shippedGoods.model.js";
 import { upoadFile } from "../utils/cloudinary.js";
+import mongoose from "mongoose";
 
 let expiryOfToken;
 // routes to add goods to donate
@@ -15,6 +16,10 @@ export const donateGoods = async (req, res) => {
       description,
       boughtdate,
       expirydate,
+      brand,
+      tags,
+      weight,
+      dimensions,
       city,
       condition,
       quantity,
@@ -82,6 +87,10 @@ export const donateGoods = async (req, res) => {
       status: "available",
       condition,
       quantity,
+      brand: brand || "",
+      tags: tags || "",
+      weight: weight || "",
+      dimensions: dimensions || "",
       city,
       image,
       video,
@@ -115,7 +124,7 @@ export const donateGoods = async (req, res) => {
   }
 };
 
-export const listGoodsBySeacrhAndTags = async () => {
+export const listGoodsBySeacrhAndTags = async (req, res) => {
   try {
     let keyword = req.body.keyword;
 
@@ -144,7 +153,7 @@ export const listGoodsBySeacrhAndTags = async () => {
       }
     }
     return res.status(200).json({
-      success: false,
+      success: true,
       messagae: "goods  found",
       goods,
     });
@@ -158,8 +167,9 @@ export const listGoodsBySeacrhAndTags = async () => {
 
 export const listGoods = async (req, res) => {
   try {
-    if (req.body.location) {
-      let goods = await Goods.find({ city: req.body.location });
+    console.log(req.body.location, "location");
+    if (req.body.city) {
+      let goods = await Goods.find({ city: req.body.city });
       if (!goods)
         return res
           .status(404)
@@ -167,9 +177,20 @@ export const listGoods = async (req, res) => {
 
       return res
         .status(200)
-        .json({ success: false, message: "goods found", goods });
+        .json({ success: true, message: "goods found", goods });
+    } else if (req.body.city == "") {
+      let goods = await Goods.find({});
+      if (!goods)
+        return res
+          .status(404)
+          .json({ success: false, message: "goods not found" });
+
+      return res
+        .status(200)
+        .json({ success: true, message: "goods found", goods });
     }
     const category = req.body.category;
+    console.log(category);
     let goods;
     if (category != "") {
       goods = await Goods.find({ category: category });
@@ -183,17 +204,32 @@ export const listGoods = async (req, res) => {
       });
     }
     return res.status(200).json({
-      succes: true,
+      success: true,
       message: "goods fetched successfully",
+      goods,
     });
   } catch (error) {
-    res.status(500).json({
-      succes: true,
+    console.log(error);
+    return res.status(500).json({
+      success: true,
       message: " internal error while goods fetching",
     });
   }
 };
 
+export const fetchProfile = async (req, res) => {
+  try {
+    console.log(req.body, "kya");
+    const user = await UserProfile.findById(
+      new mongoose.Types.ObjectId(req.body.id)
+    );
+    if (!user)
+      return res.status(404).json({ success: false, message: "not found" });
+    return res.status(200).json({ success: true, message: "user found", user });
+  } catch (error) {
+    return res.status(404).json({ success: false, message: "not found" });
+  }
+};
 // routes for needy to get the goods
 
 export const requestGoods = async (req, res) => {
@@ -232,7 +268,6 @@ export const requestGoods = async (req, res) => {
     });
   }
 };
-
 export const listRequests = async (req, res) => {
   try {
     const donor = await UserProfile.findById({ _id: req.user.id });
@@ -258,7 +293,6 @@ export const listRequests = async (req, res) => {
     });
   }
 };
-
 export const acceptOrRejectGoods = async (req, res) => {
   try {
     const status = req.body.status;
@@ -313,7 +347,6 @@ export const acceptOrRejectGoods = async (req, res) => {
     });
   }
 };
-
 const generateTokenForShiprocketApis = async () => {
   let data = JSON.stringify({
     email: "deepanshmaurya135@gmail.com",
@@ -338,7 +371,6 @@ const generateTokenForShiprocketApis = async () => {
       console.log(error);
     });
 };
-
 function generateSKU() {
   // Generate a random alphanumeric string
   const characters =
@@ -545,7 +577,6 @@ export const shipTheGoods = async (req, res) => {
     });
   }
 };
-
 export const trackOrder = async (req, res) => {
   try {
     const goodID = req.body.goodID;
@@ -579,8 +610,6 @@ export const trackOrder = async (req, res) => {
       .json({ success: true, message: "tracking successfull", response });
   } catch (error) {}
 };
-// list requested goods
-
 export const listRequestedGoods = async (req, res) => {
   try {
     const user = await UserProfile.findById({ _id: req.user?.id });
@@ -600,4 +629,3 @@ export const listRequestedGoods = async (req, res) => {
     });
   }
 };
-// cancel request for goods

@@ -1,45 +1,69 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
+import { getProfile } from "../services/auth/auth";
+import { fetchProfile } from "../services/profile/userProfile";
+import { useNavigate } from "react-router-dom";
 // TODO: avialability
 // TODO: chance of getting the item
-export const GoodDonateCard = ({ goods }) => {
+
+export const GoodDonateCard = ({ good }) => {
+  const [creator, setCreator] = useState();
+  const nav = useNavigate();
+  async function handleCreatorName() {
+    let response = await fetchProfile(good.donor);
+    setCreator(response?.name || "not available");
+  }
+  useEffect(() => {
+    handleCreatorName();
+  }, []);
+
   return (
-    <div className="bg-white w-[430px] dark:bg-black  shadow-black  mt-3 shadow-lg rounded-lg overflow-hidden">
+    <div className="bg-white w-[430px]  text-white dark:bg-black  shadow-black  mt-3 shadow-lg rounded-lg overflow-hidden">
       <img
-        src={goods.image}
-        alt={goods.title}
+        src={good.image}
+        alt={good.name}
         className="w-full h-40 object-cover"
       />
 
       <div className="p-4">
-        <h2 className="text-xl font-semibold mb-2">{goods.title}</h2>
-        <p className="text-gray-600 dark:text-gray-400 mb-2">
-          Donor {goods.donor}
-        </p>
+        <h2 className="text-xl font-semibold mb-2">{good.name}</h2>
+        <div className="flex justify-between">
+          <p className="text-gray-600 dark:text-gray-400 mb-2">
+            Donor {creator}
+          </p>
+          <p className="text-gray-600 dark:text-gray-400 mb-2">
+            Brand {good.brand}
+          </p>
+        </div>
         <div className="flex justify-between mb-4">
           <div className="text-center">
-            <h3 className="text-lg font-semibold mb-1">Total Raised</h3>
-            <p className="text-gray-700 dark:text-gray-300">
-              {goods.totalamount}
-            </p>
+            <h3 className="text-lg font-semibold mb-1">Quantity </h3>
+            <p className="text-gray-700 dark:text-gray-300">{good.quantity}</p>
           </div>
           <div className="text-center">
-            <h3 className="text-lg font-semibold mb-1">Total Donors</h3>
-            <p className="text-gray-700 dark:text-gray-300">{goods.requests}</p>
+            <h3 className="text-lg font-semibold mb-1">Total Requests</h3>
+            <p className="text-gray-700 dark:text-gray-300">
+              {good.requests || 0}
+            </p>
           </div>
         </div>
         <div className="bg-gray-200 dark:bg-gray-700 h-3 rounded-lg mb-4 overflow-hidden">
           <div
-            className="bg-blue-500 dark:bg-blue-400 h-full"
+            className=" border-2 border-red-500  bg-red-500 h-full"
             style={{
-              width: `${(goods.totalRaised / goods.targetAmount) * 100}%`,
+              width: `${(1 / Number(good?.requests || 1)) * 100}%`,
             }}
           ></div>
         </div>
         <div className="flex justify-between">
-          <button className="bg-blue-500 text-white px-4 py-2 rounded-md mr-2">
+          <button
+            onClick={() => {
+              nav("/product-page");
+            }}
+            className="bg-white text-black font-bold px-4 py-2 rounded-md mr-2 hover:text-white hover:bg-red-500 transition duration-300 ease-in-out"
+          >
             Request Now
           </button>
-          <button className="bg-gray-500 text-white px-4 py-2 rounded-md">
+          <button className="bg-red-500 text-white px-4 py-2 rounded-md hover:text-black hover:bg-white transition duration-300 ease-in-out">
             Share
           </button>
         </div>

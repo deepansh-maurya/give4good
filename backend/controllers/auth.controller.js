@@ -110,12 +110,9 @@ export const registerUser = async (req, res) => {
 
 export const loginUser = async (req, res) => {
   try {
-    console.log(req.body);
     const { username, password, role } = req.body;
-    console.log(username, password, role);
     let user;
     if (role == "donor") {
-      console.log(user);
       user = await UserProfile.findOne({
         username,
       });
@@ -165,6 +162,7 @@ export const loginUser = async (req, res) => {
       token,
     });
   } catch (error) {
+    console.log(error);
     return res.status(500).json({
       success: false,
       message: " logged in failed",

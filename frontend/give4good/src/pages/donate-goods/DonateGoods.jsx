@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { donateGoods } from "../../services/goods/donateGood";
 import { userProfile } from "../../services/profile/userProfile";
 import { Toaster, toast } from "react-hot-toast";
+import { useNavigate } from "react-router-dom";
 const categories = [
   "Select Category",
   "Apparel",
@@ -31,6 +32,7 @@ const conditions = [
   "Not working",
 ];
 const DonateGoods = () => {
+  const nav = useNavigate();
   const [isAllowedDonate, setISAllowedDonate] = useState(false);
   const [formData, setFormData] = useState({
     name: "",
@@ -44,7 +46,10 @@ const DonateGoods = () => {
     video: "",
     brand: "",
     weight: "",
-    dimensions: "",
+    dimensions: {
+      lengthe: "",
+      breadth: "",
+    },
     resaonOfDonation: "",
     category: categories[0],
   });
@@ -103,6 +108,7 @@ const DonateGoods = () => {
             category: categories[0],
           });
         }, 2000);
+        nav("/");
       } else {
         toast.error(`${response.message}`);
         setTimeout(() => {
@@ -182,15 +188,41 @@ const DonateGoods = () => {
               </div>
               <div className="w-full md:w-1/2 px-2 mb-4">
                 <label htmlFor="dimensions" className="block mb-1 flex">
-                  Dimensions
+                  Dimensions (in feet)
                 </label>
                 <input
                   type="text"
                   id="dimensions"
                   name="dimensions"
-                  value={formData.dimensions}
-                  onChange={handleChange}
-                  className="w-full border border-gray-300 rounded px-3 py-2"
+                  placeholder="length"
+                  value={formData.dimensions.lengthe}
+                  onChange={(e) =>
+                    setFormData({
+                      ...formData,
+                      dimensions: {
+                        ...formData.dimensions,
+                        lengthe: e.target.value,
+                      },
+                    })
+                  }
+                  className="w-1/2 border border-gray-300 rounded px-3 py-2"
+                />
+                <input
+                  type="text"
+                  id="dimensions"
+                  name="dimensions"
+                  placeholder="breadth"
+                  value={formData.dimensions.breadth}
+                  onChange={(e) =>
+                    setFormData({
+                      ...formData,
+                      dimensions: {
+                        ...formData.dimensions,
+                        breadth: e.target.value,
+                      },
+                    })
+                  }
+                  className="w-1/2 border border-gray-300 rounded px-3 py-2"
                 />
               </div>
             </div>
