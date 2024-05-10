@@ -94,9 +94,12 @@ const userProfileSchema = new Schema(
             video: {
               type: String,
             },
+            contact: {
+              type: Number,
+            },
             status: {
               type: String,
-              enum: ["accept", "reject"],
+              enum: ["accepted", "rejected"],
             },
           },
         ],
@@ -107,6 +110,10 @@ const userProfileSchema = new Schema(
         id: {
           type: Schema.Types.ObjectId,
           ref: "Goods",
+        },
+        status: {
+          type: String,
+          enum: ["accepted", "rejected"],
         },
         contact: {
           type: String,

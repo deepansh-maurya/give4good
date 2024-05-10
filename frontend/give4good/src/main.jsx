@@ -13,6 +13,8 @@ import KYCform from "./components/KYCform.jsx";
 import UserProfile from "./pages/profile/UserProfile.jsx";
 import { FundRaisingCard } from "./components/FundRaiserCard.jsx";
 import { GoodDonateCard } from "./components/GoodDonateCard.jsx";
+import { MyGoodDonatedCard } from "./components/MyGoodDonatedCard.jsx";
+import { ObtainedGoodCard } from "./components/ObtainedGoodCard.jsx";
 const LazyCamppaign = React.lazy(() =>
   import("./pages/create-campaign/CreateCampaign.jsx")
 );
@@ -37,6 +39,12 @@ const LazyCamppaignForm = React.lazy(() =>
 );
 const LazyProductPage = React.lazy(() =>
   import("./components/ProductPage.jsx")
+);
+const LazyMyProductPage = React.lazy(() =>
+  import("./components/MyProductPage.jsx")
+);
+const LazyObtainedGoodPage = React.lazy(() =>
+  import("./components/ObtainedGoodPage.jsx")
 );
 const router = createBrowserRouter(
   createRoutesFromElements(
@@ -126,6 +134,22 @@ const router = createBrowserRouter(
         }
       />
       <Route
+        path="/my-product-page"
+        element={
+          <Suspense fallback={<div>loading...</div>}>
+            <LazyMyProductPage />
+          </Suspense>
+        }
+      />
+      <Route
+        path="/obtained-goods-page"
+        element={
+          <Suspense fallback={<div>...loading</div>}>
+            <LazyObtainedGoodPage />
+          </Suspense>
+        }
+      />
+      <Route
         path="/my-campaign-page"
         element={
           <Suspense fallback={<div>...loading</div>}>
@@ -158,9 +182,13 @@ const router = createBrowserRouter(
         {/* <Route path="/user-profile/donation-history" /> */}
         <Route
           path="/user-profile/profile/donated-goods"
-          element={<GoodDonateCard />}
+          element={<MyGoodDonatedCard />}
         />
-        {/* <Route path="/user-profile/obtained-goods" /> */}
+        <Route
+          path="/user-profile/profile/obtained-goods"
+          element={<ObtainedGoodCard />}
+        />
+
         <Route path="/user-profile/profile/delete-account" />
       </Route>
     </Route>

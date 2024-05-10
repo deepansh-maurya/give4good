@@ -1,45 +1,22 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
-import { requestForGood } from "../services/goods/donateGood";
+import { getRequestStatus, requestForGood } from "../services/goods/donateGood";
 import { Toaster, toast } from "react-hot-toast";
-function ProductPage() {
+function ObtainedGoodPage() {
   const state = useLocation();
   const [good, setgood] = useState(state.state);
-  const [requestData, setRequestData] = useState({
-    proposel: "",
-    image: "",
-    video: "",
-    contact: "",
-  });
-
-  async function handleRequest() {
-    const formData = new FormData();
-    Object.entries(requestData).forEach(([key, value]) => {
-      formData.append(key, value);
-    });
-    formData.append("donorID", good.donor);
-    formData.append("goodid", good._id);
-    console.log(good._id);
-    let response = await requestForGood(formData);
-    if (response) {
-      toast.success("You request got submited");
-      setRequestData({
-        proposel: "",
-        image: "",
-        video: "",
-        contact: "",
-      });
-    } else {
-      toast.error("Request failed, try again");
-      setRequestData({
-        proposel: "",
-        image: "",
-        video: "",
-        contact: "",
-      });
-    }
+  console.log(good);
+  const [status, setStatus] = useState();
+  async function handleStatus() {
+    let response = await getRequestStatus(good._id);
     console.log(response);
+    console.log(response.status);
+    setStatus(response.status);
   }
+  console.log(status);
+  useEffect(() => {
+    handleStatus();
+  }, []);
   return (
     <div className="flex justify-center w-full bg-gray-900 overflow-hidden">
       <div className="flex justify-center w-[90%] relative top-14 items-start bg-gray-900 text-white min-h-screen">
@@ -223,80 +200,17 @@ function ProductPage() {
 
         {/* Right Side */}
         <div className="w-2/6 p-8 fixed right-14">
-          <div className="mb-4">
-            <button className=" bg-blue-400 w-2/3 font-bold rounded-full relative left-16   text-white px-4 py-2  mr-2">
-              Share
-            </button>
-          </div>
-          <div className="mb-4 relative flex  gap-7    mx-auto">
-            <div>Request For Product</div>
-          </div>
-          <div className="mb-4">
-            <textarea
-              name=""
-              id=""
-              placeholder="Your Proposel"
-              value={requestData.proposel}
-              onChange={(e) =>
-                setRequestData({ ...requestData, proposel: e.target.value })
-              }
-              className="bg-gray-800 focus:bg-white focus:text-black text-white px-4 py-2 rounded w-full"
-              cols={47}
-            ></textarea>
-          </div>
-          <div className="mb-4">
-            <label htmlFor=" ">Upload Image</label>
-            <input
-              type="file"
-              placeholder="Your name"
-              onChange={(e) =>
-                setRequestData({ ...requestData, image: e.target.files[0] })
-              }
-              className="bg-gray-800 focus:bg-white focus:text-black text-white px-4 py-2 rounded w-full"
-            />
-          </div>
-          <div className="mb-4">
-            <label htmlFor="">Upload Video</label>
-            <input
-              type="file"
-              placeholder="Your email"
-              onChange={(e) =>
-                setRequestData({ ...requestData, video: e.target.files[0] })
-              }
-              className="bg-gray-800 focus:bg-white focus:text-black text-white px-4 py-2 rounded w-full"
-            />
-          </div>
-          <div className="mb-4">
-            <input
-              type="text"
-              placeholder="Your Contact"
-              value={requestData.contact}
-              onChange={(e) =>
-                setRequestData({ ...requestData, contact: e.target.value })
-              }
-              className="bg-gray-800 focus:bg-white focus:text-black text-white px-4 py-2 rounded w-full"
-            />
-          </div>
-
-          <div className="mb-4">
-            <button
-              onClick={handleRequest}
-              className="bg-red-500 font-bold hover:bg-green-500 text-white px-4 py-2 rounded w-full"
-            >
-              Request Now
-            </button>
-            <div className=" underline text-blue-600">reset</div>
-          </div>
-          <div className="mb-4">
-            {/* <button className="bg-gray-700 text-white px-4 py-2 rounded w-full">
-            Refund
-          </button> */}
-          </div>
-          <div>
-            {/* <button className="bg-gray-700 text-white px-4 py-2 rounded w-full">
-            Request
-          </button> */}
-          </div>
+          <h1>Status Of Your Request</h1>
+          {status == "accepted" ? (
+            <div>
+              <div>Request Accpted 😁</div>
+              <button>Ship the product </button>
+            </div>
+          ) : status == "rejected" ? (
+            <div>Request Rejected 😑</div>
+          ) : (
+            <div>Pending....... 😥</div>
+          )}
         </div>
       </div>
       <Toaster></Toaster>
@@ -304,4 +218,4 @@ function ProductPage() {
   );
 }
 
-export default ProductPage;
+export default ObtainedGoodPage;

@@ -5,6 +5,7 @@ import { UserProfile } from "../models/userProfile.models.js";
 import { Shippedgood } from "../models/shippedGoods.model.js";
 import { upoadFile } from "../utils/cloudinary.js";
 import mongoose from "mongoose";
+import { request } from "express";
 
 let expiryOfToken;
 // routes to add goods to donate
@@ -99,7 +100,7 @@ export const donateGoods = async (req, res) => {
     });
 
     const user = await UserProfile.findById(req.user.id);
-    let donatedGood = user.donatedGood;
+    let donatedGood = user.donatedGood || [];
     donatedGood.push(goods._id);
     await UserProfile.findByIdAndUpdate(req.user.id, {
       donatedGood: donatedGood,
@@ -234,34 +235,74 @@ export const fetchProfile = async (req, res) => {
 
 export const requestGoods = async (req, res) => {
   try {
-    const donor = await UserProfile.findById({ _id: req.body.donorID });
-    const good = donor.donatedGood.map((data) => {
-      if (data.id == req.body.goodid) {
-        data.requests.push({
-          id: req.body.requesterid,
-          proposel: req.body.proposel,
-          image: req.body.image,
-          video: req.body.video,
-        });
-      }
+    console.log(new mongoose.Types.ObjectId(req.body.donorID));
+    const donor = await UserProfile.findById(
+      new mongoose.Types.ObjectId(req.body.donorID)
+    );
+    console.log(req.files);
+    let imagePath;
+    let videoPAth;
+    if (
+      req.files &&
+      Array.isArray(req.files.image) &&
+      req.files.image.length > 0
+    ) {
+      imagePath = req.files.image[0].path;
+      imagePath = await upoadFile(imagePath);
+    } else {
+      return res
+        .status(400)
+        .json({ success: false, message: "atleast relevent photo required " });
+    }
+    if (
+      req.files &&
+      Array.isArray(req.files.video) &&
+      req.files.video.length > 0
+    ) {
+      videoPAth = req.files.video[0].path;
+      videoPAth = await upoadFile(videoPAth);
+    }
+    let good = donor.donatedGood;
+    let requests = good.filter((data) => {
+      if (data._id == req.body.goodid) return data;
     });
-
+    requests[0].requests.push({
+      id: req.user._id,
+      proposel: req.body.proposel,
+      image: imagePath,
+      video: videoPAth,
+      contact: req.body.contact,
+    });
     const updatedDonor = await UserProfile.findByIdAndUpdate(
       { _id: req.body.donorID },
       { donatedGood: good },
       { new: true }
     );
-    if (!updatedDonor) {
+
+    const requester = await UserProfile.findById(req.user._id);
+    const requestedGood = requester.requestedgood;
+    requestedGood.push({ id: new mongoose.Types.ObjectId(req.body.goodid) });
+
+    const updatedRequester = await UserProfile.findByIdAndUpdate(
+      req.user._id,
+      {
+        requestedgood: requestedGood,
+      },
+      { new: true }
+    );
+
+    if (!updatedDonor || !updatedRequester) {
       return res.status(400).json({
         success: false,
         message: "request failed try again",
       });
     }
     return res.status(200).json({
-      success: false,
+      success: true,
       message: "request submitted",
     });
   } catch (error) {
+    console.log(error);
     return res.status(500).json({
       success: false,
       message: " internal error while requesting",
@@ -296,21 +337,52 @@ export const listRequests = async (req, res) => {
 export const acceptOrRejectGoods = async (req, res) => {
   try {
     const status = req.body.status;
-    const donor = await UserProfile.findById({ _id: req.user.id });
-    const donatedGood = donor.donatedGood.map((data) => {
-      if (data.id == req.body.goodID) {
-        data.requests.map((requestData) => {
-          if (requestData.id == req.body.requestID) {
-            requestData.status = status;
+    const donor = await UserProfile.findById(req.body.donor);
+    const donatedGood = donor.donatedGood;
+    donatedGood.filter((data) => {
+      if (data._id == req.body.goodid) {
+        data.requests.filter((data) => {
+          if (data.id == req.body.requestid) {
+            data.status = status;
+          }
+        });
+      }
+    });
+    donatedGood.filter((data) => {
+      if (data._id == req.body.goodid) {
+        data.requests.filter((data) => {
+          if (data.id == req.body.requestid) {
+            console.log(data);
           }
         });
       }
     });
     const updatedDonor = await UserProfile.findByIdAndUpdate(
       {
-        _id: req.user.id,
+        _id: req.body.donor,
       },
       { donatedGood: donatedGood },
+      { new: true }
+    );
+
+    const requester = await UserProfile.findById(req.body.requestid);
+    const requestedGood = requester.requestedgood;
+    requestedGood.filter((data) => {
+      if (data.id.toString() == req.body.goodid.toString()) {
+        data.status = status;
+        data.contact = donor?.contact || "7845787843";
+      }
+    });
+    requestedGood.filter((data) => {
+      if (data.id.toString() == req.body.goodid.toString()) {
+        console.log(data);
+      }
+    });
+    const updatedRequester = await UserProfile.findByIdAndUpdate(
+      req.body.requestid,
+      {
+        requestedgood: requestedGood,
+      },
       { new: true }
     );
 
@@ -320,16 +392,6 @@ export const acceptOrRejectGoods = async (req, res) => {
         message: "failed to accept or reject",
       });
     }
-    const requester = await UserProfile.findById({ _id: req.body.requestID });
-    const requestedgood = requester.requestedgood.map(
-      (data) => (data.contact = donor.contact)
-    );
-    const updatedRequester = await UserProfile.findByIdAndUpdate(
-      {
-        _id: req.body.requestID,
-      },
-      { requestedgood: requestedgood }
-    );
 
     if (!updatedRequester) {
       return res
@@ -337,7 +399,7 @@ export const acceptOrRejectGoods = async (req, res) => {
         .json({ success: false, message: "failed to accept or reject " });
     }
     return res.status(200).json({
-      success: false,
+      success: true,
       message: " decision taken successfully ",
     });
   } catch (error) {
@@ -627,5 +689,48 @@ export const listRequestedGoods = async (req, res) => {
       success: false,
       message: "internal error while searching for the goods",
     });
+  }
+};
+
+export const getRequesters = async (req, res) => {
+  try {
+    const id = new mongoose.Types.ObjectId(req.body.id);
+    const user = await UserProfile.findById(id);
+    const dondationData = user.donatedGood;
+    console.log(dondationData);
+    const requestes = dondationData.filter(
+      (data) => data._id == req.body.goodid
+    );
+
+    if (requestes.length == 0)
+      return res.status(404).json({ success: false, message: "not found" });
+    return res
+      .status(404)
+      .json({ success: true, message: "not found", requestes });
+  } catch (error) {
+    return res
+      .status(500)
+      .json({ success: false, message: "error while fetching data " });
+  }
+};
+
+export const getRequestedStatus = async (req, res) => {
+  try {
+    let id = req.body.id;
+    let user = await UserProfile.findById(req.user._id);
+    let requestedGoodData = user.requestedgood;
+    console.log(requestedGoodData);
+    let status;
+    requestedGoodData.map((data) => {
+      if (data.id == id) {
+        status = data.status;
+      }
+    });
+    if (!status)
+      return res.status(404).json({ successs: false, message: "not found" });
+    return res.status(200).json({ successs: true, message: " found", status });
+  } catch (error) {
+    console.log(error);
+    return res.status(404).json({ successs: false, message: "internal error" });
   }
 };

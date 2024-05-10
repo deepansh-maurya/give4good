@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { fetchProfile } from "../services/profile/userProfile";
 import { useNavigate } from "react-router-dom";
-export const GoodDonateCard = ({ good }) => {
+export const ObtainedGoodCard = ({ good }) => {
   const [creator, setCreator] = useState();
   const nav = useNavigate();
   async function handleCreatorName() {
@@ -53,7 +53,7 @@ export const GoodDonateCard = ({ good }) => {
         <div className="flex justify-between">
           <button
             onClick={() => {
-              nav("/product-page", { state: good });
+              nav("/obtained-goods-page", { state: good });
             }}
             className="bg-white text-black font-bold px-4 py-2 rounded-md mr-2 hover:text-white hover:bg-red-500 transition duration-300 ease-in-out"
           >

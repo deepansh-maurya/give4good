@@ -23,10 +23,9 @@ import {
 } from "../../services/goods/donateGood";
 import { GoodDonateCard } from "../../components/GoodDonateCard";
 export default function Explore() {
-  let goods = [1, 3, 4, 56, 4];
   const [location, setlocation] = useState([]);
   const [search, setsearch] = useState();
-  let [data, setdata] = useState([]);
+  const [data, setdata] = useState();
   const [locvalue, setlocvalue] = useState();
   let icons = [
     <GiClothes />,
@@ -62,8 +61,8 @@ export default function Explore() {
     { cate: "Other", icons: icons[14] },
   ];
   async function hamdleFirstOfData() {
-    let response = await getProductsFromDBByCategory("");
-    console.log(response, "ggggggggggg");
+    let response = await getProductsFromDBBySeacrh("");
+    console.log(response);
     if (response) setdata(response);
   }
   useEffect(() => {

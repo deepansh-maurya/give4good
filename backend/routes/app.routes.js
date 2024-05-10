@@ -44,6 +44,8 @@ import {
   acceptOrRejectGoods,
   donateGoods,
   fetchProfile,
+  getRequestedStatus,
+  getRequesters,
   listGoods,
   listGoodsBySeacrhAndTags,
   listRequestedGoods,
@@ -55,8 +57,8 @@ import {
 import { upload } from "../middlwares/multer.middleware.js";
 const router = Router();
 // auth routes
-router.route("/register").post(registerUser); //
-router.route("/login").post(loginUser); //
+router.route("/register").post(registerUser);
+router.route("/login").post(loginUser);
 router.route("/change-password").put(authenticationMiddleware, changePassword);
 router
   .route("/get-verification-code")
@@ -146,7 +148,14 @@ router.route("/list-goods").post(authenticationMiddleware, listGoods);
 router
   .route("/list-goods-seacrh-tags")
   .post(authenticationMiddleware, listGoodsBySeacrhAndTags);
-router.route("/request-goods").post(authenticationMiddleware, requestGoods);
+router.route("/request-goods").post(
+  authenticationMiddleware,
+  upload.fields([
+    { name: "image", maxCount: 1 },
+    { name: "video", maxCount: 1 },
+  ]),
+  requestGoods
+);
 router.route("/list-requests").post(authenticationMiddleware, listRequests);
 router
   .route("/accept-or-reject-request")
@@ -154,9 +163,12 @@ router
 router.route("/to-ship-the-goods").post(authenticationMiddleware, shipTheGoods);
 router.route("/track-order").post(authenticationMiddleware, trackOrder);
 router
+  .route("/get-requestd-status")
+  .post(authenticationMiddleware, getRequestedStatus);
+router
   .route("/list-requested-good")
   .get(authenticationMiddleware, listRequestedGoods);
-
+router.route("/get-requesters").post(authenticationMiddleware, getRequesters);
 //special routes
 router.route("/get-profile").post(authenticationMiddleware, getProfile);
 export default router;

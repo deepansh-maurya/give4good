@@ -12,6 +12,7 @@ import { upoadFile } from "../utils/cloudinary.js";
 import { upload } from "../middlwares/multer.middleware.js";
 import { Beneficiery } from "../models/beneficiary.model.js";
 import mongoose from "mongoose";
+import { Goods } from "../models/goods.models.js";
 dotenv.config({ path: "./env" });
 // report
 export const checkauthstatus = async (req, res) => {
@@ -107,7 +108,6 @@ export const registerUser = async (req, res) => {
     });
   }
 };
-
 export const loginUser = async (req, res) => {
   try {
     const { username, password, role } = req.body;
@@ -169,7 +169,6 @@ export const loginUser = async (req, res) => {
     });
   }
 };
-
 export const changePassword = async (req, res) => {
   try {
     const { oldPassword, newPassword } = req.body;
@@ -267,7 +266,6 @@ export const updateProfile = async (req, res) => {
       .json({ success: false, message: "profile updation failed" });
   }
 };
-
 export const updateDocument = async (req, res) => {
   try {
     const documentPath = req.file?.path;
@@ -329,10 +327,23 @@ export const userProfile = async (req, res) => {
     const user = await UserProfile.findById(req.user._id).select(
       "-hashpassword"
     );
-
     const cid = user.campaigns;
+    const donateID = user.donatedGood;
+    console.log(donateID);
+    const donatePromise = donateID.map((data) =>
+      Goods.findById(new mongoose.Types.ObjectId(data._id))
+    );
     const campaignPromises = cid.map((id) => Campaign.findById(id));
     let campaign;
+    let donateData;
+    await Promise.all(donatePromise)
+      .then((donate) => {
+        console.log(donate);
+        donateData = donate;
+      })
+      .catch((error) => {
+        console.log("error fetching fail");
+      });
     await Promise.all(campaignPromises)
       .then((campaigns) => {
         campaign = campaigns;
@@ -340,15 +351,32 @@ export const userProfile = async (req, res) => {
       .catch((error) => {
         console.error("Error fetching campaigns:", error);
       });
-    console.log(campaign);
-    if (!user || !campaign) {
+
+    const requestGood = user.requestedgood;
+    let obtaineddata;
+    const obtainedPromise = requestGood.map((data) =>
+      Goods.findById(new mongoose.Types.ObjectId(data.id))
+    );
+
+    await Promise.all(obtainedPromise)
+      .then((data) => {
+        obtaineddata = data;
+      })
+      .catch((error) => console.log(error));
+
+    if (!user || !campaign || !donateData || !obtaineddata) {
       return res
         .status(404)
         .json({ success: false, message: "User not found" });
     }
-    return res
-      .status(200)
-      .json({ success: true, message: "user found", user, campaign });
+    return res.status(200).json({
+      success: true,
+      message: "user found",
+      user,
+      campaign,
+      donateData,
+      obtaineddata,
+    });
   } catch (error) {
     return res
       .status(500)

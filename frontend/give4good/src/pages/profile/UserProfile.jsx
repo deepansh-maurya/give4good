@@ -7,11 +7,15 @@ import { useNavigate } from "react-router-dom";
 import { FundRaisingCard } from "../../components/FundRaiserCard";
 import { GoodDonateCard } from "../../components/GoodDonateCard";
 import { checkCampaginStatus } from "../../services/campaign/campaign";
+import { MyGoodDonatedCard } from "../../components/MyGoodDonatedCard";
+import { ObtainedGoodCard } from "../../components/ObtainedGoodCard";
 export default function UserProfile() {
   const [profileData, setPRofileData] = useState();
   const [message, serMessage] = useState(false);
   const [activeCampaigns, setActiveCampaigns] = useState();
   const [campaignData, setCampaignDAta] = useState(false);
+  const [donateData, setDonateaData] = useState(false);
+  const [obtainedGoodData, setObtaiendGoodData] = useState(false);
   const [triggerChangeCrd, setTriggerChanegeCred] = useState(false);
   const [currentPage, setCurrentPAge] = useState("profile");
   const nav = useNavigate();
@@ -19,12 +23,13 @@ export default function UserProfile() {
     const data = await userProfile();
     console.log(data);
     if (data.success) {
+      setDonateaData(data.donateData);
       setPRofileData(data.user);
       setCampaignDAta(data.campaign);
+      setObtaiendGoodData(data.obtaineddata);
     } else {
     }
   };
-
   useEffect(() => {
     getPRofileDAta();
   }, []);
@@ -74,7 +79,15 @@ export default function UserProfile() {
           >
             ◦ Donated Goods
           </div>
-          <div className="cursor-pointer">◦ Obtained Goods</div>
+          <div
+            onClick={() => {
+              nav("/user-profile/profile/obtained-goods");
+              setCurrentPAge("obtainedgood");
+            }}
+            className="cursor-pointer"
+          >
+            ◦ Obtained Goods
+          </div>
           <div
             onClick={() => {
               nav("/user-profile/profile/delete-account");
@@ -157,15 +170,30 @@ export default function UserProfile() {
               </h1>
             </div>
             <div className=" flex  mt-14 flex-wrap gap-12 justify-center ">
-              {campaigns.map((campaign, index) => (
-                <GoodDonateCard key={index} goods={campaign} />
+              {donateData.map((donateData) => (
+                <MyGoodDonatedCard key={donateData.name} good={donateData} />
               ))}
             </div>
           </div>
         ) : (
           <div></div>
         )}
-        {}
+        {currentPage == "obtainedgood" ? (
+          <div className="w-4/5">
+            <div className="bg-white z-10 fixed  w-4/5 h-12 shadow-black shadow-md">
+              <h1 className="text-3xl font-bold shadow-sm fixed  bg-white right-[410px]">
+                Requested Goods
+              </h1>
+            </div>
+            <div className=" flex  mt-14 flex-wrap gap-12 justify-center ">
+              {obtainedGoodData.map((obtaineData) => (
+                <ObtainedGoodCard key={obtaineData.name} good={obtaineData} />
+              ))}
+            </div>
+          </div>
+        ) : (
+          <div></div>
+        )}
         {}
         {currentPage == "deleteaccount" ? (
           <div className="flex w-[88%] justify-center items-center -z-0 bg-slate-400 relative left-[133px] shadow-lg shadow-black  h-[580px] ">
@@ -197,7 +225,6 @@ export default function UserProfile() {
           </div>
         ) : null}
       </div>
-      // for my profile thing
       {triggerChangeCrd == true ? (
         <ChangeCred
           setTriggerChanegeCred={setTriggerChanegeCred}

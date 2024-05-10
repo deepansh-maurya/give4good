@@ -3,7 +3,7 @@ import React, { useState } from "react";
 import { FaTimes } from "react-icons/fa";
 import { MdClose } from "react-icons/md";
 import { FaCheck } from "react-icons/fa";
-import { ToastContainer, toast } from "react-toastify";
+import { Toaster, toast } from "react-hot-toast";
 import {
   updateDoc,
   updatePciture,
@@ -39,29 +39,9 @@ export default function ChangeCred({
       const response = await updateDoc(docINform);
       //TODO:
       if (response.success) {
-        toast.success(`Document Updated successfully`, {
-          position: "bottom-center",
-          autoClose: 5000,
-          hideProgressBar: false,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
-          progress: undefined,
-          theme: "dark",
-          transition: "Bounce",
-        });
+        toast.success(`Document Updated successfully`);
       } else {
-        toast.error(`Document Updation failed`, {
-          position: "bottom-center",
-          autoClose: 5000,
-          hideProgressBar: false,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
-          progress: undefined,
-          theme: "dark",
-          transition: "Bounce",
-        });
+        toast.error(`Document Updation failed`);
       }
     }
     if (profilePicture != "") {
@@ -69,65 +49,25 @@ export default function ChangeCred({
       pictureInForm.append("profilePicture", profilePicture);
       const response = await updatePciture(pictureInForm);
       if (response.success) {
-        toast.success(`Picture Updated successfully`, {
-          position: "bottom-center",
-          autoClose: 5000,
-          hideProgressBar: false,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
-          progress: undefined,
-          theme: "dark",
-          transition: Bounce,
-        });
+        toast.success(`Picture Updated successfully`);
       } else {
-        toast.error(`Picture Updation failed`, {
-          position: "bottom-center",
-          autoClose: 5000,
-          hideProgressBar: false,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
-          progress: undefined,
-          theme: "dark",
-          transition: Bounce,
-        });
+        toast.error(`Picture Updation failed`);
       }
-    }
-    if (JSON.stringify(updateCred) !== JSON.stringify(profileData)) {
-      const response = await updateProfile(updateCred);
-      console.log(response);
-      if (response.success) {
-        setPRofileData(response.updateduser);
-        toast.success(`${response.message.toUpperCase()}`, {
-          position: "bottom-center",
-          autoClose: 5000,
-          hideProgressBar: false,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
-          progress: undefined,
-          theme: "dark",
-          transition: "Bounce",
-        });
-        setTimeout(() => {
-          setTriggerChanegeCred(false);
-        }, 1000);
-      } else {
-        toast.info(`${response.message.toUpperCase()}`, {
-          position: "bottom-center",
-          autoClose: 5000,
-          hideProgressBar: false,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
-          progress: undefined,
-          theme: "dark",
-          transition: "Bounce",
-        });
-        setTimeout(() => {
-          setTriggerChanegeCred(false);
-        }, 1000);
+      if (JSON.stringify(updateCred) !== JSON.stringify(profileData)) {
+        const response = await updateProfile(updateCred);
+        console.log(response);
+        if (response.success) {
+          setPRofileData(response.updateduser);
+          toast.success(`${response.message.toUpperCase()}`);
+          setTimeout(() => {
+            setTriggerChanegeCred(false);
+          }, 1000);
+        } else {
+          toast.error(`${response.message.toUpperCase()}`);
+          setTimeout(() => {
+            setTriggerChanegeCred(false);
+          }, 1000);
+        }
       }
     }
   }
@@ -329,7 +269,7 @@ export default function ChangeCred({
         />
       ) : null}
 
-      <ToastContainer />
+      <Toaster />
     </>
   );
 }
