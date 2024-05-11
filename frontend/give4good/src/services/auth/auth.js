@@ -1,12 +1,8 @@
-import { CgPathCrop } from "react-icons/cg";
-
-const baseURL = import.meta.env.REACT_API_BASE_URL;
-// TODO: not receiving the base url
 export const loginFunc = async ({ username, password, role }) => {
   // TODO: check usehistory
   try {
     console.log(username, password, role);
-    let response = await fetch(`http://localhost:3000/api/v1/login`, {
+    let response = await fetch(`${import.meta.env.VITE_URL}/login`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -29,7 +25,7 @@ export const loginFunc = async ({ username, password, role }) => {
 };
 export const sinupFunc = async ({ name, email, password }) => {
   try {
-    let response = await fetch(`http://localhost:3000/api/v1/register`, {
+    let response = await fetch(`${import.meta.env.VITE_URL}/register`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -51,7 +47,7 @@ export const checkAuthStatus = async () => {
     const token = localStorage.getItem("token");
 
     let response = await fetch(
-      `http://localhost:3000/api/v1/check-auth-status`,
+      `${import.meta.env.VITE_URL}/check-auth-status`,
       {
         method: "GET",
         headers: {
@@ -69,7 +65,7 @@ export const checkAuthStatus = async () => {
 export const changePassword = async () => {
   try {
     const token = localStorage.getItem("token");
-    let response = await fetch(`http://localhost:3000/api/v1/change-password`, {
+    let response = await fetch(`${import.meta.env.VITE_URL}/change-password`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -86,7 +82,7 @@ export const getCode = async () => {
   try {
     const token = localStorage.getItem("token");
     let response = await fetch(
-      `http://localhost:3000/api/v1/get-verification-code`,
+      `${import.meta.env.VITE_URL}/get-verification-code`,
       {
         method: "GET",
         headers: {
@@ -103,7 +99,7 @@ export const getCode = async () => {
 export const getProfile = async (id, user, benefciery) => {
   try {
     const token = localStorage.getItem("token");
-    let response = await fetch(`http://localhost:3000/api/v1/get-profile`, {
+    let response = await fetch(`${import.meta.env.VITE_URL}/get-profile`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -127,7 +123,7 @@ export const getProfile = async (id, user, benefciery) => {
 export const deleteAccount = async () => {
   try {
     const token = localStorage.getItem("token");
-    let response = await fetch(`http://localhost:3000/api/v1/delete-account`, {
+    let response = await fetch(`${import.meta.env.VITE_URL}/delete-account`, {
       method: "DELETE",
       headers: {
         "Content-Type": "application/json",

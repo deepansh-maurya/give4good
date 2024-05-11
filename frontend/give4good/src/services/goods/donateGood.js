@@ -1,7 +1,3 @@
-import { CgPathCrop } from "react-icons/cg";
-
-const baseURL = import.meta.env.REACT_API_BASE_URL;
-
 export const donateGoods = async (donateData) => {
   try {
     const token = localStorage.getItem("token");
@@ -15,7 +11,7 @@ export const donateGoods = async (donateData) => {
       body: donateData,
     };
     const response = await fetch(
-      `http://localhost:3000/api/v1/donate-goods`,
+      `${import.meta.env.VITE_URL}/donate-goods`,
       options
     );
     const injson = await response.json();
@@ -39,7 +35,7 @@ export const getProductsFromDBBySeacrh = async (keyword) => {
       }),
     };
     const response = await fetch(
-      `http://localhost:3000/api/v1/list-goods-seacrh-tags`,
+      `${import.meta.env.VITE_URL}/list-goods-seacrh-tags`,
       options
     );
     const injson = await response.json();
@@ -63,7 +59,7 @@ export const getProductsFromDBByCategory = async (category) => {
       }),
     };
     const response = await fetch(
-      `http://localhost:3000/api/v1/list-goods`,
+      `${import.meta.env.VITE_URL}/list-goods`,
       options
     );
     const injson = await response.json();
@@ -89,7 +85,7 @@ export const getLocation = async (cate) => {
       }),
     };
     const response = await fetch(
-      `http://localhost:3000/api/v1/list-goods`,
+      `${import.meta.env.VITE_URL}/list-goods`,
       options
     );
     const injson = await response.json();
@@ -115,7 +111,7 @@ export const getGoodsFromDBByLocation = async (location) => {
       }),
     };
     const response = await fetch(
-      `http://localhost:3000/api/v1/list-goods`,
+      `${import.meta.env.VITE_URL}/list-goods`,
       options
     );
     const injson = await response.json();
@@ -137,7 +133,7 @@ export const requestForGood = async (formdata) => {
       body: formdata,
     };
     const response = await fetch(
-      `http://localhost:3000/api/v1/request-goods`,
+      `${import.meta.env.VITE_URL}/request-goods`,
       options
     );
     const injson = await response.json();
@@ -161,7 +157,7 @@ export const getRequesters = async (id, goodid) => {
       body: JSON.stringify({ id, goodid }),
     };
     const response = await fetch(
-      `http://localhost:3000/api/v1/get-requesters`,
+      `${import.meta.env.VITE_URL}/get-requesters`,
       options
     );
     const injson = await response.json();
@@ -185,7 +181,7 @@ export const setStatus = async (status, donor, goodid, requestid) => {
       body: JSON.stringify({ status, donor, goodid, requestid }),
     };
     const response = await fetch(
-      `http://localhost:3000/api/v1/accept-or-reject-request`,
+      `${import.meta.env.VITE_URL}/accept-or-reject-request`,
       options
     );
     const injson = await response.json();
@@ -209,7 +205,7 @@ export const getRequestStatus = async (id) => {
       body: JSON.stringify({ id }),
     };
     const response = await fetch(
-      `http://localhost:3000/api/v1/get-requestd-status`,
+      `${import.meta.env.VITE_URL}/get-requestd-status`,
       options
     );
     const injson = await response.json();

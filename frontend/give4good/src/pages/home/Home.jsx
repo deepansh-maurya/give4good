@@ -6,6 +6,7 @@ import { FaBookReader } from "react-icons/fa";
 import { ImWoman } from "react-icons/im";
 import { LuAlertCircle } from "react-icons/lu";
 const Home = () => {
+  console.log(import.meta.env.VITE_URL);
   return (
     <>
       <div className="relative min-h-screen bg-black text-white">

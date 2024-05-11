@@ -1,5 +1,3 @@
-const baseURL = import.meta.env.REACT_API_BASE_URL;
-
 export const userProfile = async () => {
   try {
     const token = localStorage.getItem("token");
@@ -11,7 +9,7 @@ export const userProfile = async () => {
       },
     };
     const response = await fetch(
-      `http://localhost:3000/api/v1/user-profile`,
+      `${import.meta.env.VITE_URL}/user-profile`,
       options
     );
     const injson = await response.json();
@@ -35,7 +33,7 @@ export const updateProfile = async (formdata) => {
       body: JSON.stringify(formdata),
     };
     const response = await fetch(
-      `http://localhost:3000/api/v1/update-profile`,
+      `${import.meta.env.VITE_URL}/update-profile`,
       options
     );
     const injson = await response.json();
@@ -58,7 +56,7 @@ export const updateDoc = async (data) => {
       body: data,
     };
     const response = await fetch(
-      `http://localhost:3000/api/v1/update-document`,
+      `${import.meta.env.VITE_URL}/update-document`,
       options
     );
     const injson = await response.json();
@@ -81,7 +79,7 @@ export const updatePciture = async (data) => {
       body: data,
     };
     const response = await fetch(
-      `http://localhost:3000/api/v1/update-profile-picture`,
+      `${import.meta.env.VITE_URL}/update-profile-picture`,
       options
     );
     const injson = await response.json();
@@ -106,7 +104,7 @@ export const fetchProfile = async (id) => {
       body: JSON.stringify({ id: id }),
     };
     const response = await fetch(
-      `http://localhost:3000/api/v1/fetch-profile`,
+      `${import.meta.env.VITE_URL}/fetch-profile`,
       options
     );
     const injson = await response.json();

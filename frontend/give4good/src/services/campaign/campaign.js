@@ -1,5 +1,3 @@
-const baseURL = import.meta.env.REACT_API_BASE_URL;
-
 export const kycVerification = async (formdata) => {
   try {
     const token = localStorage.getItem("token");
@@ -11,7 +9,7 @@ export const kycVerification = async (formdata) => {
       body: formdata,
     };
     const response = await fetch(
-      `http://localhost:3000/api/v1/kyc-verification`,
+      `${import.meta.env.VITE_URL}/kyc-verification`,
       options
     );
     const inJson = await response.json();
@@ -32,9 +30,7 @@ export const createCapaign = async (formdata, id = "") => {
       body: formdata,
     };
     const response = await fetch(
-      `http://localhost:3000/api/v1/campaign-creation/${
-        id != "" ? id : "null"
-      }`,
+      `${import.meta.env.VITE_URL}/campaign-creation/${id != "" ? id : "null"}`,
       options
     );
     const injson = await response.json();
@@ -60,7 +56,7 @@ export const getLocation = async () => {
       }),
     };
     const response = await fetch(
-      `http://localhost:3000/api/v1/get-campaign-by-tag-search`,
+      `${import.meta.env.VITE_URL}/get-campaign-by-tag-search`,
       options
     );
     const injson = await response.json();
@@ -92,7 +88,7 @@ export const getCampaignsFromDbbyCategory = async (category) => {
       }),
     };
     const response = await fetch(
-      `http://localhost:3000/api/v1/get-campaignbycategory`,
+      `${import.meta.env.VITE_URL}/get-campaignbycategory`,
       options
     );
     const injson = await response.json();
@@ -119,7 +115,7 @@ export const getCampaignFromDBBySearch = async (keyword) => {
       }),
     };
     const response = await fetch(
-      `http://localhost:3000/api/v1/get-campaign-by-tag-search`,
+      `${import.meta.env.VITE_URL}/get-campaign-by-tag-search`,
       options
     );
     const injson = await response.json();
@@ -145,7 +141,7 @@ export const getCampaignFromDBByLocation = async (location) => {
       }),
     };
     const response = await fetch(
-      `http://localhost:3000/api/v1/get-campaign-by-tag-search`,
+      `${import.meta.env.VITE_URL}/get-campaign-by-tag-search`,
       options
     );
     const injson = await response.json();
@@ -172,7 +168,7 @@ export const getCampaignFromDBByTypes = async (type) => {
       },
     };
     const response = await fetch(
-      `http://localhost:3000/api/v1/get-campaign-tag-search`,
+      `${import.meta.env.VITE_URL}/get-campaign-tag-search`,
       options
     );
     const injson = await response.json();
@@ -197,7 +193,7 @@ export const checkForDonation = async (id) => {
       }),
     };
     const response = await fetch(
-      `http://localhost:3000/api/v1/is-donated`,
+      `${import.meta.env.VITE_URL}/is-donated`,
       options
     );
     const injson = await response.json();
@@ -222,7 +218,7 @@ export const campaignInsights = async (id) => {
       }),
     };
     const response = await fetch(
-      `http://localhost:3000/api/v1/campaign-donation-insights`,
+      `${import.meta.env.VITE_URL}/campaign-donation-insights`,
       options
     );
     const injson = await response.json();
@@ -244,7 +240,7 @@ export const checkCampaginStatus = async () => {
       },
     };
     const response = await fetch(
-      `http://localhost:3000/api/v1/is-campaign-active`,
+      `${import.meta.env.VITE_URL}/is-campaign-active`,
       options
     );
     const injson = await response.json();
