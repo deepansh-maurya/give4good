@@ -9,7 +9,7 @@ function App() {
     <div>
       <AuthContextProvider>
         <Navbar></Navbar>
-        <Home></Home>
+        {/* <Home></Home> */}
         <div>
           <Outlet />
         </div>
