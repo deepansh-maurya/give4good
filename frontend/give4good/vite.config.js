@@ -4,7 +4,9 @@ import react from "@vitejs/plugin-react";
 // https://vitejs.dev/config/
 export default defineConfig({
   plugins: [react()],
-  // define: {
-  //   "process.env.VITE_URL": JSON.stringify(process.env.REACT_API_BASE_URL),
-  // },
+  build: {
+    rollupOptions: {
+      external: [], // Add any external dependencies here
+    },
+  },
 });
