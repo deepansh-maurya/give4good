@@ -1,8 +1,9 @@
 {
   "routes": [
-    {
-      "src": "/[^.]+",
-      "dest": "/"
-    }
+    { "src": "/", "dest": "/" },
+    { "src": "/create-campaign", "dest": "/" },
+    { "src": "/create-campaign/kyc-verification", "dest": "/" },
+    { "src": "/login", "dest": "/" },
+    { "src": "/signup", "dest": "/" }
   ]
 }
