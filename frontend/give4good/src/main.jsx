@@ -1,4 +1,4 @@
-import React, { Suspense, lazy } from "react";
+import React, { Suspense } from "react";
 import ReactDOM from "react-dom/client";
 import "./index.css";
 import App from "./App.jsx";
@@ -12,9 +12,9 @@ import Home from "./pages/home/Home.jsx";
 import KYCform from "./components/KYCform.jsx";
 import UserProfile from "./pages/profile/UserProfile.jsx";
 import { FundRaisingCard } from "./components/FundRaiserCard.jsx";
-import { GoodDonateCard } from "./components/GoodDonateCard.jsx";
 import { MyGoodDonatedCard } from "./components/MyGoodDonatedCard.jsx";
 import { ObtainedGoodCard } from "./components/ObtainedGoodCard.jsx";
+import Login from "./pages/login/Login.jsx";
 const LazyCamppaign = React.lazy(() =>
   import("./pages/create-campaign/CreateCampaign.jsx")
 );
@@ -50,14 +50,6 @@ const router = createBrowserRouter(
   createRoutesFromElements(
     <Route path="/" element={<App />}>
       <Route path="/" element={<Home />}></Route>
-      {/* <Route
-        path="/create-campaign"
-        element={
-          <Suspense fallback={<div>Loading....</div>}>
-            <LazyCamppaign />
-          </Suspense>
-        }
-      /> */}
       <Route
         path="/create-campaign"
         element={
@@ -100,14 +92,7 @@ const router = createBrowserRouter(
           </Suspense>
         }
       />
-      <Route
-        path="/login"
-        element={
-          <Suspense fallback={<div>Loading....</div>}>
-            <LazyLogin />
-          </Suspense>
-        }
-      />
+      <Route path="/login" element={<Login />} />
       <Route
         path="/signup"
         element={
