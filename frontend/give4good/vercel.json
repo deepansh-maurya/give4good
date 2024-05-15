@@ -1,9 +1,5 @@
 {
-  "routes": [
-    { "src": "/", "dest": "/" },
-    { "src": "/create-campaign", "dest": "/" },
-    { "src": "/create-campaign/kyc-verification", "dest": "/" },
-    { "src": "/login", "dest": "/" },
-    { "src": "/signup", "dest": "/" }
-  ]
+   "rewrites":  [
+       {"source": "/login", "destination": "/src/pages/login/Login.jsx"}
+    ]
 }
