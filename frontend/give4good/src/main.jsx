@@ -187,11 +187,19 @@ const router = createBrowserRouter([
     children: [
       {
         path: "login",
-        element: <LazyLogin />,
+        element: (
+          <Suspense fallback={<div>Loading....</div>}>
+            <LazyLogin />
+          </Suspense>
+        ),
       },
       {
         path: "signup",
-        element: <LazySignup />,
+        element: (
+          <Suspense fallback={<div>Loading....</div>}>
+            <LazySignup />
+          </Suspense>
+        ),
       },
       {
         path: "/create-campaign",
