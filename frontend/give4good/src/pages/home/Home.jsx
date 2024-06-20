@@ -5,8 +5,10 @@ import { BiSolidBabyCarriage } from "react-icons/bi";
 import { FaBookReader } from "react-icons/fa";
 import { ImWoman } from "react-icons/im";
 import { LuAlertCircle } from "react-icons/lu";
+import { useNavigate } from "react-router-dom";
 const Home = () => {
-  console.log(import.meta.env.VITE_URL);
+  const nav = useNavigate();
+
   return (
     <>
       <div className="relative min-h-screen bg-black text-white">
@@ -23,8 +25,13 @@ const Home = () => {
               Convert Cliks <br /> into Donations
             </h1>
 
-            <button className="bg-white text-black py-2 px-4 rounded-full font-medium">
-              Donate Now
+            <button
+              onClick={() => {
+                nav("/explore-campaign");
+              }}
+              className="bg-white text-black py-2 px-4 rounded-full font-medium"
+            >
+              Explore More
             </button>
           </div>
         </div>

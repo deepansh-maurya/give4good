@@ -297,13 +297,16 @@ export const getCampaignsByCategory = async (req, res) => {
 export const getCampaignByType = async (req, res) => {
   try {
     const type = req.body.type;
+    console.log(type, "type");
     let campaigns;
-    if (type == "All types") campaigns = await Campaign.find({});
-    else if (type == "active")
+    if (type == "All Types") {
+      campaigns = await Campaign.find({});
+      console.log("SD");
+    } else if (type == "Active")
       campaigns = await Campaign.find({ status: "active" });
-    else if (type == "active")
-      campaigns = await Campaign.find({ status: "active" });
-    else if (type == "closed")
+    else if (type == "Urgent")
+      campaigns = await Campaign.find({ status: "urgent" });
+    else if (type == "Closed")
       campaigns = await Campaign.find({ status: "closed" });
     else if (type == "Most Raised") {
       campaigns = await Campaign.find().sort({ progress: -1 }).exec();
@@ -319,13 +322,20 @@ export const getCampaignByType = async (req, res) => {
       });
     }
 
-    if (campaigns.length == 0)
+    console.log(campaigns, "campgins");
+
+    if (Array.isArray(campaigns) && campaigns.length == 0)
       return res
         .status(404)
         .json({ success: false, message: "Campaigns not found" });
 
-    return res.status(200).json({ success: false, message: "Campaigns found" });
+    return res.status(200).json({
+      success: true,
+      message: "Campaigns found",
+      campaigns: campaigns,
+    });
   } catch (error) {
+    console.log(error);
     return res.status(500).json({
       success: false,
       message: "Error while fetching Campaigns ",

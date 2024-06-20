@@ -122,6 +122,32 @@ export const getGoodsFromDBByLocation = async (location) => {
   }
 };
 
+export const getProductByTypes = async (type) => {
+  try {
+    const token = localStorage.getItem("token");
+    let options = {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({
+        type: type,
+      }),
+    };
+    const response = await fetch(
+      `${import.meta.env.VITE_URL}/list-goods-by-type`,
+      options
+    );
+    const injson = await response.json();
+    console.log(injson);
+    if (injson.success) return injson.goods;
+    else return false;
+  } catch (error) {
+    return false;
+  }
+};
+
 export const requestForGood = async (formdata) => {
   try {
     const token = localStorage.getItem("token");

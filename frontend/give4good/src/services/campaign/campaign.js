@@ -93,10 +93,10 @@ export const getCampaignsFromDbbyCategory = async (category) => {
     );
     const injson = await response.json();
     console.log(injson);
-    // if (injson.success) return injson.campaigns;
-    // else return false;
+    if (injson.success) return injson.campaigns;
+    else return false;
   } catch (error) {
-    // TODO: display toast
+    return false;
   }
 };
 
@@ -156,19 +156,19 @@ export const getCampaignFromDBByLocation = async (location) => {
 export const getCampaignFromDBByTypes = async (type) => {
   try {
     const token = localStorage.getItem("token");
-
+    console.log(type, "ksdfjdshjdsjdh");
     let options = {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
         Authorization: `Bearer ${token}`,
       },
-      body: {
-        city: type,
-      },
+      body: JSON.stringify({
+        type: type,
+      }),
     };
     const response = await fetch(
-      `${import.meta.env.VITE_URL}/get-campaign-tag-search`,
+      `${import.meta.env.VITE_URL}/get-campaign-by-type`,
       options
     );
     const injson = await response.json();

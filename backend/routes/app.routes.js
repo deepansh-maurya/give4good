@@ -46,6 +46,7 @@ import {
   fetchProfile,
   getRequestedStatus,
   getRequesters,
+  listGoodByType,
   listGoods,
   listGoodsBySeacrhAndTags,
   listRequestedGoods,
@@ -148,6 +149,9 @@ router.route("/list-goods").post(authenticationMiddleware, listGoods);
 router
   .route("/list-goods-seacrh-tags")
   .post(authenticationMiddleware, listGoodsBySeacrhAndTags);
+router
+  .route("/list-goods-by-type")
+  .post(authenticationMiddleware, listGoodByType);
 router.route("/request-goods").post(
   authenticationMiddleware,
   upload.fields([

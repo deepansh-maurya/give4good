@@ -27,6 +27,7 @@ export const FundRaisingCard = ({ campaign, mycamp }) => {
   return (
     <>
       <div className="bg-white w-[430px] dark:bg-black  text-white shadow-black  mt-3 shadow-lg rounded-lg overflow-hidden">
+        
         <img
           src={campaign.image}
           alt={campaign.title}

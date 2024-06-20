@@ -85,7 +85,7 @@ export const donateGoods = async (req, res) => {
       description,
       boughtdate,
       expirydate,
-      status: "available",
+      status: "Available",
       condition,
       quantity,
       brand: brand || "",
@@ -168,7 +168,6 @@ export const listGoodsBySeacrhAndTags = async (req, res) => {
 
 export const listGoods = async (req, res) => {
   try {
-    console.log(req.body.location, "location");
     if (req.body.city) {
       let goods = await Goods.find({ city: req.body.city });
       if (!goods)
@@ -190,11 +189,13 @@ export const listGoods = async (req, res) => {
         .status(200)
         .json({ success: true, message: "goods found", goods });
     }
-    const category = req.body.category;
-    console.log(category);
     let goods;
-    if (category != "") {
-      goods = await Goods.find({ category: category });
+    if (req.body.category != "") {
+      console.log(req.body.category.trim());
+      goods = await Goods.find({
+        category: req.body.category.trim(),
+      });
+      console.log(goods, "goods");
     } else {
       goods = await Goods.find({});
     }
@@ -214,6 +215,50 @@ export const listGoods = async (req, res) => {
     return res.status(500).json({
       success: true,
       message: " internal error while goods fetching",
+    });
+  }
+};
+
+export const listGoodByType = async (req, res) => {
+  try {
+    const type = req.body.type;
+    let goods;
+    if (type == "All Types") {
+      goods = await Goods.find({});
+    } else if (type == "Available")
+      goods = await Goods.find({ status: "Available" });
+    else if (type == "Donated") goods = await Goods.find({ status: "Donated" });
+    else if (type == "Least Asked")
+      goods = await Goods.find({ status: "Least Asked" });
+    else if (type == "Most Asked") {
+      campaigns = await Goods.find().sort({ progress: -1 }).exec();
+    } else if (type == "Newly Added") {
+      let currentDate = new Date();
+      let oneMonthBfeoreDate = new Date(currentDate);
+      oneMonthBfeoreDate.setMonth(oneMonthBfeoreDate.getMonth() - 1);
+      goods = await Goods.find({
+        date: {
+          $gte: oneMonthBfeoreDate,
+          $lte: currentDate,
+        },
+      });
+    }
+
+    if (!Array.isArray(goods) || goods.length == 0)
+      return res
+        .status(404)
+        .json({ success: false, message: "goods not found" });
+
+    return res.status(200).json({
+      success: true,
+      message: "goods found",
+      goods,
+    });
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({
+      success: false,
+      message: "Error while fetching goods ",
     });
   }
 };

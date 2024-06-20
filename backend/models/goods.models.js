@@ -55,7 +55,6 @@ const goodsSchema = new Schema(
     status: {
       type: String,
       required: true,
-      enum: ["available", "acquired"],
     },
     resaonOfDonation: {
       type: String,
@@ -70,6 +69,12 @@ const goodsSchema = new Schema(
     weight: {
       type: String,
     },
+    requests: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: "UserProfile",
+      },
+    ],
   },
   { timestamps: true }
 );

@@ -33,7 +33,7 @@ const Signup = () => {
       setName("");
       setPassword("");
     } else {
-      toast.error(`${respones.message.toUpperCase()}`, {
+      toast.error(`${respones.message}`, {
         position: "bottom-center",
         autoClose: 5000,
         hideProgressBar: false,

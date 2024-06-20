@@ -1,4 +1,4 @@
-// TODO: handle type
+TODO: types;
 import React, { useEffect, useState } from "react";
 import {
   getCampaignFromDBByLocation,
@@ -27,7 +27,7 @@ import { BsMotherboardFill } from "react-icons/bs";
 import { FundRaisingCard } from "../../components/FundRaiserCard";
 export default function Explore() {
   const [location, setlocation] = useState();
-  const [types, setTypes] = useState();
+  let types;
   const [search, setsearch] = useState();
   let [data, setdata] = useState([]);
   console.log(location);
@@ -82,6 +82,7 @@ export default function Explore() {
   }, []);
   async function handleCategory(category) {
     let response = await getCampaignsFromDbbyCategory(category);
+    console.log(response, "response");
     setdata(response);
   }
   async function handleSearch() {
@@ -92,10 +93,12 @@ export default function Explore() {
 
   async function handleTypes() {
     const response = await getCampaignFromDBByTypes(types);
-    if (response.success) setdata(response.campaign);
+    console.log(response, "typetypetypetypetype");
+    if (response.success) setdata(response.campaigns);
     else {
-    } // TODO: handletaost
+    }
   }
+  console.log(data);
   async function handleLocation(loc) {
     const response = await getCampaignFromDBByLocation(loc);
     setdata(response);
@@ -148,11 +151,11 @@ export default function Explore() {
               className="shadow-black w-60 shadow-sm shadow-inner relative top-3"
               value={types}
               onChange={(e) => {
-                setTypes(e.target.value);
+                types = e.target.value;
                 handleTypes();
               }}
             >
-              <option className="font-bold" value="Choose location">
+              <option className="font-bold" value="All Types">
                 All Types
               </option>
               <option value="Active">Active</option>
@@ -184,7 +187,9 @@ export default function Explore() {
         {category.map((cate) => {
           return (
             <div
-              onClick={() => handleCategory(cate.cate)}
+              onClick={() => {
+                handleCategory(cate.cate);
+              }}
               className=" shadow-black cursor-pointer shadow-sm flex-col h-[80px] w-[80px] text-white font-bold  bg-slate-400 flex items-center justify-center"
             >
               {cate.icons}

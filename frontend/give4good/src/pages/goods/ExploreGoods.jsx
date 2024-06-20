@@ -1,4 +1,4 @@
-// TODO: handle type
+TODO: revisit_for_most_Asked_and_least_asked;
 import React, { useEffect, useState } from "react";
 import { GiClothes } from "react-icons/gi";
 import { FaSearch } from "react-icons/fa";
@@ -18,6 +18,7 @@ import { BsMotherboardFill } from "react-icons/bs";
 import {
   getGoodsFromDBByLocation,
   getLocation,
+  getProductByTypes,
   getProductsFromDBByCategory,
   getProductsFromDBBySeacrh,
 } from "../../services/goods/donateGood";
@@ -52,7 +53,7 @@ export default function Explore() {
     { cate: "Educational ", icons: icons[5] },
     { cate: "Appliances", icons: icons[6] },
     { cate: "Outdoor ", icons: icons[7] },
-    { cate: "Pet Care", icons: icons[8] },
+    { cate: "Pet", icons: icons[8] },
     { cate: "Medical", icons: icons[9] },
     { cate: "Tools ", icons: icons[10] },
     { cate: "Seasonal ", icons: icons[11] },
@@ -93,10 +94,16 @@ export default function Explore() {
     if (response) setdata(response);
   }
 
-  function handleCategory(category) {
-    let response = getProductsFromDBByCategory(category);
+  async function handleCategory(category) {
+    let response = await getProductsFromDBByCategory(category);
     setdata(response);
   }
+
+  async function handleTypes(types) {
+    const response = await getProductByTypes(types);
+    setdata(response);
+  }
+
   return (
     <div className="w-[100%] h-[100%] overflow-x-hidden  ">
       <div className=" ">
@@ -140,18 +147,19 @@ export default function Explore() {
               />
             </div>
             <select
-              name=""
-              id=""
+              onChange={(e) => {
+                handleTypes(e.target.value);
+              }}
               className="shadow-black w-60 shadow-sm shadow-inner relative top-3"
             >
-              <option className="font-bold" value="Choose location">
+              <option className="font-bold" value="All Types">
                 All Types
               </option>
-              <option value="Active">Available</option>
-              <option value="Urgent">Donated</option>
-              <option value="Closed">Least Asked</option>
-              <option value="Newly Launched">Most Asked</option>
-              <option value="Most Raised">Newly Added</option>
+              <option value="Available">Available</option>
+              <option value="Donated">Donated</option>
+              <option value="Least Asked">Least Asked</option>
+              <option value="Most Asked">Most Asked</option>
+              <option value="Newly Added">Newly Added</option>
             </select>
             <select
               name="location"
