@@ -33,7 +33,7 @@ export default function UserProfile() {
   useEffect(() => {
     getPRofileDAta();
   }, []);
-
+  console.log(campaignData);
   async function handleDeleteAccount() {
     let response = await checkCampaginStatus();
     console.log(response);
@@ -150,13 +150,14 @@ export default function UserProfile() {
             </div>
 
             <div className=" flex  mt-14 flex-wrap gap-12 justify-center ">
-              {campaignData?.map((campaign, index) => (
-                <FundRaisingCard
-                  key={index}
-                  campaign={campaign}
-                  mycamp={true}
-                />
-              ))}
+              {Array.isArray(campaignData) &&
+                campaignData?.map((campaign, index) => (
+                  <FundRaisingCard
+                    key={index}
+                    campaign={campaign}
+                    mycamp={true}
+                  />
+                ))}
             </div>
           </div>
         ) : (

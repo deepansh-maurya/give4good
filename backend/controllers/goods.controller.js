@@ -5,7 +5,6 @@ import { UserProfile } from "../models/userProfile.models.js";
 import { Shippedgood } from "../models/shippedGoods.model.js";
 import { upoadFile } from "../utils/cloudinary.js";
 import mongoose from "mongoose";
-import { request } from "express";
 
 let expiryOfToken;
 // routes to add goods to donate
@@ -229,9 +228,9 @@ export const listGoodByType = async (req, res) => {
       goods = await Goods.find({ status: "Available" });
     else if (type == "Donated") goods = await Goods.find({ status: "Donated" });
     else if (type == "Least Asked")
-      goods = await Goods.find({ status: "Least Asked" });
+      goods = await Goods.find().sort({ requests: 1 }).exec();
     else if (type == "Most Asked") {
-      campaigns = await Goods.find().sort({ progress: -1 }).exec();
+      campaigns = await Goods.find().sort({ requests: -1 }).exec();
     } else if (type == "Newly Added") {
       let currentDate = new Date();
       let oneMonthBfeoreDate = new Date(currentDate);

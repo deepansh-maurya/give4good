@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { loginFunc } from "../../services/auth/auth";
 import { useNavigate } from "react-router-dom";
 import { Link } from "react-router-dom";
-import { ToastContainer, toast } from "react-toastify";
+import { Toaster, toast } from "react-hot-toast";
 import { useAuth } from "../../contexts/AppContext";
 const Login = () => {
   const { isauth, setisauth } = useAuth();
@@ -20,32 +20,12 @@ const Login = () => {
     const response = await loginFunc({ username, password, role });
     if (response.success) {
       setisauth(true);
-      await toast.success(`${response.message.toUpperCase()}`, {
-        position: "bottom-center",
-        autoClose: 5000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
-        theme: "dark",
-        transition: "Bounce",
-      });
+      toast.success(`${response.message.toUpperCase()}`);
       setTimeout(() => {
         nav("/");
       }, 1000);
     } else {
-      toast.warning(`${response.message.toUpperCase()}`, {
-        position: "bottom-center",
-        autoClose: 5000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
-        theme: "dark",
-        transition: "Bounce",
-      });
+      toast.error(`${response.message.toUpperCase()}`);
     }
   };
 
@@ -110,7 +90,7 @@ const Login = () => {
           </div>
         </div>
       </div>
-      <ToastContainer />
+      <Toaster />
     </>
   );
 };

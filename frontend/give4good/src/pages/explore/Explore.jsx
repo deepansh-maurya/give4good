@@ -1,4 +1,4 @@
-TODO: types;
+// TODO: types;
 import React, { useEffect, useState } from "react";
 import {
   getCampaignFromDBByLocation,

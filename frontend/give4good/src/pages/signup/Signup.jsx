@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { sinupFunc } from "../../services/auth/auth";
 import { useNavigate } from "react-router-dom";
 import { Link } from "react-router-dom";
-import { ToastContainer, toast } from "react-toastify";
+import { Toaster, toast } from "react-hot-toast";
 const Signup = () => {
   const nav = useNavigate();
   const [name, setName] = useState("");
@@ -18,32 +18,12 @@ const Signup = () => {
     const respones = await sinupFunc({ name, email, password });
     console.log(respones.message);
     if (respones.success) {
-      toast.success(`${respones.message.toUpperCase()}`, {
-        position: "bottom-center",
-        autoClose: 5000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
-        theme: "dark",
-        transition: "Bounce",
-      });
+      toast.success(`${respones.message.toUpperCase()}`);
       setEmail("");
       setName("");
       setPassword("");
     } else {
-      toast.error(`${respones.message}`, {
-        position: "bottom-center",
-        autoClose: 5000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
-        theme: "dark",
-        transition: "Bounce",
-      });
+      toast.error(`${respones.message}`);
     }
   };
 
@@ -107,19 +87,7 @@ const Signup = () => {
           </div>
         </div>
       </div>
-      <ToastContainer
-        position="bottom-center"
-        autoClose={5000}
-        hideProgressBar={false}
-        newestOnTop={false}
-        closeOnClick
-        rtl={false}
-        pauseOnFocusLoss
-        draggable
-        pauseOnHover
-        theme="dark"
-        transition:Bounce
-      />
+      <Toaster />
     </>
   );
 };

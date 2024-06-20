@@ -29,7 +29,6 @@ const campaigneSchema = new Schema(
     },
     status: {
       type: String,
-      enum: ["active", "inactive"],
     },
     image: {
       type: String,

@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { useAuth } from "../contexts/AppContext";
 import { Toaster, toast } from "react-hot-toast";
 const CampaignForm = () => {
+  const [toenabletag, settoenaletag] = useState(false);
   const inputref = useRef();
   const { id, setId } = useAuth();
   const nav = useNavigate();
@@ -144,30 +145,34 @@ const CampaignForm = () => {
                   name="tags"
                   placeholder="Enter a Tag"
                   className=" pl-1 outline-none"
+                  onChange={() => settoenaletag(true)}
                 />
-                <div
-                  onClick={() => {
-                    let newTag = formData.tags;
-                    newTag.push(inputref.current.value);
-                    setFormData({ ...formData, tags: newTag });
-                    inputref.current.value = "";
-                  }}
-                  className=" cursor-pointer  text-lg"
-                >
-                  +
-                </div>
+                {toenabletag ? (
+                  <div
+                    onClick={() => {
+                      let newTag = formData.tags;
+                      newTag.push(inputref.current.value);
+                      setFormData({ ...formData, tags: newTag });
+                      inputref.current.value = "";
+                    }}
+                    className=" cursor-pointer  text-lg"
+                  >
+                    +
+                  </div>
+                ) : null}
               </div>
               <div className="flex mt-3 flex-wrap">
-                {formData.tags.map((data, index) => {
-                  return (
-                    <div
-                      key={index}
-                      className="bg-slate-100 mr-2 m-2 border-2 border-black rounded-3xl p-1"
-                    >
-                      {data}
-                    </div>
-                  );
-                })}
+                {Array.isArray(formData.tags) &&
+                  formData.tags.map((data, index) => {
+                    return (
+                      <div
+                        key={index}
+                        className="bg-slate-100 mr-2 m-2 border-2 border-black rounded-3xl p-1"
+                      >
+                        {data}
+                      </div>
+                    );
+                  })}
               </div>
             </div>
             {/* <div className="flex mt-3 flex-wrap">

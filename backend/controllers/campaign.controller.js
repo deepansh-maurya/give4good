@@ -128,6 +128,11 @@ export const createCampaign = async (req, res) => {
         success: false,
         message: "Failed to create campaign Try again",
       });
+    const date1 = new Date();
+    const date2 = new Date(deadline);
+    const diff = date1.getTime() - date2.getTime();
+    const forType = diff / (1000 * 3600 * 24);
+    console.log(forType);
     console.log(req.params.id, "id");
     const campaign = await Campaign.create({
       title,
@@ -135,7 +140,7 @@ export const createCampaign = async (req, res) => {
       story,
       date: new Date(),
       tags,
-      status: "active",
+      status: forType < 10 ? "urgent" : "active",
       goal,
       deadline,
       city,
