@@ -250,3 +250,58 @@ export const checkCampaginStatus = async () => {
     return false;
   }
 };
+
+export const handleComment = async (comment, id) => {
+  try {
+    console.log(comment, id);
+    const token = localStorage.getItem("token");
+    let options = {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({
+        comment: comment,
+        id,
+      }),
+    };
+    const response = await fetch(
+      `${import.meta.env.VITE_URL}/add-comment-on-campaign`,
+      options
+    );
+    const injson = await response.json();
+    console.log(injson);
+    if (injson.success) return injson.success;
+    else return false;
+  } catch (error) {
+    return false;
+  }
+};
+export const handleReport = async (message, id) => {
+  try {
+    console.log(comment, id);
+    const token = localStorage.getItem("token");
+    let options = {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({
+        message,
+        id,
+      }),
+    };
+    const response = await fetch(
+      `${import.meta.env.VITE_URL}/handle-report-to-campaign`,
+      options
+    );
+    const injson = await response.json();
+    console.log(injson);
+    if (injson.success) return injson.success;
+    else return false;
+  } catch (error) {
+    return false;
+  }
+};

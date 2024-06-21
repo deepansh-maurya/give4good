@@ -1,4 +1,3 @@
-// TODO: types;
 import React, { useEffect, useState } from "react";
 import {
   getCampaignFromDBByLocation,
@@ -183,14 +182,14 @@ export default function Explore() {
           </div>
         </div>
       </div>
-      <div className="flex gap-1  flex-col flex-wrap h-[450px] w-[200px] fixed left-[78%] bottom-[5px]">
+      <div className="flex gap-1 flex-col  flex-wrap h-[450px] w-[200px]  fixed left-[78%] bottom-[5px]">
         {category.map((cate) => {
           return (
             <div
               onClick={() => {
                 handleCategory(cate.cate);
               }}
-              className=" shadow-black cursor-pointer shadow-sm flex-col h-[80px] w-[80px] text-white font-bold  bg-slate-400 flex items-center justify-center"
+              className=" shadow-black   hover:bg-gray-100 hover:text-black cursor-pointer shadow-md flex-col h-[80px] w-[80px] text-white font-bold  bg-slate-400 flex items-center justify-center"
             >
               {cate.icons}
               {cate.cate}
@@ -199,7 +198,7 @@ export default function Explore() {
         })}
         <div
           onClick={() => handleCategory("")}
-          className="w-[249px] cursor-pointer shadow-black shadow-sm  text-white font-bold   bg-slate-400 relative right-[84%] flex items-center justify-center"
+          className="w-[249px] cursor-pointer shadow-black shadow-md hover:bg-gray-100 hover:text-black  text-white font-bold   bg-slate-400 relative right-[84%] flex items-center justify-center"
         >
           All
         </div>

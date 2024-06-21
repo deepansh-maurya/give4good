@@ -431,7 +431,6 @@ export const deleteAccount = async (req, res) => {
       .json({ success: false, message: "failed to delete the campaign" });
   }
 };
-
 export const isCampaignActive = async (req, res) => {
   try {
     // check is any campagin is active
@@ -473,7 +472,6 @@ export const isCampaignActive = async (req, res) => {
     });
   }
 };
-
 export const resetPassword = async (req, res) => {
   try {
     const code = req.body.code;
@@ -578,5 +576,19 @@ export const handleSubmitForm = async (req, res) => {
     return res.status(500).send("failed to become admin try again");
   }
 };
-
+export const fetchProfile = async (req, res) => {
+  try {
+    let user = await UserProfile.findById(req.body.id);
+    if (!user) {
+      return res
+        .status(404)
+        .json({ success: false, message: "profile not found" });
+    }
+    return res.status(200).json({ success: true, message: "profile found" });
+  } catch (error) {
+    return res
+      .status(500)
+      .json({ success: false, message: "something went wrong" });
+  }
+};
 // similar route for admin change password, delete, forget

@@ -1,13 +1,24 @@
+//TODO: check report
 import React, { useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
-import { checkForDonation } from "../services/campaign/campaign";
-
+import {
+  campaignInsights,
+  checkForDonation,
+  handleComment,
+  handleReport,
+} from "../services/campaign/campaign";
+import { Toaster, toast } from "react-hot-toast";
+import { fetchProfile } from "../services/profile/userProfile";
 const CampaignPage = () => {
   const campgaign = useLocation();
+  const [report, setreport] = useState(false);
+  const [commentedUsers, setCommentedusers] = useState([]);
   const [campaignData, setCampaignData] = useState(campgaign.state.campaign);
   const [width, setWidth] = useState(
-    Math.floor((campaignData?.progress / campaignData?.goal) * 100)
+    Math.floor((campaignData?.progress / campaignData?.goal) * 100) || 0
   );
+  const [comment, setcomment] = useState("");
+  const [message, setmessage] = useState("");
 
   const [validatedonateButton, setvalidatedonatebutton] = useState(true);
   const [donateData, setDonateData] = useState({
@@ -17,13 +28,27 @@ const CampaignPage = () => {
     amount: "",
   });
 
+  console.log(campaignData);
   async function isDonatedOrNot() {
     const response = await checkForDonation(campaignData._id);
     setvalidatedonatebutton(response);
   }
+  async function fetchCommentData() {
+    let users = await Promise.all(
+      campaignData.comments.map(async (data) => {
+        const user = await fetchProfile(data.user);
+        return { user: user, comment: data.comment };
+      })
+    );
+    console.log(users, "users");
+    setCommentedusers(users);
+  }
+
+  console.log(commentedUsers);
 
   useEffect(() => {
     isDonatedOrNot();
+    fetchCommentData();
   }, []);
 
   async function handleRazorpay() {
@@ -83,6 +108,26 @@ const CampaignPage = () => {
     var razor = new window.Razorpay(options);
     razor.open();
   }
+  async function addComment() {
+    console.log(comment);
+    let response = await handleComment(comment, campaignData._id);
+    console.log(response);
+    if (response) {
+      toast.success("comment added successfully");
+    } else {
+      toast.error("failed to comment");
+    }
+  }
+  async function addReport() {
+    let response = await handleReport(message, campaignData._id);
+    console.log(response);
+    if (response) {
+      toast.success("reported successfully");
+      setreport(false);
+    } else {
+      toast.error("failed to report");
+    }
+  }
   return (
     <>
       <div className="flex bg-white relative top-14 text-black">
@@ -101,7 +146,7 @@ const CampaignPage = () => {
                 Total Donors - {campaignData?.donors?.length}
               </div>
               <div className="text-sm ">
-                Progress ₹{campaignData.progress / 100 || 0} / Goal ₹
+                Progress ₹ {campaignData.progress || 0} / Goal ₹{" "}
                 {campaignData.goal}
               </div>
             </div>
@@ -133,20 +178,60 @@ const CampaignPage = () => {
                 name=""
                 id=""
                 placeholder="Your words "
+                onChange={(e) => {
+                  setcomment(e.target.value);
+                }}
               ></textarea>
-              <button className="bg-black font-bold text-white px-4 py-2 rounded w-3/5">
+              <button
+                onClick={() => addComment()}
+                className="bg-black font-bold text-white px-4 py-2 rounded w-3/5"
+              >
                 Comment
               </button>
             </div>
-
-            <div className="bg-red-600 text-white font-extrabold cursor-pointer flex justify-center items-center h-12 w-2/5 rounded-full">
-              Report
+            <div className="bg-gray-300 gap-9 flex-col  flex justify-center items-center p-5 h-auto w-auto rounded-lg">
+              <h1 className=" text-lg font-bold font-sans">Views Of People</h1>
+              {commentedUsers.length > 0 &&
+                commentedUsers?.map((data) => {
+                  return (
+                    <div className=" w-[100%]  py-2 px-3 rounded-lg  bg-slate-200 ">
+                      <div className="flex gap-2">
+                        <img
+                          className=" w-[40px] rounded-full"
+                          src={data.user.profilePicture}
+                          alt=""
+                        />
+                        <h6 className=" font-serif text-blue-600 underline">
+                          {data.user.name}
+                        </h6>
+                      </div>
+                      <main>{data.comment}</main>
+                    </div>
+                  );
+                })}
+            </div>
+            {report ? (
+              <div className="bg-gray-300 gap-9 flex-col  flex justify-center items-center p-5 h-auto w-auto rounded-lg">
+                <textarea
+                  name=""
+                  id=" "
+                  className="bg-white space-y-3 p-7    w-[500px] h-[200px] rounded-lg"
+                  placeholder="report the campaign"
+                ></textarea>
+              </div>
+            ) : null}
+            <div className="bg-red-500 m-auto hover:bg-red-700 text-white font-extrabold cursor-pointer flex justify-center items-center h-12 w-2/5 rounded-full">
+              {report ? (
+                <div onClick={() => addReport()}>Submit</div>
+              ) : (
+                <div onClick={() => setreport(true)}>Report</div>
+              )}
             </div>
           </div>
         </div>
         <div className="w-1/3 p-8 fixed right-0  flex flex-col justify-center gap-4  h-screen  bg-black">
           <div className="mb-4">
-            <button className=" bg-blue-400 w-2/3 font-bold rounded-full relative left-16   text-white px-4 py-2  mr-2">
+            <button className=" bg-blue-600  hover:bg-blue-500 w-2/3 font-bold rounded-full relative left-16   text-white px-4 py-2  mr-2">
               Share
             </button>
           </div>
@@ -237,22 +322,13 @@ const CampaignPage = () => {
                   amount: "",
                 })
               }
-              className=" underline text-blue-600"
+              className=" underline cursor-pointer  text-blue-500"
             >
               reset
             </div>
           </div>
-          <div className="mb-4">
-            {/* <button className="bg-gray-700 text-white px-4 py-2 rounded w-full">
-            Refund
-          </button> */}
-          </div>
-          <div>
-            {/* <button className="bg-gray-700 text-white px-4 py-2 rounded w-full">
-            Request
-          </button> */}
-          </div>
         </div>
+        <Toaster />
       </div>
     </>
   );

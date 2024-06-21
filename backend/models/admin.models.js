@@ -29,6 +29,28 @@ const adminSchema = new Schema(
       required: true,
       default: "admin",
     },
+    reportToCampaign: [
+      {
+        user: {
+          type: Schema.Types.ObjectId,
+          ref: "UserProfile",
+        },
+        campaign: {
+          type: Schema.Types.ObjectId,
+          ref: "Campaign",
+        },
+        message: { type: String },
+      },
+    ],
+    reportToGoods: [
+      {
+        user: {
+          type: Schema.Types.ObjectId,
+          ref: "UserProfile",
+        },
+        message: { type: String },
+      },
+    ],
   },
   { timestamps: true }
 );

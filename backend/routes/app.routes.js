@@ -12,11 +12,13 @@ import {
   userProfile,
 } from "../controllers/auth.controller.js";
 import {
+  commentHandler,
   createCampaign,
   getCampaignByType,
   getCampaignsByCategory,
   getCampaignsByTagAndSearch,
   getDonationInshightsData,
+  handleReport,
   isDonatedOrNot,
   kycOfBeneficiery,
 } from "../controllers/campaign.controller.js";
@@ -71,6 +73,7 @@ router
   .route("/check-auth-status")
   .get(authenticationMiddleware, checkauthstatus);
 // profile routes
+router.route("/fetch-profile").get(authenticationMiddleware, fetchProfile);
 router.route("/user-profile").get(authenticationMiddleware, userProfile);
 router.route("/update-profile").post(authenticationMiddleware, updateProfile);
 router
@@ -101,6 +104,12 @@ router.route("/campaign-creation/:id").post(
   ]),
   createCampaign
 );
+router
+  .route("/handle-report-to-campaign")
+  .post(authenticationMiddleware, handleReport);
+router
+  .route("/add-comment-on-campaign")
+  .post(authenticationMiddleware, commentHandler);
 router
   .route("/get-campaign-by-tag-search")
   .post(authenticationMiddleware, getCampaignsByTagAndSearch);

@@ -7,8 +7,6 @@ import { Beneficiery } from "../models/beneficiary.model.js";
 import { notification } from "../utils/noti.utils.js";
 import { upoadFile } from "../utils/cloudinary.js";
 import mongoose, { Schema, mongo } from "mongoose";
-//comment reammaning , report
-// TODO: handle large videos
 export const kycOfBeneficiery = async (req, res) => {
   try {
     console.log(req.body);
@@ -145,6 +143,7 @@ export const createCampaign = async (req, res) => {
       deadline,
       city,
       category,
+      comments: [],
       image: imageURL,
       video: videoURL,
       creator: req.user?._id,
@@ -187,7 +186,6 @@ export const createCampaign = async (req, res) => {
     });
   }
 };
-
 export const isDonatedOrNot = async (req, res) => {
   try {
     const user = await UserProfile.findById(req.user._id);
@@ -203,7 +201,6 @@ export const isDonatedOrNot = async (req, res) => {
     return res.status(500).json({ success: false, message: "internal error" });
   }
 };
-
 export const getCampaignsByTagAndSearch = async (req, res) => {
   try {
     console.log("SDFDSF");
@@ -703,7 +700,6 @@ export const requestDonationMoney = async (req, res) => {
       .json({ success: false, message: "internal error while payout" });
   }
 };
-
 export const getDonationInshightsData = async (req, res) => {
   try {
     const campaignID = req.body.id;
@@ -796,5 +792,73 @@ export const getDonationInshightsData = async (req, res) => {
     return res
       .status(500)
       .json({ success: false, message: "failed to get the data" });
+  }
+};
+export const commentHandler = async (req, res) => {
+  try {
+    console.log("Sdf", req.body.comment, req.body.id);
+    let campgin = await Campaign.findById(req.body.id);
+    let comment = campgin.comments;
+    let commentObject = {
+      user: req.user._id,
+      comment: req.body.comment,
+    };
+    comment.push(commentObject);
+    let updatedcampagin = await Campaign.findByIdAndUpdate(
+      req.body?.id,
+      {
+        comments: comment,
+      },
+      { new: true }
+    );
+    console.log(updatedcampagin.comments, "dfg");
+    if (!updatedcampagin) {
+      return res
+        .status(400)
+        .json({ success: false, message: "commment failed" });
+    }
+
+    return res
+      .status(200)
+      .json({ success: true, message: "commment added succesfull" });
+  } catch (error) {
+    return res
+      .status(500)
+      .json({ success: false, message: "something went wrong" });
+  }
+};
+
+export const handleReport = async (req, res) => {
+  try {
+    const admin = await Admin.find({});
+    const random = Math.floor(Math.random() * admin.length) + 1;
+    const randomAdmin = admin[random];
+    let report = randomAdmin.reportToCampaign;
+    let newReport = {
+      user: req.user._id,
+      campagin: req.body.id,
+      message: req.body,
+      message,
+    };
+    report.push(newReport);
+    const updatedAdmin = await Admin.findByIdAndUpdate(
+      randomAdmin._id,
+      {
+        reportToCampaign: report,
+      },
+      { new: true }
+    );
+    if (!updatedAdmin) {
+      return res
+        .status(400)
+        .json({ success: false, message: "failed to report" });
+    }
+    return res
+      .status(200)
+      .json({ success: true, message: "campaign reported successfully" });
+  } catch (error) {
+    return res
+      .status(500)
+      .json({ success: false, message: "failed to report" });
   }
 };

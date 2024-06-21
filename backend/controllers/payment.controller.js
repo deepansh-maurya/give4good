@@ -1,3 +1,4 @@
+// TODO: handle the transaction
 import Razorpay from "razorpay";
 import { UserProfile } from "../models/userProfile.models.js";
 import { validatePaymentVerification } from "razorpay/dist/utils/razorpay-utils.js";
@@ -73,7 +74,7 @@ export const paymentVerification = async (req, res) => {
       key_secret: process.env.RAZORPAY_API_KEY_SECRET,
     });
     const payment = await instance.payments.fetch(razorpay_payment_id);
-
+    console.log(payment);
     const campaign = await Campaign.findById({ _id: req.params.campaignID });
 
     const donorArray = campaign.donors;
@@ -84,15 +85,16 @@ export const paymentVerification = async (req, res) => {
         _id: req.params.campaignID,
       },
       {
-        progress: campaign.progress || 0 + payment.amount / 100,
+        progress:
+          campaign?.progress + payment.amount / 100 || payment.amount / 100,
         donors: donorArray,
       },
       { new: true }
     );
-    if (updatedCampaign.progress >= updatedCampaign.deadline) {
+    if (updatedCampaign.progress >= updatedCampaign.goal) {
       const progress = await Campaign.findByIdAndUpdate(
         { _id: req.params.campaignID },
-        { status: "inactive" },
+        { status: "closed" },
         { new: true }
       );
       if (!progress) {
