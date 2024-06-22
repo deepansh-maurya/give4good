@@ -1,17 +1,21 @@
 import React, { useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
-import { getRequestStatus, requestForGood } from "../services/goods/donateGood";
 import { Toaster, toast } from "react-hot-toast";
+import { userProfile } from "../services/profile/userProfile";
 function ObtainedGoodPage() {
   const state = useLocation();
   const [good, setgood] = useState(state.state);
-  console.log(good);
   const [status, setStatus] = useState();
+
   async function handleStatus() {
-    let response = await getRequestStatus(good._id);
-    console.log(response);
-    console.log(response.status);
-    setStatus(response.status);
+    console.log("Sdfsdfds");
+    let response = await userProfile();
+    console.log(response, "response");
+    response.user.requestedgood.map((data) => {
+      if (data.id == good._id) {
+        setStatus(data);
+      }
+    });
   }
   console.log(status);
   useEffect(() => {
@@ -20,7 +24,6 @@ function ObtainedGoodPage() {
   return (
     <div className="flex justify-center w-full bg-gray-900 overflow-hidden">
       <div className="flex justify-center w-[90%] relative top-14 items-start bg-gray-900 text-white min-h-screen">
-        {/* { lfet side} */}
         <div className="w-4/6 p-8 relative right-48 ">
           <h1 className="text-2xl font-bold mb-4">{good.name}</h1>
           <div className="mb-4">
@@ -199,12 +202,16 @@ function ObtainedGoodPage() {
         </div>
 
         {/* Right Side */}
-        <div className="w-2/6 p-8 fixed right-14">
-          <h1>Status Of Your Request</h1>
-          {status == "accepted" ? (
-            <div>
+        <div className="w-2/6 p-8 gap-4 h-[500px] justify-center items-center text-4xl font-serif bg-slate-800  font-bold flex flex-col fixed right-6 top-28">
+          {status?.status == "accepted" ? (
+            <div className="flex flex-col gap-7">
               <div>Request Accpted 😁</div>
-              <button>Ship the product </button>
+              <span>
+                Contact of Donor <span>{status.contact}</span>
+              </span>
+              <div className="bg-green-800 flex justify-center items-center px-3 py-2 font-sans hover:bg-green-600 cursor-pointer rounded-full">
+                Ship the product{" "}
+              </div>
             </div>
           ) : status == "rejected" ? (
             <div>Request Rejected 😑</div>

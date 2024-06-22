@@ -57,7 +57,7 @@ export const ObtainedGoodCard = ({ good }) => {
             }}
             className="bg-white text-black font-bold px-4 py-2 rounded-md mr-2 hover:text-white hover:bg-red-500 transition duration-300 ease-in-out"
           >
-            Request Now
+            View Details
           </button>
           <button className="bg-red-500 text-white px-4 py-2 rounded-md hover:text-black hover:bg-white transition duration-300 ease-in-out">
             Share

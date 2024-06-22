@@ -11,11 +11,11 @@ function MyProductPage() {
   const [toUpdate, setToUpdate] = useState(false);
   const [good, setgood] = useState(state.state);
   const [requesters, setRequesters] = useState();
-  console.log(good);
+  console.log(requesters, "requesters");
   const [decision, setDecision] = useState();
   async function handleRequesters() {
     let response = await getRequesters(good.donor, good._id);
-    console.log(response);
+    console.log(response, "Requester");
     if (response) setRequesters(response.requestes[0].requests);
   }
   useEffect(() => {
@@ -25,8 +25,7 @@ function MyProductPage() {
   async function handleStatusButton(status, requestid) {
     let response = await setStatus(status, good.donor, good._id, requestid);
     if (response.success) {
-      setDecision(status == "accepted" ? true : false);
-      toast.success("request accepted successfully");
+      toast.success("Action taken successfully");
     } else toast.error("Failed to accept the request");
   }
 
@@ -352,46 +351,55 @@ function MyProductPage() {
         {/* Right Side */}
         <div className="w-2/6 p-8 fixed right-10">
           <h1 className="text-center text-2xl font-bold  ">Requesters</h1>
-          {Array.isArray(requesters) &&
-            requesters.map((data) => {
-              return (
-                <div className="text-white shadow-md shadow-white p-4 m-2 ">
-                  <div className="flex gap-2">
-                    <img src="" alt="" />
-                    <h3>{"name"}</h3>
-                    <h3>{data.contact}</h3>
-                  </div>
-                  <p>Poposel - {data.proposel}</p>
-                  <div className="flex gap-2 mt-4">
-                    {decision == true ? (
-                      <div className="font-bold rounded-full shadow-lg bg-red-500 pl-2 pr-2 shadow-red-400">
-                        request got accpeted
-                      </div>
-                    ) : (
-                      <div className="flex gap-2 mt-4">
-                        <button
-                          onClick={() =>
-                            handleStatusButton("accepted", data.id)
-                          }
-                          className="bg-red-500 rounded-lg font-bold pl-2 pr-2 flex justify-center items-center hover:bg-green-500"
+          <div className=" overflow-scroll overflow-x-hidden h-[500px]">
+            {Array.isArray(requesters) &&
+              requesters.map((data) => {
+                return (
+                  <div className="text-white shadow-md shadow-white p-4 m-2 ">
+                    <div className="flex gap-2">
+                      <img src="" alt="" />
+                      <h3>{"Contact"}</h3>
+                      <h3>{data.contact}</h3>
+                    </div>
+                    <p>Poposel - {data.proposel}</p>
+                    <div className="flex gap-2 mt-4">
+                      {data.status == "rejected" ||
+                      data.status == "accepted" ? (
+                        <div
+                          className={`${
+                            data.status == "rejected"
+                              ? "bg-red-600 "
+                              : " bg-green-600 "
+                          }rounded-full  px-2`}
                         >
-                          accept
-                        </button>
-                        <button
-                          onClick={() =>
-                            handleStatusButton("rejected", data.id)
-                          }
-                          className="hover:bg-red-500 font-bold rounded-lg pl-2 pr-2 flex justify-center items-center bg-green-500"
-                        >
-                          {" "}
-                          deny
-                        </button>
-                      </div>
-                    )}
+                          {data.status}
+                        </div>
+                      ) : (
+                        <div className="flex gap-2 mt-4">
+                          <button
+                            onClick={() => {
+                              handleStatusButton("accepted", data.id);
+                            }}
+                            className="bg-red-500 rounded-lg font-bold pl-2 pr-2 flex justify-center items-center hover:bg-green-500"
+                          >
+                            accept
+                          </button>
+                          <button
+                            onClick={() => {
+                              handleStatusButton("rejected", data.id);
+                            }}
+                            className="hover:bg-red-500 font-bold rounded-lg pl-2 pr-2 flex justify-center items-center bg-green-500"
+                          >
+                            {" "}
+                            deny
+                          </button>
+                        </div>
+                      )}
+                    </div>
                   </div>
-                </div>
-              );
-            })}
+                );
+              })}
+          </div>
         </div>
       </div>
       <Toaster></Toaster>

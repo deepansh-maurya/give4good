@@ -123,7 +123,6 @@ export const donateGoods = async (req, res) => {
     });
   }
 };
-
 export const listGoodsBySeacrhAndTags = async (req, res) => {
   try {
     let keyword = req.body.keyword;
@@ -164,7 +163,6 @@ export const listGoodsBySeacrhAndTags = async (req, res) => {
     });
   }
 };
-
 export const listGoods = async (req, res) => {
   try {
     if (req.body.city) {
@@ -217,7 +215,6 @@ export const listGoods = async (req, res) => {
     });
   }
 };
-
 export const listGoodByType = async (req, res) => {
   try {
     const type = req.body.type;
@@ -261,7 +258,6 @@ export const listGoodByType = async (req, res) => {
     });
   }
 };
-
 export const fetchProfile = async (req, res) => {
   try {
     console.log(req.body, "kya");
@@ -276,7 +272,6 @@ export const fetchProfile = async (req, res) => {
   }
 };
 // routes for needy to get the goods
-
 export const requestGoods = async (req, res) => {
   try {
     console.log(new mongoose.Types.ObjectId(req.body.donorID));
@@ -335,7 +330,16 @@ export const requestGoods = async (req, res) => {
       { new: true }
     );
 
-    if (!updatedDonor || !updatedRequester) {
+    const requestedProduct = await Goods.findById(req.body.goodid);
+    const updatedRequestsForProduct = await Goods.findByIdAndUpdate(
+      req.body.goodid,
+      {
+        requests: requestedProduct?.requests + 1 || 1,
+      },
+      { new: true }
+    );
+
+    if (!updatedDonor || !updatedRequester || !updatedRequestsForProduct) {
       return res.status(400).json({
         success: false,
         message: "request failed try again",
@@ -383,24 +387,38 @@ export const acceptOrRejectGoods = async (req, res) => {
     const status = req.body.status;
     const donor = await UserProfile.findById(req.body.donor);
     const donatedGood = donor.donatedGood;
-    donatedGood.filter((data) => {
-      if (data._id == req.body.goodid) {
-        data.requests.filter((data) => {
-          if (data.id == req.body.requestid) {
-            data.status = status;
-          }
-        });
-      }
-    });
-    donatedGood.filter((data) => {
-      if (data._id == req.body.goodid) {
-        data.requests.filter((data) => {
-          if (data.id == req.body.requestid) {
-            console.log(data);
-          }
-        });
-      }
-    });
+    if (status == "rejected") {
+      donatedGood.filter((data) => {
+        if (data._id == req.body.goodid) {
+          data.requests.filter((data) => {
+            if (data.id == req.body.requestid) {
+              data.status = status;
+            }
+          });
+        }
+      });
+    }
+    if (status == "accepted") {
+      donatedGood.filter(async (data) => {
+        if (data._id == req.body.goodid) {
+          data.requests.filter((data) => {
+            console.log(data.id, req.body.requestid);
+            if (data.id != req.body.requestid) {
+              data.status = "rejected";
+            } else {
+              data.status = "accepted";
+            }
+          });
+        }
+      });
+      donatedGood.filter(async (data) => {
+        if (data._id == req.body.goodid) {
+          await Goods.findByIdAndUpdate(req.body.goodid, {
+            status: "donated",
+          });
+        }
+      });
+    }
     const updatedDonor = await UserProfile.findByIdAndUpdate(
       {
         _id: req.body.donor,
@@ -409,6 +427,7 @@ export const acceptOrRejectGoods = async (req, res) => {
       { new: true }
     );
 
+    console.log(updatedDonor);
     const requester = await UserProfile.findById(req.body.requestid);
     const requestedGood = requester.requestedgood;
     requestedGood.filter((data) => {
@@ -453,6 +472,7 @@ export const acceptOrRejectGoods = async (req, res) => {
     });
   }
 };
+// TODO: ho gyaa yaha tak
 const generateTokenForShiprocketApis = async () => {
   let data = JSON.stringify({
     email: "deepanshmaurya135@gmail.com",
@@ -735,7 +755,6 @@ export const listRequestedGoods = async (req, res) => {
     });
   }
 };
-
 export const getRequesters = async (req, res) => {
   try {
     const id = new mongoose.Types.ObjectId(req.body.id);
@@ -750,31 +769,30 @@ export const getRequesters = async (req, res) => {
       return res.status(404).json({ success: false, message: "not found" });
     return res
       .status(404)
-      .json({ success: true, message: "not found", requestes });
+      .json({ success: true, message: " found", requestes });
   } catch (error) {
     return res
       .status(500)
       .json({ success: false, message: "error while fetching data " });
   }
 };
-
-export const getRequestedStatus = async (req, res) => {
-  try {
-    let id = req.body.id;
-    let user = await UserProfile.findById(req.user._id);
-    let requestedGoodData = user.requestedgood;
-    console.log(requestedGoodData);
-    let status;
-    requestedGoodData.map((data) => {
-      if (data.id == id) {
-        status = data.status;
-      }
-    });
-    if (!status)
-      return res.status(404).json({ successs: false, message: "not found" });
-    return res.status(200).json({ successs: true, message: " found", status });
-  } catch (error) {
-    console.log(error);
-    return res.status(404).json({ successs: false, message: "internal error" });
-  }
-};
+// export const getRequestedStatus = async (req, res) => {
+//   try {
+//     let id = req.body.id;
+//     let user = await UserProfile.findById(req.user._id);
+//     let requestedGoodData = user.requestedgood;
+//     console.log(requestedGoodData);
+//     let status;
+//     requestedGoodData.map((data) => {
+//       if (data.id == id) {
+//         status = data.status;
+//       }
+//     });
+//     if (!status)
+//       return res.status(404).json({ successs: false, message: "not found" });
+//     return res.status(200).json({ successs: true, message: " found", status });
+//   } catch (error) {
+//     console.log(error);
+//     return res.status(404).json({ successs: false, message: "internal error" });
+//   }
+// };

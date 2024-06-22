@@ -1,8 +1,8 @@
 import React from "react";
-import { Link, NavLink } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { useAuth } from "../contexts/AppContext";
 import { CgProfile } from "react-icons/cg";
-import { Flip, ToastContainer, toast } from "react-toastify";
+import { Toaster, toast } from "react-hot-toast";
 export const Navbar = () => {
   const { isauth } = useAuth();
   console.log(isauth);
@@ -18,12 +18,33 @@ export const Navbar = () => {
             <Link to="/" className="hover:text-gray-700">
               Home
             </Link>
-            <Link to="/explore-campaign" className="hover:text-gray-700">
-              Explore Campaign
-            </Link>
-            <Link to="/explore-goods" className="hover:text-gray-700">
-              Explore Goods
-            </Link>
+            {isauth ? (
+              <Link to="/explore-campaign" className="hover:text-gray-700">
+                Explore Campaign
+              </Link>
+            ) : (
+              <span
+                className=" cursor-pointer"
+                onClick={() => toast.error("LOGIN TO PROCEED")}
+              >
+                {" "}
+                Explore Campaign
+              </span>
+            )}
+
+            {isauth ? (
+              <Link to="/explore-goods" className="hover:text-gray-700">
+                Explore Goods
+              </Link>
+            ) : (
+              <span
+                className=" cursor-pointer"
+                onClick={() => toast.error("LOGIN TO PROCEED")}
+              >
+                Explore Goods
+              </span>
+            )}
+
             {isauth == true ? (
               <Link
                 to="/create-campaign/kyc-verification"
@@ -34,17 +55,7 @@ export const Navbar = () => {
             ) : (
               <span
                 onClick={() => {
-                  toast.info("YOU ARE NOT LOGGED IN!", {
-                    position: "bottom-center",
-                    autoClose: 5000,
-                    hideProgressBar: false,
-                    closeOnClick: true,
-                    pauseOnHover: true,
-                    draggable: true,
-                    progress: undefined,
-                    theme: "dark",
-                    transition: "Bounce",
-                  });
+                  toast.error("YOU ARE NOT LOGGED IN!");
                 }}
                 className="hover:text-gray-700"
               >
@@ -59,17 +70,7 @@ export const Navbar = () => {
             ) : (
               <span
                 onClick={() => {
-                  toast.info("YOU ARE NOT LOGGED IN!", {
-                    position: "bottom-center",
-                    autoClose: 5000,
-                    hideProgressBar: false,
-                    closeOnClick: true,
-                    pauseOnHover: true,
-                    draggable: true,
-                    progress: undefined,
-                    theme: "dark",
-                    transition: "Bounce",
-                  });
+                  toast.error("YOU ARE NOT LOGGED IN!");
                 }}
                 className="hover:text-gray-700"
               >
@@ -106,17 +107,7 @@ export const Navbar = () => {
               <span className="hover:text-gray-700 flex  cursor-pointer items-center">
                 <CgProfile
                   onClick={() => {
-                    toast.info("YOU ARE NOT LOGGED IN!", {
-                      position: "bottom-center",
-                      autoClose: 5000,
-                      hideProgressBar: false,
-                      closeOnClick: true,
-                      pauseOnHover: true,
-                      draggable: true,
-                      progress: undefined,
-                      theme: "dark",
-                      transition: "Bounce",
-                    });
+                    toast.error("YOU ARE NOT LOGGED IN!");
                   }}
                 />
               </span>
@@ -124,19 +115,7 @@ export const Navbar = () => {
           )}
         </div>
       </nav>
-      <ToastContainer
-        position="bottom-center"
-        autoClose={5000}
-        hideProgressBar={false}
-        newestOnTop={false}
-        closeOnClick
-        rtl={false}
-        pauseOnFocusLoss
-        draggable
-        pauseOnHover
-        theme="dark"
-        transition:Bounce
-      />
+      <Toaster />
     </>
   );
 };

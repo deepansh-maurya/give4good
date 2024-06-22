@@ -12,6 +12,8 @@ function ProductPage() {
     contact: "",
   });
 
+  console.log(good);
+
   async function handleRequest() {
     const formData = new FormData();
     Object.entries(requestData).forEach(([key, value]) => {
@@ -277,7 +279,6 @@ function ProductPage() {
               className="bg-gray-800 focus:bg-white focus:text-black text-white px-4 py-2 rounded w-full"
             />
           </div>
-
           <div className="mb-4">
             <button
               onClick={handleRequest}
@@ -287,17 +288,14 @@ function ProductPage() {
             </button>
             <div className=" underline text-blue-600">reset</div>
           </div>
-          <div className="mb-4">
-            {/* <button className="bg-gray-700 text-white px-4 py-2 rounded w-full">
-            Refund
-          </button> */}
-          </div>
-          <div>
-            {/* <button className="bg-gray-700 text-white px-4 py-2 rounded w-full">
-            Request
-          </button> */}
-          </div>
+
+          {""}
         </div>
+        {good.status == "donated" ? (
+          <div class=" border-white text-4xl fixed w-2/6 h-[500px] p-8 right-8  top-[150px] backdrop-blur bg-black bg-opacity-10 flex justify-center items-center text-red-500 font-extrabold ">
+            Product is donated
+          </div>
+        ) : null}
       </div>
       <Toaster></Toaster>
     </div>

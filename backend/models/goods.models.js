@@ -69,12 +69,9 @@ const goodsSchema = new Schema(
     weight: {
       type: String,
     },
-    requests: [
-      {
-        type: Schema.Types.ObjectId,
-        ref: "UserProfile",
-      },
-    ],
+    requests: {
+      type: Number,
+    },
   },
   { timestamps: true }
 );
