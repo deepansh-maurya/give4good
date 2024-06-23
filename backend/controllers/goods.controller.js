@@ -509,7 +509,9 @@ function generateSKU() {
 }
 export const shipTheGoods = async (req, res) => {
   try {
-    // creating order
+    // TODO: creating order
+    token = generateTokenForShiprocketApis();
+    console.log(token);
     let data = JSON.stringify({
       order_id: "224-447",
       order_date: req.body.date,
@@ -545,7 +547,7 @@ export const shipTheGoods = async (req, res) => {
           selling_price: req.body.pro_price,
         },
       ],
-      payment_method: "Prepaid",
+      payment_method: "COD",
       shipping_charges: 0,
       giftwrap_charges: 0,
       transaction_charges: 0,
@@ -567,6 +569,7 @@ export const shipTheGoods = async (req, res) => {
       },
       data: data,
     };
+    //TODO: order created
 
     axios(config)
       .then(async function (response) {
@@ -576,7 +579,7 @@ export const shipTheGoods = async (req, res) => {
           shipment_id: response.shipment_id,
         });
         if (shippedgood) {
-          // check available courier
+          //TODO: check available courier
           let avialability = await axios({
             method: "get",
             maxBodyLength: Infinity,
@@ -588,7 +591,7 @@ export const shipTheGoods = async (req, res) => {
           });
           let courier = avialability.data.available_courier_companies;
 
-          // generate awb
+          //TODO: generate awb
           let data = JSON.stringify({
             shipment_id: shippedgood.shipment_id,
             courier_id: courier[Math.floor(Math.random() * courier.length - 1)],
@@ -647,7 +650,7 @@ export const shipTheGoods = async (req, res) => {
                     { _id: req.user.id },
                     { shippedgooddetail: shippedgooddetail }
                   );
-                  ///   changes remaaining for updating values
+                  //   changes remaaining for updating values
                   if (updatedUser) {
                     return res.status(200).json({
                       success: true,
@@ -692,8 +695,7 @@ export const shipTheGoods = async (req, res) => {
       })
       .catch(function (error) {
         if (error.err_code) {
-          token = generateTokenForShiprocketApis();
-          shipTheGoods();
+          // shipTheGoods();
         }
       });
   } catch (error) {
@@ -776,23 +778,23 @@ export const getRequesters = async (req, res) => {
       .json({ success: false, message: "error while fetching data " });
   }
 };
-// export const getRequestedStatus = async (req, res) => {
-//   try {
-//     let id = req.body.id;
-//     let user = await UserProfile.findById(req.user._id);
-//     let requestedGoodData = user.requestedgood;
-//     console.log(requestedGoodData);
-//     let status;
-//     requestedGoodData.map((data) => {
-//       if (data.id == id) {
-//         status = data.status;
-//       }
-//     });
-//     if (!status)
-//       return res.status(404).json({ successs: false, message: "not found" });
-//     return res.status(200).json({ successs: true, message: " found", status });
-//   } catch (error) {
-//     console.log(error);
-//     return res.status(404).json({ successs: false, message: "internal error" });
-//   }
-// };
+export const getRequestedStatus = async (req, res) => {
+  try {
+    let id = req.body.id;
+    let user = await UserProfile.findById(req.user._id);
+    let requestedGoodData = user.requestedgood;
+    console.log(requestedGoodData);
+    let status;
+    requestedGoodData.map((data) => {
+      if (data.id == id) {
+        status = data.status;
+      }
+    });
+    if (!status)
+      return res.status(404).json({ successs: false, message: "not found" });
+    return res.status(200).json({ successs: true, message: " found", status });
+  } catch (error) {
+    console.log(error);
+    return res.status(404).json({ successs: false, message: "internal error" });
+  }
+};

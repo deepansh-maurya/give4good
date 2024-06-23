@@ -6,7 +6,28 @@ function ObtainedGoodPage() {
   const state = useLocation();
   const [good, setgood] = useState(state.state);
   const [status, setStatus] = useState();
+  const [ship, setship] = useState(false);
+  const [formData, setFormData] = useState({
+    firstName: "",
+    lastName: "",
+    address: "",
+    address2: "",
+    city: "",
+    pincode: "",
+    state: "",
+    country: "",
+    email: "",
+    number: "",
+  });
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData({ ...formData, [name]: value });
+  };
 
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    console.log(formData);
+  };
   async function handleStatus() {
     console.log("Sdfsdfds");
     let response = await userProfile();
@@ -21,6 +42,10 @@ function ObtainedGoodPage() {
   useEffect(() => {
     handleStatus();
   }, []);
+
+  async function shippingGoodHandler() {
+    const response = await handleShippingGood();
+  }
   return (
     <div className="flex justify-center w-full bg-gray-900 overflow-hidden">
       <div className="flex justify-center w-[90%] relative top-14 items-start bg-gray-900 text-white min-h-screen">
@@ -202,23 +227,203 @@ function ObtainedGoodPage() {
         </div>
 
         {/* Right Side */}
-        <div className="w-2/6 p-8 gap-4 h-[500px] justify-center items-center text-4xl font-serif bg-slate-800  font-bold flex flex-col fixed right-6 top-28">
-          {status?.status == "accepted" ? (
-            <div className="flex flex-col gap-7">
-              <div>Request Accpted 😁</div>
-              <span>
-                Contact of Donor <span>{status.contact}</span>
-              </span>
-              <div className="bg-green-800 flex justify-center items-center px-3 py-2 font-sans hover:bg-green-600 cursor-pointer rounded-full">
-                Ship the product{" "}
+        {ship ? (
+          <div className="min-h-screen bg-gray-900 text-white flex items-center justify-center">
+            <form
+              className="bg-gray-800 p-8 rounded-lg shadow-lg w-full max-w-md"
+              onSubmit={handleSubmit}
+            >
+              <h2 className="text-2xl font-bold mb-6">Contact Form</h2>
+              <div className="mb-4">
+                <label
+                  className="block text-sm font-medium mb-1"
+                  htmlFor="firstName"
+                >
+                  First Name
+                </label>
+                <input
+                  className="w-full p-2 bg-gray-700 text-white rounded-md"
+                  type="text"
+                  id="firstName"
+                  name="firstName"
+                  value={formData.firstName}
+                  onChange={handleChange}
+                />
               </div>
-            </div>
-          ) : status == "rejected" ? (
-            <div>Request Rejected 😑</div>
-          ) : (
-            <div>Pending....... 😥</div>
-          )}
-        </div>
+              <div className="mb-4">
+                <label
+                  className="block text-sm font-medium mb-1"
+                  htmlFor="lastName"
+                >
+                  Last Name
+                </label>
+                <input
+                  className="w-full p-2 bg-gray-700 text-white rounded-md"
+                  type="text"
+                  id="lastName"
+                  name="lastName"
+                  value={formData.lastName}
+                  onChange={handleChange}
+                />
+              </div>
+              <div className="mb-4">
+                <label
+                  className="block text-sm font-medium mb-1"
+                  htmlFor="address"
+                >
+                  Address
+                </label>
+                <input
+                  className="w-full p-2 bg-gray-700 text-white rounded-md"
+                  type="text"
+                  id="address"
+                  name="address"
+                  value={formData.address}
+                  onChange={handleChange}
+                />
+              </div>
+              <div className="mb-4">
+                <label
+                  className="block text-sm font-medium mb-1"
+                  htmlFor="address2"
+                >
+                  Address 2
+                </label>
+                <input
+                  className="w-full p-2 bg-gray-700 text-white rounded-md"
+                  type="text"
+                  id="address2"
+                  name="address2"
+                  value={formData.address2}
+                  onChange={handleChange}
+                />
+              </div>
+              <div className="mb-4">
+                <label
+                  className="block text-sm font-medium mb-1"
+                  htmlFor="city"
+                >
+                  City
+                </label>
+                <input
+                  className="w-full p-2 bg-gray-700 text-white rounded-md"
+                  type="text"
+                  id="city"
+                  name="city"
+                  value={formData.city}
+                  onChange={handleChange}
+                />
+              </div>
+              <div className="mb-4">
+                <label
+                  className="block text-sm font-medium mb-1"
+                  htmlFor="pincode"
+                >
+                  Pincode
+                </label>
+                <input
+                  className="w-full p-2 bg-gray-700 text-white rounded-md"
+                  type="text"
+                  id="pincode"
+                  name="pincode"
+                  value={formData.pincode}
+                  onChange={handleChange}
+                />
+              </div>
+              <div className="mb-4">
+                <label
+                  className="block text-sm font-medium mb-1"
+                  htmlFor="state"
+                >
+                  State
+                </label>
+                <input
+                  className="w-full p-2 bg-gray-700 text-white rounded-md"
+                  type="text"
+                  id="state"
+                  name="state"
+                  value={formData.state}
+                  onChange={handleChange}
+                />
+              </div>
+              <div className="mb-4">
+                <label
+                  className="block text-sm font-medium mb-1"
+                  htmlFor="country"
+                >
+                  Country
+                </label>
+                <input
+                  className="w-full p-2 bg-gray-700 text-white rounded-md"
+                  type="text"
+                  id="country"
+                  name="country"
+                  value={formData.country}
+                  onChange={handleChange}
+                />
+              </div>
+              <div className="mb-4">
+                <label
+                  className="block text-sm font-medium mb-1"
+                  htmlFor="email"
+                >
+                  Email
+                </label>
+                <input
+                  className="w-full p-2 bg-gray-700 text-white rounded-md"
+                  type="email"
+                  id="email"
+                  name="email"
+                  value={formData.email}
+                  onChange={handleChange}
+                />
+              </div>
+              <div className="mb-4">
+                <label
+                  className="block text-sm font-medium mb-1"
+                  htmlFor="number"
+                >
+                  Phone Number
+                </label>
+                <input
+                  className="w-full p-2 bg-gray-700 text-white rounded-md"
+                  type="text"
+                  id="number"
+                  name="number"
+                  value={formData.number}
+                  onChange={handleChange}
+                />
+              </div>
+              <button
+                className="w-full bg-blue-500 text-white p-2 rounded-md hover:bg-blue-600"
+                type="submit"
+              >
+                Submit
+              </button>
+            </form>
+          </div>
+        ) : (
+          <div className="w-2/6 p-8 gap-4 h-[500px] justify-center items-center text-4xl font-serif bg-slate-800  font-bold flex flex-col fixed right-6 top-28">
+            {status?.status == "accepted" ? (
+              <div className="flex flex-col gap-7">
+                <div>Request Accpted 😁</div>
+                <span>
+                  Contact of Donor <span>{status.contact}</span>
+                </span>
+                <div
+                  onClick={() => setship(true)}
+                  className="bg-green-800 flex justify-center items-center px-3 py-2 font-sans hover:bg-green-600 cursor-pointer rounded-full"
+                >
+                  Ship the product{" "}
+                </div>
+              </div>
+            ) : status == "rejected" ? (
+              <div>Request Rejected 😑</div>
+            ) : (
+              <div>Pending....... 😥</div>
+            )}
+          </div>
+        )}
       </div>
       <Toaster></Toaster>
     </div>
